@@ -3,6 +3,7 @@
 
 #include "../src/util/vec2d.h"
 #include "../src/util/quad.h"
+#include "../src/util/rect.h"
 #include "../src/util/screen.h"
 #include "../src/util/transformation.h"
 #include "../src/graphics/sprite.h"
