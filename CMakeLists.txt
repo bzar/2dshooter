@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(pandora-opengl-test) 
+project(2dshooter) 
 
 if(PANDORA)
   add_definitions(-DPANDORA)
@@ -13,6 +13,9 @@ add_subdirectory (lib/framework)
 
 file (GLOB SRCS src/*.cpp)
 
-add_executable(pandora-opengl-test ${SRCS})
-target_link_libraries(pandora-opengl-test framework)
+add_executable(2dshooter ${SRCS})
+target_link_libraries(2dshooter framework)
 
+
+install(TARGETS 2dshooter DESTINATION .)
+install(FILES img/icon.png DESTINATION img)

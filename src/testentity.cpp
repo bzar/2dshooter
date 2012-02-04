@@ -1,6 +1,6 @@
 #include "testentity.h"
 
-Image TestEntity::image("icon.png", false);
+Image TestEntity::image("img/icon.png", false);
 
 TestEntity::TestEntity(Vec2D const& position) : World::Entity(), sprite(image, position), sprite2(image, Vec2D(0,0))
 {
