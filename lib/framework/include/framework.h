@@ -6,6 +6,8 @@
 #include "../src/util/quad.h"
 #include "../src/util/rect.h"
 #include "../src/util/screen.h"
+#include "../src/util/segment.h"
+#include "../src/util/segmenttree.h"
 #include "../src/util/transformation.h"
 #include "../src/graphics/sprite.h"
 #include "../src/graphics/image.h"

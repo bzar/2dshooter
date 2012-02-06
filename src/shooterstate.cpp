@@ -1,7 +1,8 @@
 #include "shooterstate.h"
 #include <SDL/SDL.h>
 
-#include "testentity.h"
+#include "human.h"
+#include "segmentgroup.h"
 
 ShooterState::ShooterState() : Engine::State(), world(Vec2D(0, -0.4))
 {
@@ -14,29 +15,15 @@ ShooterState::~ShooterState()
 
 void ShooterState::enter()
 {
-  TestEntity* e1 = new TestEntity(Vec2D(250, 240));
-  e1->setZIndex(1);
-  world.addEntity(e1);
+  world.addEntity(new Human(Vec2D(200, 350)));
   
-  int const n = 50;
-  int k = 0;
-  for(int i = 0; i < n; ++i)
-  {
-    if(i * i >= n)
-    {
-      k = i;
-      break;
-    }
-  }
-  for(int i = 0; i < n; ++i) {
-    world.addEntity(e1 = new TestEntity(Vec2D((i%k) * 760 / k + 50 , (i/k) * 440 / k + 50)));
-  }
-  
-  TestEntity* e2 = new TestEntity(Vec2D(650, 240));
-  e2->setZIndex(6);
-  world.addEntity(e2);
-  
-  world.removeEntity(e1);
+  SegmentGroup::SegmentList terrainSegments;
+  terrainSegments.push_back(Segment(Vec2D(-50,  50), Vec2D( 50,  50)));
+  terrainSegments.push_back(Segment(Vec2D( 50,  50), Vec2D( 50, -50)));
+  terrainSegments.push_back(Segment(Vec2D( 50, -50), Vec2D(-50, -50)));
+  terrainSegments.push_back(Segment(Vec2D(-50, -50), Vec2D(-50,  50)));
+  SegmentGroup* terrain = new SegmentGroup(Vec2D(200, 200), terrainSegments);
+  world.addEntity(terrain);
 }
 
 

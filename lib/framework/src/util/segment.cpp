@@ -4,7 +4,12 @@ Segment::Segment(Vec2D const& a, Vec2D const& b) : a(a), b(b)
 {
   
 }
+
+Segment::Segment(Segment const& other) : a(other.a), b(other.b)
+{
   
+}
+
 Vec2D Segment::delta() const
 {
   return b.subtract(a);

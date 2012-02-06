@@ -35,7 +35,7 @@ public:
   
 private:
   struct OrderByZIndex {
-    bool operator() (Entity* a, Entity* b) const { return a->getZIndex() < b->getZIndex() ? true : a < b; }
+    bool operator() (Entity* a, Entity* b) const { return a->getZIndex() < b->getZIndex() || a < b; }
   };
   typedef std::set<Entity*, OrderByZIndex> EntitySet;
   EntitySet entities;

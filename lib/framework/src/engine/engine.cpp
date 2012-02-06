@@ -71,6 +71,7 @@ void Engine::run(int const fps, Screen const& screen)
     current->clear(screen);
     current->update(screen, delta/1000.0);
     current->draw(screen);
+    glFlush();
     dlSwapBuffers();
 
     int timeLeft = 1000/fps - (SDL_GetTicks() - timer);

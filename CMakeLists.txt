@@ -18,4 +18,4 @@ target_link_libraries(2dshooter framework)
 
 
 install(TARGETS 2dshooter DESTINATION .)
-install(FILES img/icon.png DESTINATION img)
+install(DIRECTORY img DESTINATION .)

@@ -60,8 +60,8 @@ void Image::render(Quad const& target) const
   target.coordArray(box);
   GLfloat tex[] = {0,1, 0,0, 1,1, 1,0};
 
-  glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
 
   glVertexPointer(2, GL_FLOAT, 0, box);
   glTexCoordPointer(2, GL_FLOAT, 0, tex);
@@ -70,6 +70,7 @@ void Image::render(Quad const& target) const
 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Quad const& Image::quad() const

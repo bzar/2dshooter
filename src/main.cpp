@@ -13,11 +13,12 @@
 
 void glInit()
 {
-  glClearColor(0.3f, 0.3f, 0.3f, 1.0f);  
+  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);  
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_ALPHA_TEST);
   glAlphaFunc(GL_GREATER, 0);
   glDisable(GL_DITHER);  
+  glShadeModel(GL_FLAT);
 }
 
 int main( int argc, char* args[] )

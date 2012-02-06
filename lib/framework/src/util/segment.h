@@ -6,7 +6,7 @@
 class Segment {
 public:
   Segment(Vec2D const& a, Vec2D const& b);
-  
+  Segment(Segment const& other);
   Vec2D delta() const;
   bool intersects(Segment const& other) const;
   Vec2D intersectionPoint(Segment const& other) const;

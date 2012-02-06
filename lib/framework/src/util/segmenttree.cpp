@@ -1,5 +1,5 @@
 #include "segmenttree.h"
-
+#include "log.h"
 #include <set>
 
 namespace
@@ -125,6 +125,7 @@ void SegmentTree::construct()
       }
       Interval interval((*i)->interval.upper, (*next)->interval.lower);
       nextNodes.push_back(new Node(interval, *i, *next));
+      ++i;
     }
     
     if(i != nodes.end()) {
