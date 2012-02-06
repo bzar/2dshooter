@@ -8,6 +8,18 @@ else(PANDORA)
   find_package(OpenGL)
 endif(PANDORA)
 
+if(LOGLEVEL STREQUAL "DEBUG")
+  add_definitions(-DLOG_LEVEL_DEBUG)
+elseif(LOGLEVEL STREQUAL "INFO")
+  add_definitions(-DLOG_LEVEL_INFO)
+elseif(LOGLEVEL STREQUAL "WARNING")
+  add_definitions(-DLOG_LEVEL_WARNING)
+elseif(LOGLEVEL STREQUAL "NONE")
+  
+else(LOGLEVEL STREQUAL "DEBUG")
+  add_definitions(-DLOG_LEVEL_ERROR)
+endif(LOGLEVEL STREQUAL "DEBUG")
+
 find_package (SDL)
 find_package (SDL_image)
 

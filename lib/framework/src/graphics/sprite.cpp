@@ -64,12 +64,6 @@ void Sprite::scale(float const amount)
 
 void Sprite::render(Screen const& screen)
 {
-  if(dirtyTransformation)
-  {
-    updateTransformation();
-    dirtyTransformation = false;
-  }
-  
   Transformation t = getTransformation().apply(screen.transformation());
   image.render(t.transform(image.quad()));
 }
@@ -81,8 +75,14 @@ void Sprite::setParent(Sprite* const newParent)
     parent = newParent;
   }
 }
-Transformation Sprite::getTransformation() const
+Transformation Sprite::getTransformation()
 {
+  if(dirtyTransformation)
+  {
+    updateTransformation();
+    dirtyTransformation = false;
+  }
+  
   if(parent)
   {
     return Transformation(transformation).apply(parent->getTransformation());

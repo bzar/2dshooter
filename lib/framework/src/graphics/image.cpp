@@ -1,4 +1,5 @@
 #include "image.h"
+#include "../util/log.h"
 #include <SDL/SDL_image.h>
 
 Image::Image(std::string const& filename, bool const loadImmediately) : texture(new TextureInformation())
@@ -20,6 +21,7 @@ Image::~Image()
   texture->refs -= 1;
   if(texture->refs <= 0)
   {
+    Log::info(std::string("Deleting texture ") + texture->filename);
     glDeleteTextures(1, &(texture->id));
     delete texture;
   }
@@ -29,6 +31,7 @@ void Image::load()
 {
   if(!texture->loaded)
   {
+    Log::info(std::string("Loading texture ") + texture->filename);
     SDL_Surface* img = IMG_Load(texture->filename.c_str());
     texture->width = img->w;
     texture->height = img->h;

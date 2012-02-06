@@ -24,7 +24,7 @@ public:
 
   void render(Screen const& screen);
   void setParent(Sprite* const newParent);
-  Transformation getTransformation() const;
+  Transformation getTransformation();
   
 private:
   void updateTransformation();

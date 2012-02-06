@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_H
 #define FRAMEWORK_H
 
+#include "../src/util/log.h"
 #include "../src/util/vec2d.h"
 #include "../src/util/quad.h"
 #include "../src/util/rect.h"
