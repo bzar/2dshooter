@@ -3,7 +3,7 @@
 
 #include "framework.h"
 
-class TestEntity : public World::Entity
+class TestEntity : public Entity
 {
 public:
   TestEntity(Vec2D const& position);

@@ -200,11 +200,11 @@ bool SegmentTree::queryNode(Segment const& segment, ResultHandler& handler, Node
     return false;
   }
 
-  Interval yInterval(min(segment.a.x, segment.b.x), max(segment.a.x, segment.b.x));
+  Interval yInterval(min(segment.a.y, segment.b.y), max(segment.a.y, segment.b.y));
   for(std::list<Segment const*>::iterator i = node->segments.begin(); i != node->segments.end(); ++i)
   {
     Segment const& s = **i;
-    Interval syInterval(min(s.a.x, s.b.x), max(s.a.x, s.b.x));
+    Interval syInterval(min(s.a.y, s.b.y), max(s.a.y, s.b.y));
     if(syInterval.intersects(yInterval))
     {
       if(handler.handle(s))

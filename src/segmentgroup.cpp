@@ -1,6 +1,7 @@
 #include "segmentgroup.h"
+#include "shooterworld.h"
 
-SegmentGroup::SegmentGroup(Vec2D const& position, SegmentList const& segments) : ShooterWorld::ShooterEntity(), position(position), segments(segments), segmentTree(segments)
+SegmentGroup::SegmentGroup(Vec2D const& position, SegmentList const& segments) : ShooterEntity(), position(position), velocity(0, 0), segments(segments), segmentTree(segments)
 {
 }
 
@@ -22,6 +23,13 @@ void SegmentGroup::reaction(float const delta)
 }
 void SegmentGroup::update(float const delta)
 {
+}
+
+bool SegmentGroup::query(Segment const& segment, SegmentTree::ResultHandler& handler) const
+{
+  Segment s(segment.a - position, segment.b - position);
+  ResultHandlerHelper helper(position + velocity, handler);
+  return segmentTree.query(s, helper);
 }
 
 void SegmentGroup::drawArrow(Transformation const& view, Vec2D const& base, Vec2D const& tip, float const r, float const g, float const b, float const lineWidth, float const tipLength, float const tipWidth)
@@ -60,4 +68,10 @@ void SegmentGroup::drawArrow(Transformation const& view, Vec2D const& base, Vec2
   glDrawArrays(GL_TRIANGLES, 0, NUM_ARROW_VERTICES);
   glDisableClientState(GL_COLOR_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+bool SegmentGroup::ResultHandlerHelper::handle(Segment const& segment) const
+{
+  Segment s(segment.a + delta, segment.a + delta);
+  return handler.handle(s);
 }

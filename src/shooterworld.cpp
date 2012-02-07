@@ -1,6 +1,6 @@
 #include "shooterworld.h"
 
-ShooterWorld::ShooterWorld(Vec2D const& gravity) : World(), gravity(gravity)
+ShooterWorld::ShooterWorld(Vec2D const& gravity) : World(), gravity(gravity), terrain()
 {
   
 }
@@ -11,6 +11,17 @@ void ShooterWorld::addEntity(ShooterEntity* const entity)
   World::addEntity(entity);
 }
 
+void ShooterWorld::addTerrain(SegmentGroup* const segmentGroup)
+{
+  terrain.insert(segmentGroup);
+  addEntity(segmentGroup);
+}
+
+void ShooterWorld::removeTerrain(SegmentGroup* const segmentGroup)
+{
+  terrain.erase(segmentGroup);
+  removeEntity(segmentGroup);
+}
 Vec2D const& ShooterWorld::getGravity() const
 {
   return gravity;
@@ -18,4 +29,9 @@ Vec2D const& ShooterWorld::getGravity() const
 void ShooterWorld::setGravity(Vec2D const& newGravity)
 {
   gravity = newGravity;
+}
+
+std::set<SegmentGroup*> const& ShooterWorld::getTerrain() const
+{
+  return terrain;
 }

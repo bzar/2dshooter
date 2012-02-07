@@ -1,36 +1,6 @@
 #include "world.h"
 #include "../util/log.h"
 
-void World::Entity::setWorld(World* const newWorld) 
-{ 
-  world = newWorld; 
-};
-
-World* World::Entity::getWorld() const 
-{ 
-  return world; 
-};
-
-void World::Entity::setZIndex(int const newz) 
-{ 
-  if(world)
-  {
-    world->detachEntity(this);
-  }
-  
-  zIndex = newz; 
-  
-  if(world)
-  {
-    world->addEntity(this);
-  }
-};
-
-int World::Entity::getZIndex() const 
-{ 
-  return zIndex; 
-};
-
 World::World() : entities()
 {
   
@@ -87,4 +57,8 @@ void World::render(Transformation const& view)
     (*i)->render(view);
   }  
 }
-  
+
+bool World::OrderByZIndex::operator()(Entity* a, Entity* b) const
+{ 
+  return a->getZIndex() < b->getZIndex() || a < b; 
+}

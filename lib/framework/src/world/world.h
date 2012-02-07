@@ -4,26 +4,11 @@
 #include <set>
 #include "../util/transformation.h"
 
-class World {
-public:
-  class Entity
-  {
-  public:
-    Entity() : world(0), zIndex(0) {};
-    void setWorld(World* const newWorld);
-    World* getWorld() const;
-    void setZIndex(int const newz);
-    int getZIndex() const;
-    virtual void render(Transformation const& view) {};
-    virtual void intent(float const delta) {};
-    virtual void reaction(float const delta) {};
-    virtual void update(float const delta) {};
+class Entity;
+#include "entity.h"
 
-  protected:
-    World* world;
-    int zIndex;
-  };
-  
+class World {
+public:  
   World();
   ~World();
   
@@ -36,9 +21,10 @@ public:
   
 private:
   struct OrderByZIndex {
-    bool operator() (Entity* a, Entity* b) const { return a->getZIndex() < b->getZIndex() || a < b; }
+    bool operator() (Entity* a, Entity* b) const;
   };
   typedef std::set<Entity*, OrderByZIndex> EntitySet;
   EntitySet entities;
 };
+
 #endif

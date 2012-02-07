@@ -4,7 +4,7 @@
 #include "human.h"
 #include "segmentgroup.h"
 
-ShooterState::ShooterState() : Engine::State(), player(0), world(Vec2D(0, -0.4)), view()
+ShooterState::ShooterState() : Engine::State(), player(0), world(Vec2D(0, -1.0)), view()
 {
 }
 
@@ -24,7 +24,7 @@ void ShooterState::enter()
   terrainSegments.push_back(Segment(Vec2D( 50, -50), Vec2D(-50, -50)));
   terrainSegments.push_back(Segment(Vec2D(-50, -50), Vec2D(-50,  50)));
   SegmentGroup* terrain = new SegmentGroup(Vec2D(200, 200), terrainSegments);
-  world.addEntity(terrain);
+  world.addTerrain(terrain);
 }
 
 

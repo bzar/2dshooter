@@ -2,7 +2,7 @@
 
 Image TestEntity::image("img/icon.png", false);
 
-TestEntity::TestEntity(Vec2D const& position) : World::Entity(), sprite(image, position), sprite2(image, Vec2D(0,0)), counter(0)
+TestEntity::TestEntity(Vec2D const& position) : Entity(), sprite(image, position), sprite2(image, Vec2D(0,0)), counter(0)
 {
   image.load();
   sprite2.setParent(&sprite);

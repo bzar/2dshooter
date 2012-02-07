@@ -2,9 +2,9 @@
 #define HUMAN_HH
 
 #include "framework.h"
-#include "shooterworld.h"
+#include "shooterentity.h"
 
-class Human : public ShooterWorld::ShooterEntity
+class Human : public ShooterEntity
 {
 public:
   Human(Vec2D const& position);
@@ -15,6 +15,17 @@ public:
   void update(float const delta);
   
 private:
+  class CollisionHandler : public SegmentTree::ResultHandler
+  {
+  public:
+    CollisionHandler(Human* human) : human(human) {}
+    virtual bool handle(Segment const& segment) const;
+  private:
+    Human* human;
+  };
+  
+  friend class CollisionHandler;
+  
   Sprite sprite;
   Vec2D velocity;
   

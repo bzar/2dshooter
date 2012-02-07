@@ -1,11 +1,12 @@
-#ifndef SEGMENT_GROUP_HH
-#define SEGMENT_GROUP_HH
+#ifndef SEGMENT_GROUP_H
+#define SEGMENT_GROUP_H
 
-#include "framework.h"
-#include "shooterworld.h"
 #include <list>
+#include "framework.h"
 
-class SegmentGroup : public ShooterWorld::ShooterEntity
+#include "shooterentity.h"
+
+class SegmentGroup : public ShooterEntity
 {
 public:
   typedef std::list<Segment> SegmentList;
@@ -16,10 +17,23 @@ public:
   void reaction(float const delta);
   void update(float const delta);
   
+  bool query(Segment const& segment, SegmentTree::ResultHandler& handler) const;
+  
 private:
+  class ResultHandlerHelper : public SegmentTree::ResultHandler
+  {
+  public:
+    ResultHandlerHelper(Vec2D const& velocity, SegmentTree::ResultHandler& handler) : delta(delta), handler(handler) {}
+    virtual bool handle(Segment const& segment) const;
+  private:
+    Vec2D const& delta;
+    SegmentTree::ResultHandler& handler;
+  };
+  
   void drawArrow(Transformation const& view, Vec2D const& base, Vec2D const& tip, float const r, float const g, float const b, float const lineWidth, float const tipLength, float const tipWidth);
   
   Vec2D position;
+  Vec2D velocity;
   SegmentList segments;
   SegmentTree segmentTree;
 };
