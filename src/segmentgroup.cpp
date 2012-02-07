@@ -4,11 +4,11 @@ SegmentGroup::SegmentGroup(Vec2D const& position, SegmentList const& segments) :
 {
 }
 
-void SegmentGroup::render(Screen const& screen)
+void SegmentGroup::render(Transformation const& view)
 {
   for(SegmentList::iterator i = segments.begin(); i != segments.end(); ++i)
   {
-    drawArrow(screen, position + i->a, position + i->b, 0.0, 0.8, 0.0, 1, 9, 7);
+    drawArrow(view, position + i->a, position + i->b, 0.0, 0.8, 0.0, 1, 9, 7);
   }
 }
 
@@ -24,22 +24,21 @@ void SegmentGroup::update(float const delta)
 {
 }
 
-void SegmentGroup::drawArrow(Screen const& screen, Vec2D const& base, Vec2D const& tip, float const r, float const g, float const b, float const lineWidth, float const tipLength, float const tipWidth)
+void SegmentGroup::drawArrow(Transformation const& view, Vec2D const& base, Vec2D const& tip, float const r, float const g, float const b, float const lineWidth, float const tipLength, float const tipWidth)
 {
   Vec2D const delta = tip - base;
   Vec2D const normal = delta.normal().uniti();
   float length = delta.length();
   Vec2D const c = base + delta.scale((length - tipLength) / length);
   
-  Transformation const& s = screen.transformation();
-  Vec2D const l1 = s.transform(base + normal.scale(0.5 * lineWidth));
-  Vec2D const l2 = s.transform(c + normal.scale(0.5 * lineWidth));
-  Vec2D const l3 = s.transform(c - normal.scale(0.5 * lineWidth));
-  Vec2D const l4 = s.transform(base - normal.scale(0.5 * lineWidth));
+  Vec2D const l1 = view.transform(base + normal.scale(0.5 * lineWidth));
+  Vec2D const l2 = view.transform(c + normal.scale(0.5 * lineWidth));
+  Vec2D const l3 = view.transform(c - normal.scale(0.5 * lineWidth));
+  Vec2D const l4 = view.transform(base - normal.scale(0.5 * lineWidth));
   
-  Vec2D const t1 = s.transform(c - normal.scale(0.5 * tipWidth));
-  Vec2D const t2 = s.transform(c + normal.scale(0.5 * tipWidth));
-  Vec2D const t3 = s.transform(tip);
+  Vec2D const t1 = view.transform(c - normal.scale(0.5 * tipWidth));
+  Vec2D const t2 = view.transform(c + normal.scale(0.5 * tipWidth));
+  Vec2D const t3 = view.transform(tip);
   
   int const NUM_ARROW_VERTICES = 9;
   GLfloat arrow[] = {

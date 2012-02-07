@@ -10,10 +10,10 @@ TestEntity::TestEntity(Vec2D const& position) : World::Entity(), sprite(image, p
   sprite2.setRotation(0.5);
 }
 
-void TestEntity::render(Screen const& screen)
+void TestEntity::render(Transformation const& view)
 {
-  sprite.render(screen);
-  sprite2.render(screen);
+  sprite.render(view);
+  sprite2.render(view);
 }
 
 void TestEntity::intent(float const delta)

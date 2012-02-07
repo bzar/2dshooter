@@ -62,9 +62,9 @@ void Sprite::scale(float const amount)
   dirtyTransformation = true;
 }
 
-void Sprite::render(Screen const& screen)
+void Sprite::render(Transformation const& view)
 {
-  Transformation t = getTransformation().apply(screen.transformation());
+  Transformation t = getTransformation().apply(view);
   image.render(t.transform(image.quad()));
 }
 

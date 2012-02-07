@@ -49,7 +49,7 @@ void TestState::update(Screen const& screen, float const& delta)
 
 void TestState::draw(Screen const& screen)
 {
-  world.render(screen);
+  world.render(screen.transformation());
 }
   
 

@@ -1,6 +1,36 @@
 #include "world.h"
 #include "../util/log.h"
 
+void World::Entity::setWorld(World* const newWorld) 
+{ 
+  world = newWorld; 
+};
+
+World* World::Entity::getWorld() const 
+{ 
+  return world; 
+};
+
+void World::Entity::setZIndex(int const newz) 
+{ 
+  if(world)
+  {
+    world->detachEntity(this);
+  }
+  
+  zIndex = newz; 
+  
+  if(world)
+  {
+    world->addEntity(this);
+  }
+};
+
+int World::Entity::getZIndex() const 
+{ 
+  return zIndex; 
+};
+
 World::World() : entities()
 {
   
@@ -24,9 +54,14 @@ void World::addEntity(Entity* const entity)
 
 void World::removeEntity(Entity* const entity)
 {
-  entities.erase(entity);
+  detachEntity(entity);
   delete entity;
   Log::debug() << "Removed entity (total: " << static_cast<long unsigned int>(entities.size()) << ")";
+}
+
+void World::detachEntity(Entity* const entity)
+{
+  entities.erase(entity);
 }
 
 void World::update(float delta)
@@ -45,11 +80,11 @@ void World::update(float delta)
   }
 }
 
-void World::render(Screen const& screen)
+void World::render(Transformation const& view)
 {
   for(EntitySet::iterator i = entities.begin(); i != entities.end(); ++i)
   {
-    (*i)->render(screen);
+    (*i)->render(view);
   }  
 }
   

@@ -7,9 +7,14 @@ Human::Human(Vec2D const& position) : ShooterWorld::ShooterEntity(), sprite(imag
   image.load();
 }
 
-void Human::render(Screen const& screen)
+Vec2D Human::getPosition() const
 {
-  sprite.render(screen);
+  return sprite.getPosition();
+}
+
+void Human::render(Transformation const& view)
+{
+  sprite.render(view);
 }
 
 void Human::intent(float const delta)

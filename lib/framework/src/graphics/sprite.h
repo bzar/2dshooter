@@ -22,7 +22,7 @@ public:
   void rotate(float const delta);
   void scale(float const amount);
 
-  void render(Screen const& screen);
+  void render(Transformation const& view);
   void setParent(Sprite* const newParent);
   Transformation getTransformation();
   

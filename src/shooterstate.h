@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "shooterworld.h"
+#include "human.h"
 
 class ShooterState : public Engine::State {
 public:
@@ -15,6 +16,8 @@ public:
   virtual void draw(Screen const& screen);  
   
 private:
+  Human* player;
   ShooterWorld world;
+  Transformation view;
 };
 #endif

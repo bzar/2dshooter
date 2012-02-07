@@ -8,7 +8,8 @@ class Human : public ShooterWorld::ShooterEntity
 {
 public:
   Human(Vec2D const& position);
-  void render(Screen const& screen);
+  Vec2D getPosition() const;
+  void render(Transformation const& view);
   void intent(float const delta);
   void reaction(float const delta);
   void update(float const delta);
