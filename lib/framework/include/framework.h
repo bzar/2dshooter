@@ -11,6 +11,7 @@
 #include "../src/util/transformation.h"
 #include "../src/graphics/sprite.h"
 #include "../src/graphics/image.h"
+#include "../src/graphics/shapes.h"
 #include "../src/engine/engine.h"
 #include "../src/world/world.h"
 #include "../src/platform/gl.h"

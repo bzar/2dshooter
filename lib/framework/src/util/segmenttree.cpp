@@ -27,6 +27,28 @@ SegmentTree::SegmentTree(std::list<Segment> const& segments) : root(0), segments
   construct();
 }
 
+SegmentTree::~SegmentTree()
+{
+  deconstruct();
+}
+SegmentTree& SegmentTree::operator=(SegmentTree const& other)
+{
+  if(&other != this)
+  {
+    deconstruct();
+    segments = other.segments;
+    construct();
+  }
+  return *this;
+}
+
+void SegmentTree::setSegments(std::list<Segment> const& newSegments)
+{
+  deconstruct();
+  segments = newSegments;
+  construct();
+}
+
 SegmentTree::SegmentResults const SegmentTree::query(Vec2D const& point) const
 {
   DefaultResultHandler handler;
@@ -123,7 +145,7 @@ void SegmentTree::construct()
       {
         break;
       }
-      Interval interval((*i)->interval.upper, (*next)->interval.lower);
+      Interval interval((*i)->interval.lower, (*next)->interval.upper);
       nextNodes.push_back(new Node(interval, *i, *next));
       ++i;
     }
@@ -139,6 +161,72 @@ void SegmentTree::construct()
 
   for(std::list<Segment>::iterator i = segments.begin(); i != segments.end(); ++i) {
     insertToTree(*i, root);
+  }
+}
+
+void SegmentTree::deconstruct()
+{
+  if(!root)
+  {
+    return;
+  }
+  
+  std::set<Node*> nodes;
+  nodes.insert(root);
+  
+  while(nodes.size() > 0)
+  {
+    std::set<Node*> temp;
+    for(std::set<Node*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+    {
+      Node* n = *i;
+      if(n->left)
+      {
+        temp.insert(n->left);
+      }
+      if(n->right)
+      {
+        temp.insert(n->right);
+      }
+      
+      delete n;
+    }
+    nodes.swap(temp);
+  }
+  
+  root = 0;
+}
+
+void SegmentTree::print()
+{
+  if(!root)
+  {
+    return;
+  }
+  
+  std::set<Node*> nodes;
+  nodes.insert(root);
+  
+  while(nodes.size() > 0)
+  {
+    std::set<Node*> temp;
+    for(std::set<Node*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+    {
+      Node* n = *i;
+      if(n->left)
+      {
+        temp.insert(n->left);
+      }
+      if(n->right)
+      {
+        temp.insert(n->right);
+      }
+      
+      Interval in = n->interval;
+      Log::debug() << (in.lower.closed ? "[" : "(") << in.lower.value << ", " << in.upper.value << (in.upper.closed ? "]" : ")");
+    }
+    Log::debug() << "---";
+    nodes.swap(temp);
   }
 }
 
@@ -187,7 +275,7 @@ bool SegmentTree::queryNode(Vec2D const& point, ResultHandler& handler, Node* no
   }
   else if(node->right)
   {
-    return queryNode(point, handler, node->left);
+    return queryNode(point, handler, node->right);
   }
   
   return false;
@@ -224,7 +312,7 @@ bool SegmentTree::queryNode(Segment const& segment, ResultHandler& handler, Node
   }
   if(node->right && node->right->interval.intersects(interval))
   {
-    if(queryNode(segment, handler, node->left))
+    if(queryNode(segment, handler, node->right))
     {
       return true;
     }

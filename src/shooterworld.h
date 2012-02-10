@@ -8,7 +8,6 @@ class SegmentGroup;
 #include "segmentgroup.h"
 
 class ShooterEntity;
-#include "shooterentity.h"
 
 class ShooterWorld : public World
 {

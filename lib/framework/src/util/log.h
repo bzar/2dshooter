@@ -3,6 +3,8 @@
 
 #include <string>
 #include <sstream>
+#include "vec2d.h"
+#include "segment.h"
 
 namespace Log
 {
@@ -18,6 +20,8 @@ namespace Log
     Logger& operator<<(int const& val);
     Logger& operator<<(long unsigned int const& val);
     Logger& operator<<(float const& val);
+    Logger& operator<<(Vec2D const& val);
+    Logger& operator<<(Segment const& val);
   private:
     std::ostringstream content;
     Level level;

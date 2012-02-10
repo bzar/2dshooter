@@ -58,6 +58,23 @@ Log::Logger& Log::Logger::operator<<(float const& val)
   return *this;
 }
 
+Log::Logger& Log::Logger::operator<<(Vec2D const& val)
+{
+  if(level <= globalLevel)
+  {
+    content << "(" << val.x << ", " << val.y << ")";
+  }
+  return *this;
+}
+Log::Logger& Log::Logger::operator<<(Segment const& val)
+{
+  if(level <= globalLevel)
+  {
+    content << "(" << val.a.x << ", " << val.a.y << ")-(" << val.b.x << ", " << val.b.y << ")";
+  }
+  return *this;  
+}
+
 void Log::log(Level const& logLevel, std::string const& message)
 {
   if(logLevel <= globalLevel)

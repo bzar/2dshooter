@@ -1,4 +1,5 @@
 #include "shooterworld.h"
+#include "shooterentity.h"
 
 ShooterWorld::ShooterWorld(Vec2D const& gravity) : World(), gravity(gravity), terrain()
 {
