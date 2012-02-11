@@ -12,9 +12,10 @@ public:
   World();
   ~World();
   
-  void addEntity(Entity* const entity);
+  Entity* addEntity(Entity* const entity);
   void removeEntity(Entity* const entity);
   void detachEntity(Entity* const entity);
+  void removeAllEntities();
   
   void update(float delta);
   void render(Transformation const& view);

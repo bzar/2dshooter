@@ -8,18 +8,15 @@ World::World() : entities()
 
 World::~World()
 {
-  for(EntitySet::iterator i = entities.begin(); i != entities.end(); ++i)
-  {
-    delete *i;
-  }
-  entities.clear();
+  removeAllEntities();
 }
 
-void World::addEntity(Entity* const entity)
+Entity* World::addEntity(Entity* const entity)
 {
   entity->setWorld(this);
   entities.insert(entity);
   Log::debug() << "New entity (total: " << static_cast<long unsigned int>(entities.size()) << ")";
+  return entity;
 }
 
 void World::removeEntity(Entity* const entity)
@@ -32,6 +29,15 @@ void World::removeEntity(Entity* const entity)
 void World::detachEntity(Entity* const entity)
 {
   entities.erase(entity);
+}
+
+void World::removeAllEntities()
+{
+  for(EntitySet::iterator i = entities.begin(); i != entities.end(); ++i)
+  {
+    removeEntity(*i);
+  }
+  entities.clear();
 }
 
 void World::update(float delta)

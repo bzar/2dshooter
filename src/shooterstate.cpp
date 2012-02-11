@@ -1,10 +1,10 @@
 #include "shooterstate.h"
 #include <SDL/SDL.h>
-
+#include <cmath>
 #include "player.h"
 #include "segmentgroup.h"
 
-ShooterState::ShooterState() : Engine::State(), player(0), world(Vec2D(0, -9.8)), view(), newTerrainSegment(), drawingTerrain(false)
+ShooterState::ShooterState() : Engine::State(), world(Vec2D(0, -9.8)), view(), newTerrainSegment(), drawingTerrain(false)
 {
 }
 
@@ -15,21 +15,7 @@ ShooterState::~ShooterState()
 
 void ShooterState::enter()
 {
-  player = new Player(Vec2D(200, 350));
-  world.addEntity(player);
-  
-  SegmentGroup::SegmentList terrainSegments;
-  terrainSegments.push_back(Segment(Vec2D(150, 250), Vec2D(250, 250)));
-  terrainSegments.push_back(Segment(Vec2D(250, 250), Vec2D(250, 150)));
-  terrainSegments.push_back(Segment(Vec2D(250, 150), Vec2D(150, 150)));
-  terrainSegments.push_back(Segment(Vec2D(150, 150), Vec2D(150, 250)));
-  terrainSegments.push_back(Segment(Vec2D(100, 100), Vec2D(300, 100)));
-  terrainSegments.push_back(Segment(Vec2D(300, 100), Vec2D(450, 100)));
-  //terrainSegments.push_back(Segment(Vec2D(-150, -100), Vec2D(-100, -100)));
-  SegmentGroup* terrain = new SegmentGroup(Vec2D(0, 0), terrainSegments);
-  world.addTerrain(terrain);
-  
-  terrain->addSegment(Segment(Vec2D(250, 100), Vec2D(100, 100)));
+  world.loadLevel("levels/test.txt");
 }
 
 
@@ -44,8 +30,11 @@ void ShooterState::clear(Screen const& screen)
 
 void ShooterState::update(Screen const& screen, float const& delta)
 {
+  world.update(delta);
+
+  Player* player = world.getPlayer();
   SDL_Event event;
-  if( SDL_PollEvent( &event ) )
+  while( SDL_PollEvent( &event ) )
   {
     if( event.type == SDL_QUIT )
     {
@@ -57,6 +46,9 @@ void ShooterState::update(Screen const& screen, float const& delta)
       { 
         newTerrainSegment.a.x = event.button.x - screen.width()/2 + player->getPosition().x;
         newTerrainSegment.a.y = (screen.height() - event.button.y) - screen.height()/2 + player->getPosition().y;
+        newTerrainSegment.a.x = snapToGrid(newTerrainSegment.a.x);
+        newTerrainSegment.a.y = snapToGrid(newTerrainSegment.a.y);
+        newTerrainSegment.b = newTerrainSegment.a;
         drawingTerrain = true;
       }
     }
@@ -66,8 +58,20 @@ void ShooterState::update(Screen const& screen, float const& delta)
       { 
         newTerrainSegment.b.x = event.button.x - screen.width()/2 + player->getPosition().x;
         newTerrainSegment.b.y = (screen.height() - event.button.y) - screen.height()/2 + player->getPosition().y;
+        newTerrainSegment.b.x = snapToGrid(newTerrainSegment.b.x);
+        newTerrainSegment.b.y = snapToGrid(newTerrainSegment.b.y);
         drawingTerrain = false;
         (*(world.getTerrain().begin()))->addSegment(newTerrainSegment);
+      }
+    }
+    else if(event.type == SDL_MOUSEMOTION)
+    { 
+      if(drawingTerrain)
+      { 
+        newTerrainSegment.b.x = event.button.x - screen.width()/2 + player->getPosition().x;
+        newTerrainSegment.b.y = (screen.height() - event.button.y) - screen.height()/2 + player->getPosition().y;
+        newTerrainSegment.b.x = snapToGrid(newTerrainSegment.b.x);
+        newTerrainSegment.b.y = snapToGrid(newTerrainSegment.b.y);
       }
     }
   }
@@ -95,20 +99,28 @@ void ShooterState::update(Screen const& screen, float const& delta)
     }
   }
   
-  
-  
-  world.update(delta);
+  if(keystates['q'])
+    getEngine()->quit();
 }
 
 void ShooterState::draw(Screen const& screen)
 {
+  Player* player = world.getPlayer();
   view.reset().move(Vec2D(screen.width()/2, screen.height()/2).subtracti(player->getPosition()));
   view.apply(screen.transformation());
+
+  Shapes::grid(view, player->getPosition().subtract(Vec2D(screen.width()/2, screen.height()/2)),
+               Vec2D(screen.width(), 0), Vec2D(0, screen.height()),
+               Vec2D(0, 0), GRID_SIZE, GRID_SIZE, 0.0, 0.3, 0.0);
   world.render(view);
-}
   
+  if(drawingTerrain)
+  {
+    Shapes::arrow(view, newTerrainSegment.a, newTerrainSegment.b, 0.0, 1.0, 0.0, 1, 9, 7);
+  }
+}
 
-
-    
-
-    
+float ShooterState::snapToGrid(float const value) const
+{
+  return floor(value / GRID_SIZE + 0.5) * GRID_SIZE;
+}

@@ -3,7 +3,7 @@
 
 class Vec2D {
 public:
-  Vec2D(float const& x, float const& y);
+  Vec2D(float const& x = 0.0, float const& y = 0.0);
   Vec2D(Vec2D const& other);
     
   Vec2D add(Vec2D const& other) const;

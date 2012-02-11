@@ -9,8 +9,8 @@ Quad::Quad(float x, float y, float w, float h) :
 }
 
 Quad::Quad(Vec2D const& position, Vec2D const& u, Vec2D const& v) : 
-  a(position.subtract(u).add(v)), 
-  b(position.subtract(u).subtract(v)),
+  a(position.subtract(u).subtract(v)), 
+  b(position.subtract(u).add(v)),
   c(position.add(u).subtract(v)), 
   d(position.add(u).add(v))
 {

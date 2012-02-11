@@ -1,5 +1,5 @@
-#ifndef HUMAN_HH
-#define HUMAN_HH
+#ifndef HUMAN_H
+#define HUMAN_H
 
 #include "framework.h"
 #include "shooterentity.h"

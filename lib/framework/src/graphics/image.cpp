@@ -53,13 +53,13 @@ void Image::render(Quad const& target) const
     return;
   }
   
-  glBindTexture(GL_TEXTURE_2D, texture->id);
  
   int const QUAD_COORD_NUM = 8;
   GLfloat box[QUAD_COORD_NUM];
   target.coordArray(box);
   GLfloat tex[] = {0,1, 0,0, 1,1, 1,0};
 
+  glBindTexture(GL_TEXTURE_2D, texture->id);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
 

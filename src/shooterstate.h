@@ -17,7 +17,9 @@ public:
   virtual void draw(Screen const& screen);  
   
 private:
-  Player* player;
+  static float const GRID_SIZE = 16; 
+  
+  float snapToGrid(float const value) const;
   ShooterWorld world;
   Transformation view;
 
