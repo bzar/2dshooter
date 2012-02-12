@@ -8,16 +8,22 @@
 class Sprite
 {
 public:
-  Sprite(Image const& image, Vec2D const& position);
+  Sprite(Image const& image, Vec2D const& position, Sprite* parent = 0);
   
+  Vec2D getOrigin() const;
   Vec2D getPosition() const;
   float getRotation() const;
   float getScale() const;
+  bool getMirrorX() const;
+  bool getMirrorY() const;
 
+  void setOrigin(Vec2D const& newOrigin);
   void setPosition(Vec2D const& newPosition);
   void setRotation(float const newRotation);
   void setScale(float const newScale);
-
+  void setMirrorX(bool const newMirrorX);
+  void setMirrorY(bool const newMirrorY);
+  
   void move(Vec2D const& delta);
   void rotate(float const delta);
   void scale(float const amount);
@@ -30,9 +36,12 @@ private:
   void updateTransformation();
   
   Image image;
+  Vec2D origin;
   Vec2D position;
   float rotation;
   float scaleAmount;
+  bool mirrorX;
+  bool mirrorY;
   Transformation transformation;
   bool dirtyTransformation;
   Sprite* parent;

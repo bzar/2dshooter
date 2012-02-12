@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "shooterworld.h"
+#include "input.h"
 
 class Player;
 
@@ -20,9 +21,14 @@ private:
   static float const GRID_SIZE = 16; 
   
   float snapToGrid(float const value) const;
-  ShooterWorld world;
-  Transformation view;
+  Vec2D snapToGrid(Vec2D const& value) const;
 
+  ShooterWorld world;
+  Input input;
+  
+  Transformation view;
+  Vec2D viewCenter;
+  
   Segment newTerrainSegment;
   bool drawingTerrain;
 };

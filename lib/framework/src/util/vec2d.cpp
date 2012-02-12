@@ -141,6 +141,32 @@ float Vec2D::cross(Vec2D const& other) const
   return x * other.y - y * other.x;
 }
 
+float Vec2D::angle() const
+{
+  if(y >= 0)
+  {
+    return acos(unit().x) / TAU;
+  }
+  else
+  {
+    return -acos(unit().x) / TAU;
+  }
+}
+
+float Vec2D::rotationTo(Vec2D const& other) const
+{
+  float myAngle = angle();
+  float otherAngle = other.angle();  
+  if(myAngle > otherAngle)
+  {
+    return myAngle - (otherAngle + 1.0);
+  }
+  else
+  {
+    return myAngle - otherAngle;
+  }
+}
+
 Vec2D& Vec2D::assign(Vec2D const& other)
 {
   x = other.x;

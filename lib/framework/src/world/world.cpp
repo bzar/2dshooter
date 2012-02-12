@@ -1,7 +1,7 @@
 #include "world.h"
 #include "../util/log.h"
 
-World::World() : entities()
+World::World() : entities(), entitiesToDelete()
 {
   
 }
@@ -24,6 +24,11 @@ void World::removeEntity(Entity* const entity)
   detachEntity(entity);
   delete entity;
   Log::debug() << "Removed entity (total: " << static_cast<long unsigned int>(entities.size()) << ")";
+}
+
+void World::removeEntityLater(Entity* const entity)
+{
+  entitiesToDelete.push_back(entity);
 }
 
 void World::detachEntity(Entity* const entity)
@@ -54,6 +59,13 @@ void World::update(float delta)
   {
     (*i)->update(delta);
   }
+  
+  for(EntityList::iterator i = entitiesToDelete.begin(); i != entitiesToDelete.end(); ++i)
+  {
+    removeEntity(*i);
+  }
+  
+  entitiesToDelete.clear();
 }
 
 void World::render(Transformation const& view)

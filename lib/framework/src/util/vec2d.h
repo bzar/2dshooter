@@ -31,6 +31,8 @@ public:
   float length() const;
   float dot(Vec2D const& other) const;
   float cross(Vec2D const& other) const;
+  float angle() const;
+  float rotationTo(Vec2D const& other) const;
   
   Vec2D& assign(Vec2D const& other);
 

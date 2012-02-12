@@ -136,12 +136,10 @@ void Shapes::grid(Transformation const& view, Vec2D const& position, Vec2D const
   glColorPointer(4, GL_FLOAT, 0, &(colors[0]));
   if(lineWidth > 0)
   {
-    Log::debug() << "triangles!";
     glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
   }
   else
   {
-    Log::debug() << "lines!";
     glDrawArrays(GL_LINES, 0, NUM_VERTICES);
   }
   glDisableClientState(GL_COLOR_ARRAY);

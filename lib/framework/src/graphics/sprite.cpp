@@ -1,10 +1,15 @@
 #include "sprite.h"
 #include "../util/quad.h"
 
-Sprite::Sprite(Image const& image, Vec2D const& position) : 
-  image(image), position(position), rotation(0), scaleAmount(1), 
-  transformation(), dirtyTransformation(true), parent(0)
+Sprite::Sprite(Image const& image, Vec2D const& position, Sprite* parent) : 
+  image(image), origin(), position(position), rotation(0), scaleAmount(1), 
+  mirrorX(false), mirrorY(false), transformation(), dirtyTransformation(true), parent(parent)
 {
+}
+
+Vec2D Sprite::getOrigin() const
+{
+  return origin;
 }
 
 Vec2D Sprite::getPosition() const
@@ -22,6 +27,22 @@ float Sprite::getScale() const
   return scaleAmount;
 }
 
+bool Sprite::getMirrorX() const
+{
+  return mirrorX;
+}
+
+bool Sprite::getMirrorY() const
+{
+  return mirrorY;
+}
+
+void Sprite::setOrigin(Vec2D const& newOrigin)
+{
+  origin = newOrigin;
+  dirtyTransformation = true;
+}
+
 void Sprite::setPosition(Vec2D const& newPosition)
 {
   position = newPosition;
@@ -37,6 +58,18 @@ void Sprite::setRotation(float const newRotation)
 void Sprite::setScale(float const newScale)
 {
   scaleAmount = newScale;
+  dirtyTransformation = true;
+}
+
+void Sprite::setMirrorX(bool const newMirrorX)
+{
+  mirrorX = newMirrorX;
+  dirtyTransformation = true;
+}
+
+void Sprite::setMirrorY(bool const newMirrorY)
+{
+  mirrorY = newMirrorY;
   dirtyTransformation = true;
 }
 
@@ -96,9 +129,13 @@ void Sprite::updateTransformation()
   const float epsilon = 0.00001;
   transformation.reset();
   
+  transformation.scale(mirrorX ? -1 : 1, mirrorY ? -1 : 1);
+  
   if(scaleAmount < 1 - epsilon || scaleAmount > 1 + epsilon)
     transformation.scale(scaleAmount);
-    
+  
+  transformation.move(origin.neg());
+  
   if(rotation < -epsilon || rotation > epsilon)
     transformation.rotate(rotation);
   

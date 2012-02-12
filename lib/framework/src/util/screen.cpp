@@ -1,5 +1,5 @@
 #include "screen.h"
-#include <iostream>
+#include <SDL/SDL.h>
 
 Screen::Screen(float const& screenWidth, float const& screenHeight) : w(screenWidth), h(screenHeight), t()
 {
@@ -14,6 +14,22 @@ float Screen::width() const
 float Screen::height() const
 {
   return h;
+}
+
+int Screen::windowWidth() const
+{
+  return SDL_GetVideoSurface()->w;
+
+}
+
+int Screen::windowHeight() const
+{
+  return SDL_GetVideoSurface()->h;
+}
+
+Vec2D Screen::windowToScreenCoordinates(Vec2D const& windowCoordinates) const
+{
+  return Vec2D(windowCoordinates.x * w / windowWidth(), h - windowCoordinates.y * h / windowHeight());
 }
 
 Transformation const& Screen::transformation() const

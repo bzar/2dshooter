@@ -40,6 +40,15 @@ Log::Logger& Log::Logger::operator<<(int const& val)
   return *this;
 }
 
+Log::Logger& Log::Logger::operator<<(unsigned int const& val)
+{
+  if(level <= globalLevel)
+  {
+    content << val;
+  }
+  return *this;
+}
+
 Log::Logger& Log::Logger::operator<<(long unsigned int const& val)
 {
   if(level <= globalLevel)

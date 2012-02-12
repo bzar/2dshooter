@@ -10,6 +10,9 @@ public:
   Screen(float const& screenWidth, float const& screenHeight);
   float width() const;
   float height() const;
+  int windowWidth() const;
+  int windowHeight() const;
+  Vec2D windowToScreenCoordinates(Vec2D const& windowCoordinates) const;
   Transformation const& transformation() const;
 
 private:

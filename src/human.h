@@ -2,25 +2,24 @@
 #define HUMAN_H
 
 #include "framework.h"
-#include "shooterentity.h"
+#include "movingentity.h"
 #include "segmentgroup.h"
+#include "bullet.h"
 
-class Human : public ShooterEntity
+class Human : public MovingEntity
 {
 public:
   Human(Vec2D const& position);
-  Vec2D getPosition() const;
-  Vec2D getVelocity() const;
-  void setPosition(Vec2D const& newPosition);
-  void setVelocity(Vec2D const& newVelocity);
   void render(Transformation const& view);
   void intent(float const delta);
   void reaction(float const delta);
   void update(float const delta);
   
+  void setOnGround(bool const value);
+  void aimAt(Vec2D const& point);
+  void shoot(Bullet::Owner const owner = Bullet::ENEMY);
+  
 protected:
-  Vec2D position;
-  Vec2D velocity;
   bool onGround;
   
 private:
@@ -33,11 +32,15 @@ private:
     Human& human;
   };
   
-  friend class CollisionHandler;
+  Sprite body;
+  Sprite rifle;
+  Sprite leftHand;
+  Sprite rightHand;
   
-  Sprite sprite;
-  
-  static Image image;
+  static Image bodyImage;
+  static Image rifleImage;
+  static Image leftHandImage;
+  static Image rightHandImage;
 };
 
 #endif

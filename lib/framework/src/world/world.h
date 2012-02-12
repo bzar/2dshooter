@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include <set>
+#include <list>
 #include "../util/transformation.h"
 
 class Entity;
@@ -14,6 +15,7 @@ public:
   
   Entity* addEntity(Entity* const entity);
   void removeEntity(Entity* const entity);
+  void removeEntityLater(Entity* const entity);
   void detachEntity(Entity* const entity);
   void removeAllEntities();
   
@@ -25,7 +27,10 @@ private:
     bool operator() (Entity* a, Entity* b) const;
   };
   typedef std::set<Entity*, OrderByZIndex> EntitySet;
+  typedef std::list<Entity*> EntityList;
+  
   EntitySet entities;
+  EntityList entitiesToDelete;
 };
 
 #endif

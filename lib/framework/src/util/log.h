@@ -18,6 +18,7 @@ namespace Log
     ~Logger();
     Logger& operator<<(char const* const val);
     Logger& operator<<(int const& val);
+    Logger& operator<<(unsigned int const& val);
     Logger& operator<<(long unsigned int const& val);
     Logger& operator<<(float const& val);
     Logger& operator<<(Vec2D const& val);
