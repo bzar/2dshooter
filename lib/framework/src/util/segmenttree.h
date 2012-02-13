@@ -15,9 +15,19 @@ public:
   class ResultHandler
   {
   public:
-    virtual bool handle(Segment const& segment) const = 0;
+    virtual bool handle(Segment const& segment) = 0;
   };
   
+  class DefaultResultHandler : public ResultHandler
+  {
+  public:
+    DefaultResultHandler();
+    bool handle(Segment const& segment);
+    SegmentResults getResults();
+  private:
+    SegmentResults results;
+  };  
+
   SegmentTree(std::list<Segment> const& segments);
   ~SegmentTree();
   SegmentTree& operator=(SegmentTree const& other);
@@ -36,16 +46,6 @@ private:
     Node* right;
     Interval interval;
     std::list<Segment const*> segments;
-  };
-  
-  class DefaultResultHandler : public ResultHandler
-  {
-  public:
-    DefaultResultHandler();
-    bool handle(Segment const& segment) const;
-    SegmentResults getResults();
-  private:
-    SegmentResults results;
   };
   
   void construct();

@@ -72,7 +72,7 @@ Segment SegmentGroup::toGlobal(Segment const& s) const
   return Segment(toGlobal(s.a), toGlobal(s.b));
 }
 
-bool SegmentGroup::ResultHandlerHelper::handle(Segment const& segment) const
+bool SegmentGroup::ResultHandlerHelper::handle(Segment const& segment)
 {
   return handler.handle(sg.toGlobal(segment), sg);
 }

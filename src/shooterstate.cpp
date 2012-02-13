@@ -5,7 +5,7 @@
 #include "segmentgroup.h"
 
 ShooterState::ShooterState() : 
-  Engine::State(), world(Vec2D(0, -9.8)), input(), view(), viewCenter(), newTerrainSegment(), drawingTerrain(false)
+  Engine::State(), world(Vec2D(0, -980)), input(), view(), viewCenter(), newTerrainSegment(), drawingTerrain(false)
 {
 }
 
@@ -59,6 +59,15 @@ void ShooterState::update(Screen const& screen, float const& delta)
   }
   
     
+#ifdef PANDORA
+  if(input.aimDirection().x != 0 || input.aimDirection().y != 0)
+    player->aimAt(player->getPosition() + input.aimDirection());
+  else
+    player->stopAiming();
+#else
+  if(input.shoot()) player->aimAt(mousePosition); else player->stopAiming();
+#endif
+
   if(input.jump())                     player->jump();
   if(!(input.left() || input.right())) player->stop();
   if(input.left())                     player->moveLeft();
@@ -66,11 +75,6 @@ void ShooterState::update(Screen const& screen, float const& delta)
   if(input.shoot())                    player->shoot();
   if(input.quit())                     getEngine()->quit();
 
-#ifdef PANDORA
-  player->aimAt(player->getPosition() + input.aimDirection());
-#else
-  player->aimAt(mousePosition);
-#endif
   viewCenter = player->getPosition();
   
   world.update(delta);

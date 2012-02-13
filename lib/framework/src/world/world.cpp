@@ -15,15 +15,16 @@ Entity* World::addEntity(Entity* const entity)
 {
   entity->setWorld(this);
   entities.insert(entity);
-  Log::debug() << "New entity (total: " << static_cast<long unsigned int>(entities.size()) << ")";
   return entity;
 }
 
-void World::removeEntity(Entity* const entity)
+bool World::removeEntity(Entity* const entity)
 {
-  detachEntity(entity);
+  if(!detachEntity(entity))
+    return false;
+  
   delete entity;
-  Log::debug() << "Removed entity (total: " << static_cast<long unsigned int>(entities.size()) << ")";
+  return true;
 }
 
 void World::removeEntityLater(Entity* const entity)
@@ -31,9 +32,9 @@ void World::removeEntityLater(Entity* const entity)
   entitiesToDelete.push_back(entity);
 }
 
-void World::detachEntity(Entity* const entity)
+bool World::detachEntity(Entity* const entity)
 {
-  entities.erase(entity);
+  return entities.erase(entity) > 0;
 }
 
 void World::removeAllEntities()

@@ -14,7 +14,19 @@ public:
   class ResultHandler
   {
   public:
-    virtual bool handle(Segment const& segment, SegmentGroup const& group) const = 0;
+    virtual bool handle(Segment const& segment, SegmentGroup const& group) = 0;
+  };
+
+  class BooleanResultHandler : public ResultHandler
+  {
+  public:
+    BooleanResultHandler() : segment(), group(0) {}
+    bool handle(Segment const& s, SegmentGroup const& g) { segment = s; group = &g; return true; }
+    Segment getSegment() { return segment; };
+    SegmentGroup const* getGroup() { return group; };
+  private:
+    Segment segment;
+    SegmentGroup const* group;
   };
 
   SegmentGroup(Vec2D const& position, SegmentList const& segments);
@@ -36,7 +48,7 @@ private:
   {
   public:
     ResultHandlerHelper(SegmentGroup const& sg, SegmentGroup::ResultHandler& handler) : sg(sg), handler(handler) {}
-    virtual bool handle(Segment const& segment) const;
+    virtual bool handle(Segment const& segment);
   private:
     SegmentGroup const& sg;
     SegmentGroup::ResultHandler& handler;

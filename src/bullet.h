@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "movingentity.h"
+#include "segmentgroup.h"
 
 class Bullet : public MovingEntity
 {
@@ -18,14 +19,27 @@ public:
   float getLife() const;
   Owner getOwner() const;
   void setLife(float const newLife);
+  void setIsRicochet(bool const newIsRicochet);
   void setOwner(Owner const newOwner);
   
-protected:
+private:
+  class CollisionHandler : public SegmentGroup::ResultHandler
+  {
+  public:
+    CollisionHandler(Bullet& bullet, float const timeDelta) : bullet(bullet), timeDelta(timeDelta) {}
+    virtual bool handle(Segment const& segment, SegmentGroup const& group);
+  private:
+    Bullet& bullet;
+    float timeDelta;
+  };
+
   float life;
+  bool isRicochet;
   Owner owner;
   Sprite sprite;
   
   static Image image;
+
 };
 
 #endif

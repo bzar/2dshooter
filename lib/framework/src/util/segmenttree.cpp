@@ -325,7 +325,7 @@ SegmentTree::DefaultResultHandler::DefaultResultHandler() : results(new SegmentL
 {
 }
 
-bool SegmentTree::DefaultResultHandler::handle(Segment const& segment) const
+bool SegmentTree::DefaultResultHandler::handle(Segment const& segment)
 {
   results->push_back(&segment);
   return false;

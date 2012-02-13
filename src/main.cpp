@@ -1,4 +1,6 @@
 #include <SDL/SDL.h>
+#include <time.h>
+#include <cstdlib>
 
 #include "framework.h"
 #include "shooterstate.h"
@@ -26,6 +28,8 @@ void glInit()
 
 int main( int argc, char* args[] )
 {
+  srand (time(NULL));
+  
   Log::setLevel(Log::LOGLEVEL_DEBUG);
   #ifdef PANDORA
     PandoraNub::initialize();

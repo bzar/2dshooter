@@ -14,9 +14,9 @@ public:
   ~World();
   
   Entity* addEntity(Entity* const entity);
-  void removeEntity(Entity* const entity);
+  bool removeEntity(Entity* const entity);
   void removeEntityLater(Entity* const entity);
-  void detachEntity(Entity* const entity);
+  bool detachEntity(Entity* const entity);
   void removeAllEntities();
   
   void update(float delta);

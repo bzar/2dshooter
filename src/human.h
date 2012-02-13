@@ -17,6 +17,7 @@ public:
   
   void setOnGround(bool const value);
   void aimAt(Vec2D const& point);
+  void stopAiming();
   void shoot(Bullet::Owner const owner = Bullet::ENEMY);
   
 protected:
@@ -26,16 +27,21 @@ private:
   class CollisionHandler : public SegmentGroup::ResultHandler
   {
   public:
-    CollisionHandler(Human& human) : human(human) {}
-    virtual bool handle(Segment const& segment, SegmentGroup const& group) const;
+    CollisionHandler(Human& human, float const timeDelta) : human(human), timeDelta(timeDelta) {}
+    virtual bool handle(Segment const& segment, SegmentGroup const& group);
   private:
     Human& human;
+    float timeDelta;
   };
   
   Sprite body;
   Sprite rifle;
   Sprite leftHand;
   Sprite rightHand;
+  
+  bool aiming;
+  float weaponCooldown;
+  static float const RIFLE_COOLDOWN = 0.15;
   
   static Image bodyImage;
   static Image rifleImage;

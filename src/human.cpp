@@ -1,6 +1,7 @@
 #include "human.h"
 #include "shooterworld.h"
 #include <cmath>
+#include <cstdlib>
 
 Image Human::bodyImage("img/red_guy.png", false);
 Image Human::rifleImage("img/rifle.png", false);
@@ -10,9 +11,10 @@ Image Human::rightHandImage("img/right_hand.png", false);
 Human::Human(Vec2D const& position) : 
   MovingEntity(position), onGround(false), 
   body(bodyImage, position), 
-  rifle(rifleImage, Vec2D(0, 3), &body),
-  leftHand(leftHandImage, Vec2D(0, 0), &rifle), 
-  rightHand(rightHandImage, Vec2D(0, 0), &rifle)
+  rifle(rifleImage, Vec2D(), &body),
+  leftHand(leftHandImage, Vec2D(), &rifle), 
+  rightHand(rightHandImage, Vec2D(), &rifle),
+  aiming(true), weaponCooldown(0)
   
 {
   bodyImage.load();
@@ -22,6 +24,9 @@ Human::Human(Vec2D const& position) :
  
   body.setOrigin(Vec2D(0, -static_cast<int>(bodyImage.height()/2)));
   rifle.setOrigin(Vec2D(-8, 2));
+  leftHand.setOrigin(Vec2D(-8, 2));
+  rightHand.setOrigin(Vec2D(-8, 2));
+  stopAiming();
 }
 
 void Human::render(Transformation const& view)
@@ -31,6 +36,7 @@ void Human::render(Transformation const& view)
   body.render(view);
   rifle.render(view);
   rightHand.render(view);
+  
 }
 
 void Human::intent(float const delta)
@@ -41,7 +47,7 @@ void Human::intent(float const delta)
 void Human::reaction(float const delta)
 {
   std::set<SegmentGroup*> const& terrain = getWorld()->getTerrain();
-  CollisionHandler handler(*this);
+  CollisionHandler handler(*this, delta);
   bool collisions = true;
   while(collisions)
   {
@@ -60,7 +66,10 @@ void Human::update(float const delta)
   else if(velocity.x > 0)
     body.setMirrorX(false);
     
-  position += velocity;
+  position += velocity.scale(delta);
+  
+  if(weaponCooldown > 0)
+    weaponCooldown -= delta;
 }
 
 void Human::setOnGround(bool const value)
@@ -70,6 +79,15 @@ void Human::setOnGround(bool const value)
 
 void Human::aimAt(Vec2D const& point)
 {
+  if(!aiming)
+  {
+    aiming = true;
+    rifle.setPosition(Vec2D(0, 3));
+    leftHand.setPosition(Vec2D(-8, 2));
+    rightHand.setPosition(Vec2D(-8, 2));
+    leftHand.setRotation(0);
+    rightHand.setRotation(0);
+  }
   Vec2D direction = point - (position - body.getOrigin() + Vec2D(0, rifle.getOrigin().y + rifle.getPosition().y));
   if(body.getMirrorX())
     direction.x = -direction.x;
@@ -77,21 +95,39 @@ void Human::aimAt(Vec2D const& point)
   rifle.setRotation(angle);
 }
 
-void Human::shoot(Bullet::Owner const owner)
+void Human::stopAiming()
 {
-  Vec2D bulletVelocity(800, 0);
-  bulletVelocity.rotatei(rifle.getRotation());
-  if(body.getMirrorX())
-    bulletVelocity.x = -bulletVelocity.x;
-  
-  Bullet* bullet = new Bullet(rifle.getTransformation().transform(Vec2D(12, 3)), 
-                              bulletVelocity, 0.5, owner);
-  getWorld()->addEntity(bullet);
+  if(aiming)
+  {
+    aiming = false;
+    rifle.setRotation(0);
+    rifle.setPosition(Vec2D(-4, -2));
+    leftHand.setPosition(Vec2D(-5, 6));
+    rightHand.setPosition(Vec2D(-5, 6));
+    leftHand.setRotation(-0.04);
+    rightHand.setRotation(-0.15);
+  }
 }
 
-bool Human::CollisionHandler::handle(Segment const& segment, SegmentGroup const& group) const
+void Human::shoot(Bullet::Owner const owner)
 {
-  Vec2D relativeVelocity = human.getVelocity() - group.getVelocity();
+  if(weaponCooldown <= 0)
+  {
+    Vec2D bulletVelocity(700 + rand() % 100, (rand() % 100) - 50);
+    bulletVelocity.rotatei(rifle.getRotation());
+    if(body.getMirrorX())
+      bulletVelocity.x = -bulletVelocity.x;
+    
+    Bullet* bullet = new Bullet(rifle.getTransformation().transform(Vec2D(12, 3)), 
+                                bulletVelocity + velocity, 0.5, owner);
+    getWorld()->addEntity(bullet);
+    weaponCooldown = RIFLE_COOLDOWN;
+  }
+}
+
+bool Human::CollisionHandler::handle(Segment const& segment, SegmentGroup const& group)
+{
+  Vec2D relativeVelocity = (human.getVelocity() - group.getVelocity()).scalei(timeDelta);
   Segment relativeMotion(human.getPosition(), human.getPosition() + relativeVelocity);
   if(segment.intersects(relativeMotion))
   {
