@@ -1,22 +1,18 @@
-cmake_minimum_required(VERSION 2.6)
-project(2dshooter) 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+project(2dshooter)
 
-if(PANDORA)
-  add_definitions(-DPANDORA)
-endif(PANDORA)
+add_subdirectory(lib)
 
-#set(CMAKE_CXX_FLAGS "-g -Wall")
-set(CMAKE_CXX_FLAGS "-Wall")
+include_directories(
+  ${kazmath_SOURCE_DIR}/src
+  ${glhck_SOURCE_DIR}/include
+  ${GLFW_SOURCE_DIR}/include
+  ${engineworks_SOURCE_DIR}/include
+)
 
-include_directories(lib/framework/include)
-add_subdirectory (lib/framework)
+file(GLOB SOURCES src/*.cpp src/util/*.cpp)
+add_definitions(-DGLHCK_KAZMATH_FLOAT -DUSE_SINGLE_PRECISION)
+list(APPEND CMAKE_CXX_FLAGS -std=c++0x)
+add_executable(2dshooter ${SOURCES})
 
-file (GLOB SRCS src/*.cpp)
-
-add_executable(2dshooter ${SRCS})
-target_link_libraries(2dshooter framework)
-
-
-install(TARGETS 2dshooter DESTINATION .)
-install(DIRECTORY img DESTINATION .)
-install(DIRECTORY levels DESTINATION .)
+target_link_libraries(2dshooter engineworks glfw glhck ${GLFW_LIBRARIES})

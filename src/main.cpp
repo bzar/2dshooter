@@ -1,62 +1,80 @@
-#include <SDL/SDL.h>
-#include <time.h>
+#include "GL/glfw3.h"
+#include "GL/glhck.h"
+
+#include "ew/engine.h"
+#include "ew/integration/glfwcontrolcontext.h"
+#include "ew/integration/glfwtimecontext.h"
+#include "ew/integration/glhckglfwrendercontext.h"
+#include "gamestate.h"
+
 #include <cstdlib>
+#include <random>
 
-#include "framework.h"
-#include "shooterstate.h"
-#include "states.h"
+int const WIDTH = 800;
+int const HEIGHT = 480;
 
-#ifdef PANDORA
-  #include "pandoranub.h"
+int windowCloseCallback(GLFWwindow window);
+void windowResizeCallback(GLFWwindow window, int width, int height);
+int gameloop(GLFWwindow& window);
 
-  unsigned int const DISPLAY_FLAGS = SDL_SWSURFACE | SDL_FULLSCREEN;
-  unsigned int const SDL_FLAGS = SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
-#else
-  unsigned int const DISPLAY_FLAGS = SDL_OPENGL;
-  unsigned int const SDL_FLAGS = SDL_INIT_VIDEO;
-#endif
-
-void glInit()
+int main(int argc, char** argv)
 {
-  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);  
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_GREATER, 0);
-  glDisable(GL_DITHER);  
-  glShadeModel(GL_FLAT);
+  if (!glfwInit())
+    return EXIT_FAILURE;
+
+  glfwOpenWindowHint(GLFW_DEPTH_BITS, 24);
+  GLFWwindow window = glfwOpenWindow(WIDTH, HEIGHT, GLFW_WINDOWED, "2dshooter", NULL);
+
+  if(!window)
+    return EXIT_FAILURE;
+
+  glfwSwapInterval(1);
+  glfwSetWindowCloseCallback(windowCloseCallback);
+
+  if(!glhckInit(argc, argv))
+    return EXIT_FAILURE;
+
+  if(!glhckDisplayCreate(WIDTH, HEIGHT, GLHCK_RENDER_AUTO))
+    return EXIT_FAILURE;
+
+  int retval = gameloop(window);
+
+  glhckTerminate();
+  glfwTerminate();
+
+  return retval;
 }
 
-int main( int argc, char* args[] )
+
+int windowCloseCallback(GLFWwindow window)
 {
-  srand (time(NULL));
-  
-  Log::setLevel(Log::LOGLEVEL_DEBUG);
-  #ifdef PANDORA
-    PandoraNub::initialize();
-    sleep(1);
-  #endif
+  ew::Engine* engine = static_cast<ew::Engine*>(glfwGetWindowUserPointer(window));
+  engine->quit();
+  return GL_FALSE;
+}
 
-  SDL_Init( SDL_FLAGS );
+void windowResizeCallback(GLFWwindow window, int width, int height)
+{
+  glhckDisplayResize(width, height);
+}
 
-  if(dlCreateWindow(800, 480, 16, DISPLAY_FLAGS))
-  {
-    Log::error() << dlWindowGetError();
-  }
-  glInit();
-  
-  Screen screen(400, 240);
-  
-  Engine engine;
-  engine.addState(STATE_SHOOTER, new ShooterState);
-  engine.changeState(STATE_SHOOTER);
-  engine.run(60, screen);
-  
-  dlCloseWindow();
-  SDL_Quit();
-  
-  #ifdef PANDORA
-    PandoraNub::finalize();
-  #endif
+int gameloop(GLFWwindow& window)
+{
+  GLFWControlContext controlContext(&window);
+  GlhckGLFWRenderContext renderContext;
+  GLFWTimeContext timeContext;
+  ew::Engine engine(&controlContext, &renderContext, &timeContext);
 
-  return 0;
+  glfwSetWindowUserPointer(window, &engine);
+  glfwSetWindowSizeCallback(windowResizeCallback);
+
+  GameState game(&engine);
+  engine.addState(0, &game);
+  engine.setState(0);
+
+  glhckMemoryGraph();
+
+  engine.run();
+
+  return EXIT_SUCCESS;
 }
