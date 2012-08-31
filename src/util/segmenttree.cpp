@@ -48,26 +48,26 @@ void SegmentTree::setSegments(std::list<Segment> const& newSegments)
   construct();
 }
 
-SegmentTree::SegmentResults const SegmentTree::query(Vec2D const& point) const
+SegmentTree::SegmentList const SegmentTree::query(Vec2D const& point) const
 {
-  DefaultResultHandler handler;
-  query(point, handler);
-  return handler.getResults();
+  SegmentList list;
+  query(point, [&list](Segment const& s){ list.push_back(s); return false; });
+  return list;
 }
 
-SegmentTree::SegmentResults const SegmentTree::query(Segment const& segment) const
+SegmentTree::SegmentList const SegmentTree::query(Segment const& segment) const
 {
-  DefaultResultHandler handler;
-  query(segment, handler);
-  return handler.getResults();
+  SegmentList list;
+  query(segment, [&list](Segment const& s){ list.push_back(s); return false; });
+  return list;
 }
 
-bool SegmentTree::query(Vec2D const& point, ResultHandler& handler) const
+bool SegmentTree::query(Vec2D const& point, ResultHandler const& handler) const
 {
   return queryNode(point, handler, root);
 }
 
-bool SegmentTree::query(Segment const& segment, ResultHandler& handler) const
+bool SegmentTree::query(Segment const& segment, ResultHandler const& handler) const
 {
   return queryNode(segment, handler, root);
 }
@@ -247,7 +247,7 @@ void SegmentTree::insertToTree(Segment const& segment, Node* node)
   }
 }
 
-bool SegmentTree::queryNode(Vec2D const& point, ResultHandler& handler, Node* node) const
+bool SegmentTree::queryNode(Vec2D const& point, ResultHandler const& handler, Node* node) const
 {
   if(!node)
   {
@@ -259,7 +259,7 @@ bool SegmentTree::queryNode(Vec2D const& point, ResultHandler& handler, Node* no
     Segment const& s = **i;
     if(min(s.a.y, s.b.y) <= point.y && max(s.a.y, s.b.y) >= point.y)
     {
-      if(handler.handle(s))
+      if(handler(s))
       {
         return true;
       }
@@ -278,7 +278,7 @@ bool SegmentTree::queryNode(Vec2D const& point, ResultHandler& handler, Node* no
   return false;
 }
 
-bool SegmentTree::queryNode(Segment const& segment, ResultHandler& handler, Node* node) const
+bool SegmentTree::queryNode(Segment const& segment, ResultHandler const& handler, Node* node) const
 {
   if(!node)
   {
@@ -292,7 +292,7 @@ bool SegmentTree::queryNode(Segment const& segment, ResultHandler& handler, Node
     Interval syInterval(min(s.a.y, s.b.y), max(s.a.y, s.b.y));
     if(syInterval.intersects(yInterval))
     {
-      if(handler.handle(s))
+      if(handler(s))
       {
         return true;
       }
@@ -316,19 +316,4 @@ bool SegmentTree::queryNode(Segment const& segment, ResultHandler& handler, Node
   }
 
   return false;
-}
-
-SegmentTree::DefaultResultHandler::DefaultResultHandler() : results(new SegmentList)
-{
-}
-
-bool SegmentTree::DefaultResultHandler::handle(Segment const& segment)
-{
-  results->push_back(&segment);
-  return false;
-}
-
-SegmentTree::SegmentResults SegmentTree::DefaultResultHandler::getResults()
-{
-  return results;
 }

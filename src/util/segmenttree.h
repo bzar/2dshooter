@@ -6,36 +6,21 @@
 #include "rect.h"
 #include <list>
 #include <memory>
+#include <functional>
 
 class SegmentTree {
 public:
-  typedef std::list<Segment const*> SegmentList;
-  typedef std::auto_ptr< SegmentList > SegmentResults;
-
-  class ResultHandler
-  {
-  public:
-    virtual bool handle(Segment const& segment) = 0;
-  };
-
-  class DefaultResultHandler : public ResultHandler
-  {
-  public:
-    DefaultResultHandler();
-    bool handle(Segment const& segment);
-    SegmentResults getResults();
-  private:
-    SegmentResults results;
-  };
+  typedef std::list<Segment> SegmentList;
+  typedef std::function<bool(Segment const&)> ResultHandler;
 
   SegmentTree(std::list<Segment> const& segments);
   ~SegmentTree();
   SegmentTree& operator=(SegmentTree const& other);
   void setSegments(std::list<Segment> const& newSegments);
-  SegmentResults const query(Vec2D const& point) const;
-  SegmentResults const query(Segment const& segment) const;
-  bool query(Vec2D const& point, ResultHandler& handler) const;
-  bool query(Segment const& segment, ResultHandler& handler) const;
+  SegmentList const query(Vec2D const& point) const;
+  SegmentList const query(Segment const& segment) const;
+  bool query(Vec2D const& point, ResultHandler const& handler) const;
+  bool query(Segment const& segment, ResultHandler const& handler) const;
 
 private:
   struct Node
@@ -52,8 +37,8 @@ private:
   void deconstruct();
   void print();
   void insertToTree(Segment const& segment, Node* node);
-  bool queryNode(Vec2D const& point, ResultHandler& handler, Node* node) const;
-  bool queryNode(Segment const& segment, ResultHandler& handler, Node* node) const;
+  bool queryNode(Vec2D const& point, ResultHandler const& handler, Node* node) const;
+  bool queryNode(Segment const& segment, ResultHandler const& handler, Node* node) const;
 
   Node* root;
   std::list<Segment> segments;
