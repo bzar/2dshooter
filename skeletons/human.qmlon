@@ -1,0 +1,91 @@
+Skeleton {
+  Bone {
+    name: "spine"
+    base: {y: 8}
+    tip: {y: 16}
+
+    Bone {
+      name: "head"
+      base: {y: 16}
+      tip: {y: 18}
+    }
+
+    Bone {
+      name: "arm-left"
+      base: {y: 16}
+      tip: {y: 12}
+
+      Bone {
+        name: "forearm-left"
+        base: {y: 12}
+        tip: {y: 8}
+      }
+    }
+
+    Bone {
+      name: "arm-right"
+      base: {y: 16}
+      tip: {y: 12}
+
+      Bone {
+        name: "forearm-right"
+        base: {y: 12}
+        tip: {y: 8}
+      }
+    }
+
+    Bone {
+      name: "thigh-left"
+      base: {y: 8}
+      tip: {y: 4}
+
+      Bone {
+        name: "leg-left"
+        base: {y: 4}
+        tip: {y: 0}
+      }
+    }
+
+    Bone {
+      name: "thigh-right"
+      base: {y: 8}
+      tip: {y: 4}
+
+      Bone {
+        name: "leg-right"
+        base: {y: 4}
+        tip: {y: 0}
+      }
+    }
+  }
+
+  Pose {
+    name: "stand"
+    Animation {
+      duration: 0.5
+      Angle { target: "thigh-left", to: 10 }
+      Angle { target: "leg-left", to: 0 }
+      Angle { target: "thigh-right", to: -10 }
+      Angle { target: "leg-right", to: 0 }
+    }
+  }
+
+  Pose {
+    name: "walk"
+    SequentialAnimation {
+      loop: true
+      Animation {
+        Angle { target: "thigh-left", from: 10, to: -10 }
+        Angle { target: "leg-left", from: 0, to: -5 }
+        Angle { target: "thigh-right", from: -10, to: 10 }
+        Angle { target: "leg-right", from: -5, to: 0 }
+      }
+      Animation {
+        Angle { target: "thigh-left", from: -10, to: 10 }
+        Angle { target: "leg-left", from: -5, to: 0 }
+        Angle { target: "thigh-right", from: 10, to: -10 }
+        Angle { target: "leg-right", from: 0, to: -5 }
+      }
+    }
+  }
+}
