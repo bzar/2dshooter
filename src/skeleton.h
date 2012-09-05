@@ -11,27 +11,43 @@
 class Skeleton
 {
 public:
-  struct Bone
+  class Bone
   {
+  public:
+    friend class Skeleton;
+
     typedef std::shared_ptr<Bone> Reference;
+    typedef std::vector<Bone::Reference> Children;
 
-    struct Position
-    {
-      Vec2D base;
-      Vec2D tip;
-    };
+    Bone(int const id, Reference const parent = Reference());
 
-    Bone(int const id, Reference const parent = Reference()) :
-      id(id), parent(parent), name(), position(), transformedPosition(), transformation(), children() {}
+    int getId() const;
+    std::string const& getName() const;
+    Vec2D getBase() const;
+    Vec2D getTip() const;
+
+    void setAngle(float const value);
+    void changeAngle(float const delta);
+
+    void transform();
+    Children const& getChildren() const;
+
+  private:
+    void setAsDirty();
+    void setAsHasDirtyChildren();
 
     int const id;
     Reference const parent;
 
     std::string name;
-    Position position;
-    Position transformedPosition;
+    Vec2D base;
+    Vec2D tip;
+
+    float angle;
+    bool dirty;
+    bool hasDirtyChildren;
     Transformation transformation;
-    std::vector<Bone::Reference> children;
+    Children children;
   };
 
   typedef std::vector<Bone::Reference> Bones;
@@ -45,8 +61,6 @@ public:
   void transformBones();
 
 private:
-  static void transformBone(Bone::Reference& bone, Transformation transformation = Transformation());
-
   Bones bones;
 };
 

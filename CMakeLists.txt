@@ -17,3 +17,5 @@ list(APPEND CMAKE_CXX_FLAGS -std=c++0x)
 add_executable(2dshooter ${SOURCES})
 
 target_link_libraries(2dshooter engineworks glfw glhck qmlon ${GLFW_LIBRARIES})
+
+file(COPY skeletons DESTINATION .)

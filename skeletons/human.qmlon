@@ -2,35 +2,35 @@ Skeleton {
   Bone {
     name: "spine"
     base: {y: 8}
-    tip: {y: 16}
+    tip: {y: 14}
 
     Bone {
       name: "head"
-      base: {y: 16}
-      tip: {y: 18}
+      base: {y: 14}
+      tip: {y: 16}
     }
 
     Bone {
       name: "arm-left"
-      base: {y: 16}
-      tip: {y: 12}
+      base: {y: 14}
+      tip: {y: 10}
 
       Bone {
         name: "forearm-left"
-        base: {y: 12}
-        tip: {y: 8}
+        base: {y: 10}
+        tip: {y: 6}
       }
     }
 
     Bone {
       name: "arm-right"
-      base: {y: 16}
-      tip: {y: 12}
+      base: {y: 14}
+      tip: {y: 10}
 
       Bone {
         name: "forearm-right"
-        base: {y: 12}
-        tip: {y: 8}
+        base: {y: 10}
+        tip: {y: 6}
       }
     }
 

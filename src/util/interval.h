@@ -11,11 +11,11 @@ public:
   };
   Interval(Limit const& lower, Limit const& upper);
   Interval(float const lower, float const upper);
-  
+
   bool contains(float const value);
   bool contains(Interval const& other);
   bool intersects(Interval const& other);
-  
+
   Limit lower;
   Limit upper;
 };

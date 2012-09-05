@@ -7,12 +7,16 @@
 #include "ew/controllableworld.h"
 #include "ew/engine.h"
 
+#include "GL/glhck.h"
+
 class GameWorld : public ew::RenderableWorld, public ew::UpdatableWorld,
                   public ew::CollidableWorld, public ew::ControllableWorld
 {
 public:
   GameWorld();
 
+private:
+  glhckCamera* camera;
 };
 
 #endif

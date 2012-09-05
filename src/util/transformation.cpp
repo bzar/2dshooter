@@ -9,14 +9,14 @@ namespace
 {
   void copyArray(float const* from, float* to, int size)
   {
-    for(int i = 0; i < size; ++i) 
+    for(int i = 0; i < size; ++i)
     {
       to[i] = from[i];
     }
   }
 }
 
-Transformation::Transformation() 
+Transformation::Transformation()
 {
   copyArray(INITIAL_VALUES, values, NUM_VALUES);
 }
@@ -34,42 +34,42 @@ Transformation& Transformation::reset()
 
 Transformation& Transformation::move(Vec2D const& v)
 {
-  float const matrix[] = { 1.0,  0.0, v.x, 
-                           0.0,  1.0, v.y, 
+  float const matrix[] = { 1.0,  0.0, v.x,
+                           0.0,  1.0, v.y,
                            0.0,  0.0, 1.0 };
-  return apply(matrix);  
+  return apply(matrix);
 }
 
 Transformation& Transformation::move(float const& x, float const& y)
 {
-  float const matrix[] = { 1.0,  0.0,   x, 
-                           0.0,  1.0,   y, 
+  float const matrix[] = { 1.0,  0.0,   x,
+                           0.0,  1.0,   y,
                            0.0,  0.0, 1.0 };
-  return apply(matrix);  
+  return apply(matrix);
 }
 
 Transformation& Transformation::rotate(float const& r)
 {
   float const cs = cos(r * TAU);
   float const sn = sin(r * TAU);
-  float const matrix[] = {  cs, -sn, 0.0, 
-                            sn,  cs, 0.0, 
+  float const matrix[] = {  cs, -sn, 0.0,
+                            sn,  cs, 0.0,
                            0.0, 0.0, 1.0 };
   return apply(matrix);
 }
 
 Transformation& Transformation::scale(float const& k)
 {
-  float const matrix[] = {   k, 0.0, 0.0, 
-                           0.0,   k, 0.0, 
+  float const matrix[] = {   k, 0.0, 0.0,
+                           0.0,   k, 0.0,
                            0.0, 0.0, 1.0 };
   return apply(matrix);
 }
 
 Transformation& Transformation::scale(float const& x, float const& y)
 {
-  float const matrix[] = {   x, 0.0, 0.0, 
-                           0.0,   y, 0.0, 
+  float const matrix[] = {   x, 0.0, 0.0,
+                           0.0,   y, 0.0,
                            0.0, 0.0, 1.0 };
   return apply(matrix);
 }
@@ -84,7 +84,7 @@ Transformation& Transformation::apply(float const matrix[])
   float old[NUM_VALUES];
   copyArray(values, old, NUM_VALUES);
   copyArray(ZERO_VALUES, values, NUM_VALUES);
-  
+
   for( unsigned int m = 0; m < NUM_ROWS; ++m )
   {
     for( unsigned int n = 0; n < NUM_COLS; ++n )

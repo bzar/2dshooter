@@ -16,7 +16,7 @@ public:
   Transformation& apply(Transformation const& other);
   Transformation& apply(float const matrix[]);
   Vec2D transform(Vec2D const& v) const;
-  
+
 private:
   static unsigned int const NUM_ROWS = 3;
   static unsigned int const NUM_COLS = 3;
@@ -26,6 +26,6 @@ private:
 
   float values[NUM_VALUES];
 
-  
+
 };
 #endif
