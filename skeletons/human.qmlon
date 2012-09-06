@@ -63,9 +63,9 @@ Skeleton {
     name: "stand"
     Animation {
       duration: 0.5
-      Angle { target: "thigh-left", to: 10 }
+      Angle { target: "thigh-left", to: 0.1 }
       Angle { target: "leg-left", to: 0 }
-      Angle { target: "thigh-right", to: -10 }
+      Angle { target: "thigh-right", to: -0.1 }
       Angle { target: "leg-right", to: 0 }
     }
   }
@@ -75,16 +75,35 @@ Skeleton {
     SequentialAnimation {
       loop: true
       Animation {
-        Angle { target: "thigh-left", from: 10, to: -10 }
-        Angle { target: "leg-left", from: 0, to: -5 }
-        Angle { target: "thigh-right", from: -10, to: 10 }
-        Angle { target: "leg-right", from: -5, to: 0 }
+        Angle { target: "thigh-left", from: 0.1, to: -0.1 }
+        Angle { target: "leg-left", from: 0, to: -0.05 }
+        Angle { target: "thigh-right", from: -0.1, to: 0.1 }
+        Angle { target: "leg-right", from: -0.05, to: 0 }
       }
       Animation {
-        Angle { target: "thigh-left", from: -10, to: 10 }
-        Angle { target: "leg-left", from: -5, to: 0 }
-        Angle { target: "thigh-right", from: 10, to: -10 }
-        Angle { target: "leg-right", from: 0, to: -5 }
+        Angle { target: "thigh-left", from: -0.1, to: 0.1 }
+        Angle { target: "leg-left", from: -0.05, to: 0 }
+        Angle { target: "thigh-right", from: 0.1, to: -0.1 }
+        Angle { target: "leg-right", from: 0, to: -0.05 }
+      }
+    }
+  }
+
+  Pose {
+    name: "walk-hands"
+    SequentialAnimation {
+      loop: true
+      Animation {
+        Angle { target: "arm-left", from: 0.1, to: -0.1 }
+        Angle { target: "forearm-left", from: 0.1, to: 0 }
+        Angle { target: "arm-right", from: -0.1, to: 0.1 }
+        Angle { target: "forearm-right", from: 0, to: 0.1 }
+      }
+      Animation {
+        Angle { target: "arm-left", from: -0.1, to: 0.1 }
+        Angle { target: "forearm-left", from: 0, to: 0.1 }
+        Angle { target: "arm-right", from: 0.1, to: -0.1 }
+        Angle { target: "forearm-right", from: 0.1, to: 0 }
       }
     }
   }

@@ -26,6 +26,7 @@ public:
     std::string const& getName() const;
     Vec2D getBase() const;
     Vec2D getTip() const;
+    float getAngle() const;
 
     void setAngle(float const value);
     void changeAngle(float const delta);
