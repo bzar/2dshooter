@@ -7,6 +7,7 @@
 
 #include "util/vec2d.h"
 #include "util/transformation.h"
+#include "animation.h"
 
 class Skeleton
 {
@@ -50,7 +51,29 @@ public:
     Children children;
   };
 
+  class Pose
+  {
+  public:
+    friend class Skeleton;
+    typedef std::shared_ptr<Pose> Reference;
+    typedef std::vector<Animation::Reference> Animations;
+
+    Pose(int const id, Skeleton* skeleton);
+    void activate();
+    void deactivate();
+    bool isActive() const;
+    void animate(float const delta);
+
+  private:
+    int const id;
+    Skeleton* skeleton;
+    std::string name;
+    bool active;
+    Animations animations;
+  };
+
   typedef std::vector<Bone::Reference> Bones;
+  typedef std::vector<Pose::Reference> Poses;
 
   Skeleton(std::string const& filename);
 
@@ -58,10 +81,15 @@ public:
   Bone::Reference const getBone(int const id) const;
   Bones const& getBones() const;
 
-  void transformBones();
+  Pose::Reference const getPose(std::string const& name) const;
+  Pose::Reference const getPose(int const id) const;
+  Poses const& getPoses() const;
+
+  void update(float const delta);
 
 private:
   Bones bones;
+  Poses poses;
 };
 
 

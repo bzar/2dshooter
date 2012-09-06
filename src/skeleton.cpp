@@ -100,6 +100,40 @@ void Skeleton::Bone::setAsHasDirtyChildren()
     parent->setAsHasDirtyChildren();
 }
 
+
+
+Skeleton::Pose::Pose(int const id, Skeleton* skeleton) :
+  id(id), skeleton(skeleton), name(), active(false), animations()
+{
+}
+
+void Skeleton::Pose::activate()
+{
+  active = true;
+}
+
+void Skeleton::Pose::deactivate()
+{
+  active = false;
+}
+
+bool Skeleton::Pose::isActive() const
+{
+  return active;
+}
+
+void Skeleton::Pose::animate(float const delta)
+{
+  if(active)
+  {
+    for(Animation::Reference& animation : animations)
+    {
+      animation->animate(delta);
+    }
+  }
+}
+
+
 Skeleton::Skeleton(std::string const& filename) :
   bones()
 {
@@ -155,8 +189,34 @@ Skeleton::Bones const& Skeleton::getBones() const
   return bones;
 }
 
-void Skeleton::transformBones()
+Skeleton::Pose::Reference const Skeleton::getPose(std::string const& name) const
 {
+  for(Pose::Reference b : poses)
+  {
+    if(b->name == name)
+    {
+      return b;
+    }
+  }
+}
+
+Skeleton::Pose::Reference const Skeleton::getPose(int const id) const
+{
+  return poses.at(id);
+}
+
+Skeleton::Poses const& Skeleton::getPoses() const
+{
+  return poses;
+}
+
+void Skeleton::update(float const delta)
+{
+  for(Pose::Reference& pose : poses)
+  {
+    pose->animate(delta);
+  }
+
   for(Bone::Reference& bone : bones)
   {
     bone->transform();

@@ -38,7 +38,7 @@ void Human::update(float const delta)
   /*skeleton.getBone("a")->changeAngle(0.0025);
   skeleton.getBone("b")->changeAngle(0.005);*/
   skeleton.getBone("arm-left")->changeAngle(-0.0045);
-  skeleton.transformBones();
+  skeleton.update(delta);
 
   std::vector<glhckImportVertexData> debugLineData;
 
