@@ -4,6 +4,7 @@
 #include "ew/renderable.h"
 #include "ew/updatable.h"
 #include "skeleton.h"
+#include "spritesheet.h"
 #include "gameworld.h"
 #include "GL/glhck.h"
 
@@ -23,9 +24,11 @@ public:
 
 private:
   static std::string const SKELETON_FILE;
+  static std::string const SPRITESHEET_FILE;
   glhckObject* debugLines;
 
   Skeleton skeleton;
+  SpriteSheet spritesheet;
 };
 
 #endif
