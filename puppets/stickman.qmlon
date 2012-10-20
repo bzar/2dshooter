@@ -1,0 +1,102 @@
+Puppet {
+  skeleton: "skeletons/human.qmlon"
+  spritesheet: "spritesheets/stickman.qmlon"
+
+  Part {
+    name: "torso"
+    front: "torso"
+    back: "torso"
+    bone: "spine"
+    base: {}
+    tip: {y: -80}
+  }
+
+  Part {
+    name: "head"
+    front: "head"
+    back: "head"
+    bone: "head"
+    base: {}
+    tip: {y: -28}
+  }
+
+  Part {
+    name: "arm-left"
+    front: "arm-back"
+    back: "arm-front"
+    bone: "arm-left"
+    base: {}
+    tip: {y: 48}
+    z: -2
+  }
+
+  Part {
+    name: "forearm-left"
+    front: "forearm-back"
+    back: "forearm-front"
+    bone: "forearm-left"
+    base: {}
+    tip: {y: 48}
+    z: -2
+  }
+
+  Part {
+    name: "arm-right"
+    front: "arm-front"
+    back: "arm-back"
+    bone: "arm-right"
+    base: {}
+    tip: {y: 48}
+    z: 2
+  }
+
+  Part {
+    name: "forearm-right"
+    front: "forearm-front"
+    back: "forearm-back"
+    bone: "forearm-right"
+    base: {}
+    tip: {y: 48}
+    z: 2
+  }
+
+  Part {
+    name: "thigh-left"
+    front: "thigh-back"
+    back: "thigh-front"
+    bone: "thigh-left"
+    base: {}
+    tip: {y: 48}
+    z: -1
+  }
+
+  Part {
+    name: "leg-left"
+    front: "leg-back"
+    back: "leg-front"
+    bone: "leg-left"
+    base: {}
+    tip: {y: 48}
+    z: -1
+  }
+
+  Part {
+    name: "thigh-right"
+    front: "thigh-front"
+    back: "thigh-back"
+    bone: "thigh-right"
+    base: {}
+    tip: {y: 48}
+    z: 1
+  }
+
+  Part {
+    name: "leg-right"
+    front: "leg-front"
+    back: "leg-back"
+    bone: "leg-right"
+    base: {}
+    tip: {y: 48}
+    z: 1
+  }
+}
