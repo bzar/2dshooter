@@ -6,7 +6,7 @@
 #include "skeleton.h"
 #include "spritesheet.h"
 #include "gameworld.h"
-#include "GL/glhck.h"
+#include "glhck/glhck.h"
 
 #include <string>
 

@@ -5,10 +5,12 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 
 class SpriteSheet
 {
 public:
+  typedef std::shared_ptr<SpriteSheet> Reference;
   class Frame
   {
   public:

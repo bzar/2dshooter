@@ -16,7 +16,7 @@ Sheet {
       id: "torso"
 
       Frame {
-        position: Vec2D {x: 8, y: 36}
+        position: Vec2D {x: 8, y: 80}
         size: Size {width: 36, height: 80}
         hotspot: Vec2D {x: 18, y: 0}
       }

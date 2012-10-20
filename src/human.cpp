@@ -12,7 +12,7 @@ Human::Human(GameWorld* world) :
   debugLines(glhckObjectNew()), skeleton(SKELETON_FILE),
   spritesheet(SpriteSheet::create(SPRITESHEET_FILE))
 {
-  glhckObjectSetGeometryType(debugLines, GLHCK_LINES);
+  glhckObjectNewGeometry(debugLines)->type = GLHCK_LINES;
   skeleton.getPose("walk")->activate();
   skeleton.getPose("walk-hands")->activate();
 }
@@ -32,20 +32,21 @@ void Human::update(float const delta)
 {
   skeleton.update(delta);
 
-  std::vector<glhckImportVertexData> debugLineData;
+  std::vector<glhckVertexData2f> debugLineData;
 
   for(Skeleton::Bone::Reference const& bone : skeleton.getBones())
   {
     debugLineData.push_back({
-      {bone->getBase().x, bone->getBase().y, 0},
-      {0, 0, 0}, {0, 0}, {255, 255, 255, 255}
+      {bone->getBase().x, bone->getBase().y},
+      {0, 0}, {255, 255, 255, 255}
     });
     debugLineData.push_back({
-      {bone->getTip().x, bone->getTip().y, 0},
-      {0, 0, 0}, {0, 0}, {255, 255, 255, 255}
+      {bone->getTip().x, bone->getTip().y},
+      {0, 0}, {255, 255, 255, 255}
     });
   }
 
-  glhckObjectInsertVertexData3d(debugLines, debugLineData.size(), debugLineData.data());
+  glhckGeometrySetVertices(glhckObjectGetGeometry(debugLines), GLHCK_VERTEX_V2F, debugLineData.data(), debugLineData.size());
+  glhckObjectUpdate(debugLines);
 }
 

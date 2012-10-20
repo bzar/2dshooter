@@ -12,6 +12,8 @@
 class Skeleton
 {
 public:
+  typedef std::shared_ptr<Skeleton> Reference;
+
   class Bone
   {
   public:
