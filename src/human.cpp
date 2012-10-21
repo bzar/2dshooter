@@ -57,7 +57,7 @@ void Human::update(float const delta)
     Vec2D base = bone->getBase();
     Vec2D tip = bone->getTip();
     vertices[i * 2].vertex = {base.x, base.y};
-    vertices[i * 2 + 1].vertex = {base.x, base.y};
+    vertices[i * 2 + 1].vertex = {tip.x, tip.y};
   }
   glhckObjectUpdate(debugLines);
 }
