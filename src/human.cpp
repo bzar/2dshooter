@@ -15,6 +15,24 @@ Human::Human(GameWorld* world) :
   glhckObjectNewGeometry(debugLines)->type = GLHCK_LINES;
   skeleton.getPose("walk")->activate();
   skeleton.getPose("walk-hands")->activate();
+
+  // Set initial bone geometry
+  std::vector<glhckVertexData2f> debugLineData;
+
+  for(Skeleton::Bone::Reference const& bone : skeleton.getBones())
+  {
+    debugLineData.push_back({
+      {bone->getBase().x, bone->getBase().y},
+      {0, 0}, {255, 255, 255, 255}
+    });
+    debugLineData.push_back({
+      {bone->getTip().x, bone->getTip().y},
+      {0, 0}, {255, 255, 255, 255}
+    });
+  }
+
+  glhckGeometrySetVertices(glhckObjectGetGeometry(debugLines), GLHCK_VERTEX_V2F, debugLineData.data(), debugLineData.size());
+
 }
 
 Human::~Human()
@@ -32,21 +50,16 @@ void Human::update(float const delta)
 {
   skeleton.update(delta);
 
-  std::vector<glhckVertexData2f> debugLineData;
-
-  for(Skeleton::Bone::Reference const& bone : skeleton.getBones())
+  for(int i = 0; i < skeleton.getBones().size(); ++i) 
   {
-    debugLineData.push_back({
-      {bone->getBase().x, bone->getBase().y},
-      {0, 0}, {255, 255, 255, 255}
-    });
-    debugLineData.push_back({
-      {bone->getTip().x, bone->getTip().y},
-      {0, 0}, {255, 255, 255, 255}
-    });
+    glhckVector2f& vBase = glhckObjectGetGeometry(debugLines)->vertices.v2f[i * 2].vertex;
+    glhckVector2f& vTip = glhckObjectGetGeometry(debugLines)->vertices.v2f[(i * 2) + 1].vertex;
+    Skeleton::Bone::Reference bone = skeleton.getBone(i);
+    vBase.x = bone->getBase().x;
+    vBase.y = bone->getBase().y;
+    vTip.x = bone->getTip().x;
+    vTip.y = bone->getTip().y;
   }
-
-  glhckGeometrySetVertices(glhckObjectGetGeometry(debugLines), GLHCK_VERTEX_V2F, debugLineData.data(), debugLineData.size());
   glhckObjectUpdate(debugLines);
 }
 
