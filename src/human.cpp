@@ -50,14 +50,14 @@ void Human::update(float const delta)
 {
   skeleton.update(delta);
 
+  glhckVertexData2f* vertices = glhckObjectGetGeometry(debugLines)->vertices.v2f;
   for(int i = 0; i < skeleton.getBones().size(); ++i) 
   {
-    glhckGeometry* geometry = glhckObjectGetGeometry(debugLines);
-    glhckVector2f& vBase = geometry->vertices.v2f[i * 2].vertex;
-    glhckVector2f& vTip = geometry->vertices.v2f[i * 2 + 1].vertex;
     Skeleton::Bone::Reference bone = skeleton.getBone(i);
-    vBase = {bone->getBase().x, bone->getBase().y};
-    vTip = {bone->getTip().x, bone->getTip().y};
+    Vec2D base = bone->getBase();
+    Vec2D tip = bone->getTip();
+    vertices[i * 2].vertex = {base.x, base.y};
+    vertices[i * 2 + 1].vertex = {base.x, base.y};
   }
   glhckObjectUpdate(debugLines);
 }
