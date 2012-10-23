@@ -1,7 +1,7 @@
 #ifndef SPRITE_SHEET_HH
 #define SPRITE_SHEET_HH
 
-#include "qmlon.h"
+#include "qmloninitializer.h"
 #include <vector>
 #include <string>
 #include <map>

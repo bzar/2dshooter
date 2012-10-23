@@ -22,7 +22,7 @@ public:
     typedef std::shared_ptr<Bone> Reference;
     typedef std::vector<Bone::Reference> Children;
 
-    Bone(int const id, Reference const parent = Reference());
+    Bone(int const id, Bone* const parent = 0);
 
     int getId() const;
     std::string const& getName() const;
@@ -41,7 +41,7 @@ public:
     void setAsHasDirtyChildren();
 
     int const id;
-    Reference const parent;
+    Bone* const parent;
 
     std::string name;
     Vec2D base;

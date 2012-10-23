@@ -6,7 +6,7 @@
 #include "parallelanimation.h"
 #include "pauseanimation.h"
 
-#include "qmlon.h"
+#include "qmloninitializer.h"
 #include <fstream>
 
 namespace
@@ -26,7 +26,7 @@ namespace
   }
 }
 
-Skeleton::Bone::Bone(int const id, Reference const parent) :
+Skeleton::Bone::Bone(int const id, Bone* const parent) :
   id(id), parent(parent), name(), base(), tip(),
   angle(0), dirty(true), hasDirtyChildren(true),
   transformation(), children()
@@ -179,7 +179,7 @@ Skeleton::Skeleton(std::string const& filename) :
     }},
   });
   qmlon::Initializer<SkeletonAnimation> ai({
-    {"duration", [](SkeletonAnimation& a, qmlon::Value::Reference v) { a.setDuration(v->asFloat()); }},
+    {"duration", qmlon::set(&SkeletonAnimation::setDuration)},
     {"easing", [](SkeletonAnimation& a, qmlon::Value::Reference v) {
       auto i = Ease::BY_NAME.find(v->asString());
       if(i != Ease::BY_NAME.end())
@@ -195,7 +195,7 @@ Skeleton::Skeleton(std::string const& filename) :
   });
 
   qmlon::Initializer<PauseAnimation> pai({
-    {"duration", [](PauseAnimation& a, qmlon::Value::Reference v) { a.setDuration(v->asFloat()); }},
+    {"duration", qmlon::set(&PauseAnimation::setDuration)},
   });
 
   qmlon::Initializer<CompoundAnimation> cai({
@@ -226,56 +226,56 @@ Skeleton::Skeleton(std::string const& filename) :
     }}
   });
 
-  qmlon::Initializer<Pose::Reference> pi({
-    {"name", [](Pose::Reference& pose, qmlon::Value::Reference value) { pose->name = value->asString(); }},
+  qmlon::Initializer<Pose> pi({
+    {"name", qmlon::set(&Pose::name)},
   }, {
-    {"Animation", [&](Pose::Reference& p, qmlon::Object* obj) {
-      SkeletonAnimation* animation = new SkeletonAnimation(p->skeleton);
+    {"Animation", [&](Pose& p, qmlon::Object* obj) {
+      SkeletonAnimation* animation = new SkeletonAnimation(p.skeleton);
       ani.init(*animation, obj);
       ai.init(*animation, obj);
-      p->animations.push_back(Animation::Reference(animation));
+      p.animations.push_back(Animation::Reference(animation));
     }},
-    {"SequentialAnimation", [&](Pose::Reference& p, qmlon::Object* obj) {
-      SequentialAnimation* animation = new SequentialAnimation(p->skeleton);
+    {"SequentialAnimation", [&](Pose& p, qmlon::Object* obj) {
+      SequentialAnimation* animation = new SequentialAnimation(p.skeleton);
       ani.init(*animation, obj);
       cai.init(*animation, obj);
-      p->animations.push_back(Animation::Reference(animation));
+      p.animations.push_back(Animation::Reference(animation));
     }},
-    {"ParallelAnimation", [&](Pose::Reference& p, qmlon::Object* obj) {
-      ParallelAnimation* animation = new ParallelAnimation(p->skeleton);
+    {"ParallelAnimation", [&](Pose& p, qmlon::Object* obj) {
+      ParallelAnimation* animation = new ParallelAnimation(p.skeleton);
       ani.init(*animation, obj);
       cai.init(*animation, obj);
-      p->animations.push_back(Animation::Reference(animation));
+      p.animations.push_back(Animation::Reference(animation));
     }},
   });
 
   qmlon::Initializer<Vec2D> vi({
-    {"x", [](Vec2D& v, qmlon::Value::Reference value) { v.x = value->asFloat(); }},
-    {"y", [](Vec2D& v, qmlon::Value::Reference value) { v.y = value->asFloat(); }}
+    {"x", qmlon::set(&Vec2D::x)},
+    {"y", qmlon::set(&Vec2D::y)}
   });
 
-  qmlon::Initializer<Bone::Reference> bi({
-    {"name", [](Bone::Reference& bone, qmlon::Value::Reference value) { bone->name = value->asString(); }},
-    {"base", [&](Bone::Reference& bone, qmlon::Value::Reference value) { bone->base = qmlon::create(value, vi); }},
-    {"tip", [&](Bone::Reference& bone, qmlon::Value::Reference value) { bone->tip = qmlon::create(value, vi); }},
+  qmlon::Initializer<Bone> bi({
+    {"name", qmlon::set(&Bone::name)},
+    {"base", qmlon::createSet(vi, &Bone::base)},
+    {"tip", qmlon::createSet(vi, &Bone::tip)},
   });
 
-  bi.addChildSetter("Bone", [&](Bone::Reference& bone, qmlon::Object* object) {
-    Bone::Reference b(new Bone(bones.size(), bone));
+  bi.addChildSetter("Bone", [&](Bone& bone, qmlon::Object* object) {
+    Bone::Reference b(new Bone(bones.size(), &bone));
     bones.push_back(b);
-    bi.init(b, object);
-    bone->children.push_back(b);
+    bi.init(*b, object);
+    bone.children.push_back(b);
   });
 
   qmlon::Initializer<Skeleton> si({}, {
     {"Bone", [&](Skeleton& skeleton, qmlon::Object* object) {
       Bone::Reference b(new Bone(bones.size()));
       bones.push_back(b);
-      bi.init(b, object);
+      bi.init(*b, object);
     }},
     {"Pose", [&](Skeleton& skeleton, qmlon::Object* object) {
       Pose::Reference p(new Pose(poses.size(), this));
-      pi.init(p, object);
+      pi.init(*p, object);
       poses.push_back(p);
     }},
   });
