@@ -7,22 +7,20 @@
 
 #include "util/vec2d.h"
 #include "util/transformation.h"
+#include "qmlon.h"
 #include "animation.h"
 
 class Skeleton
 {
 public:
-  typedef std::shared_ptr<Skeleton> Reference;
-
   class Bone
   {
   public:
     friend class Skeleton;
 
-    typedef std::shared_ptr<Bone> Reference;
-    typedef std::vector<Bone::Reference> Children;
+    typedef std::vector<int> Children;
 
-    Bone(int const id, Bone* const parent = 0);
+    Bone(int const id, int const parentId = -1);
 
     int getId() const;
     std::string const& getName() const;
@@ -33,23 +31,19 @@ public:
     void setAngle(float const value);
     void changeAngle(float const delta);
 
-    void transform();
+    void transform(Skeleton* skeleton, bool parentDirty = false);
     Children const& getChildren() const;
-
+    
   private:
-    void setAsDirty();
-    void setAsHasDirtyChildren();
-
-    int const id;
-    Bone* const parent;
-
+    int id;
+    int parentId;
+    
     std::string name;
     Vec2D base;
     Vec2D tip;
 
     float angle;
     bool dirty;
-    bool hasDirtyChildren;
     Transformation transformation;
     Children children;
   };
@@ -58,35 +52,42 @@ public:
   {
   public:
     friend class Skeleton;
-    typedef std::shared_ptr<Pose> Reference;
     typedef std::vector<Animation::Reference> Animations;
 
-    Pose(int const id, Skeleton* skeleton);
+    Pose(int const id);
+    Pose(Pose const& other);
+    Pose(Pose&& other);
+    
     void activate();
     void deactivate();
     bool isActive() const;
-    void animate(float const delta);
+    void animate(float const delta, Skeleton* skeleton);
 
   private:
     int const id;
-    Skeleton* skeleton;
     std::string name;
     bool active;
     Animations animations;
   };
 
-  typedef std::vector<Bone::Reference> Bones;
-  typedef std::vector<Pose::Reference> Poses;
+  typedef std::vector<Bone> Bones;
+  typedef std::vector<Pose> Poses;
 
-  Skeleton(std::string const& filename);
+  Skeleton();
+  Skeleton(Skeleton const& other);
+  Skeleton(Skeleton&& other);
+  ~Skeleton();
+  
+  void initialize(qmlon::Value::Reference value);
+  static void initialize(Skeleton& skeleton, qmlon::Value::Reference value);
+  
+  Bone& getBone(std::string const& name);
+  Bone& getBone(int const id);
+  Bones& getBones();
 
-  Bone::Reference const getBone(std::string const& name) const;
-  Bone::Reference const getBone(int const id) const;
-  Bones const& getBones() const;
-
-  Pose::Reference const getPose(std::string const& name) const;
-  Pose::Reference const getPose(int const id) const;
-  Poses const& getPoses() const;
+  Pose& getPose(std::string const& name);
+  Pose& getPose(int const id);
+  Poses& getPoses();
 
   void update(float const delta);
 
@@ -94,6 +95,5 @@ private:
   Bones bones;
   Poses poses;
 };
-
 
 #endif

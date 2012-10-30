@@ -1,10 +1,10 @@
 Sheet {
   image: "img/stickman.png"
   Sprite {
-    id: "stickman"
+    id: "head"
 
     Animation {
-      id: "head"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 12, y: 4}
@@ -12,8 +12,12 @@ Sheet {
         hotspot: Vec2D {x: 14, y: 28}
       }
     }
+  }
+  Sprite {
+    id: "torso"
+
     Animation {
-      id: "torso"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 8, y: 80}
@@ -21,8 +25,12 @@ Sheet {
         hotspot: Vec2D {x: 18, y: 0}
       }
     }
+  }
+  Sprite {
+    id: "arm-front"
+
     Animation {
-      id: "arm-front"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 52, y: 36}
@@ -30,8 +38,12 @@ Sheet {
         hotspot: Vec2D {x: 10, y: 8}
       }
     }
+  }
+  Sprite {
+    id: "forearm-front"
+
     Animation {
-      id: "forearm-front"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 80, y: 36}
@@ -39,8 +51,12 @@ Sheet {
         hotspot: Vec2D {x: 8, y: 16}
       }
     }
+  }
+  Sprite {
+    id: "arm-back"
+
     Animation {
-      id: "arm-back"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 108, y: 36}
@@ -48,8 +64,12 @@ Sheet {
         hotspot: Vec2D {x: 10, y: 8}
       }
     }
+  }
+  Sprite {
+    id: "forearm-back"
+
     Animation {
-      id: "forearm-back"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 136, y: 36}
@@ -57,8 +77,12 @@ Sheet {
         hotspot: Vec2D {x: 8, y: 16}
       }
     }
+  }
+  Sprite {
+    id: "thigh-front"
+
     Animation {
-      id: "thigh-front"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 52, y: 104}
@@ -66,8 +90,12 @@ Sheet {
         hotspot: Vec2D {x: 10, y: 8}
       }
     }
+  }
+  Sprite {
+    id: "leg-front"
+
     Animation {
-      id: "leg-front"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 80, y: 104}
@@ -75,8 +103,12 @@ Sheet {
         hotspot: Vec2D {x: 8, y: 16}
       }
     }
+  }
+  Sprite {
+    id: "thigh-back"
+
     Animation {
-      id: "thigh-back"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 108, y: 104}
@@ -84,8 +116,12 @@ Sheet {
         hotspot: Vec2D {x: 10, y: 8}
       }
     }
+  }
+  Sprite {
+    id: "leg-back"
+
     Animation {
-      id: "leg-back"
+      id: "default"
 
       Frame {
         position: Vec2D {x: 136, y: 104}

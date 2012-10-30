@@ -16,50 +16,54 @@ SpriteSheet::Frame const& SpriteSheet::Animation::getFrame(float const time) con
   return frames.at(f);
 }
 
-int SpriteSheet::Sprite::getAnimationId(std::string const& name) const
+SpriteSheet::Animation const& SpriteSheet::Sprite::getAnimation(std::string const& name) const
 {
   for(int i = 0; i < animations.size(); ++i)
   {
-    if(animations.at(i).name == name)
+    if(animations.at(i).getName() == name)
     {
-      return i;
+      return animations.at(i);
     }
   }
-
-  return -1;
+  
+  throw std::runtime_error("Error Unknown animation!");
 }
 
-SpriteSheet SpriteSheet::create(std::string const& filename)
+void SpriteSheet::Sprite::addAnimation(const SpriteSheet::Animation& value)
 {
-  std::ifstream ifs(filename);
-  auto value = qmlon::readValue(ifs);
-  return create(value);
+  animations.push_back(value);
+  animations.back().setId(animations.size() - 1);
 }
 
-SpriteSheet SpriteSheet::create(qmlon::Value::Reference value)
+void SpriteSheet::initialize(qmlon::Value::Reference value)
+{
+  initialize(*this, value);
+}
+
+void SpriteSheet::initialize(SpriteSheet& spriteSheet, qmlon::Value::Reference value)
 {
   qmlon::Initializer<Frame::Position> initPosition({
-    {"x", [](Frame::Position& p, qmlon::Value::Reference v) { p.x = v->asInteger(); }},
-    {"y", [](Frame::Position& p, qmlon::Value::Reference v) { p.y = v->asInteger(); }}
+    {"x", qmlon::set(&Frame::Position::x)},
+    {"y", qmlon::set(&Frame::Position::y)}
   });
 
   qmlon::Initializer<Frame::Size> initSize({
-    {"width", [](Frame::Size& s, qmlon::Value::Reference v) { s.width = v->asInteger(); }},
-    {"height", [](Frame::Size& s, qmlon::Value::Reference v) { s.height = v->asInteger(); }}
+    {"width", qmlon::set(&Frame::Size::width)},
+    {"height", qmlon::set(&Frame::Size::height)}
   });
 
   qmlon::Initializer<Frame> initFrame({
-    {"position", [&](Frame& f, qmlon::Value::Reference v) { f.setPosition(qmlon::create(v, initPosition)); }},
-    {"hotspot", [&](Frame& f, qmlon::Value::Reference v) { f.setHotspot(qmlon::create(v, initPosition)); }},
-    {"size", [&](Frame& f, qmlon::Value::Reference v) { f.setSize(qmlon::create(v, initSize)); }}
+    {"position", qmlon::createSet(initPosition, &Frame::setPosition)},
+    {"hotspot", qmlon::createSet(initPosition, &Frame::setHotspot)},
+    {"size", qmlon::createSet(initSize, &Frame::setSize)}
   });
 
   qmlon::Initializer<Animation> initAnimation({
-    {"id", [](Animation& a, qmlon::Value::Reference v) { a.setId(v->asString()); }},
-    {"fps", [](Animation& a, qmlon::Value::Reference v) { a.setFps(v->asInteger()); }},
-    {"loop", [](Animation& a, qmlon::Value::Reference v) { a.setLoop(v->asBoolean()); }}
+    {"id", qmlon::set(&Animation::setName)},
+    {"fps", qmlon::set(&Animation::setFps)},
+    {"loop", qmlon::set(&Animation::setLoop)}
   }, {
-    {"Frame", [&](Animation& a, qmlon::Object* o) { a.addFrame(qmlon::create(o, initFrame)); }},
+    {"Frame", qmlon::createAdd(initFrame, &Animation::addFrame)},
     {"Frames", [&](Animation& a, qmlon::Object* o) {
       int count = o->hasProperty("count") ? o->getProperty("count")->asInteger() : 1;
       int dx = 0;
@@ -85,16 +89,35 @@ SpriteSheet SpriteSheet::create(qmlon::Value::Reference value)
   });
 
   qmlon::Initializer<Sprite> initSprite({
-    {"id", [](Sprite& s, qmlon::Value::Reference v) { s.setId(v->asString()); }}
+    {"id", qmlon::set(&Sprite::setName)}
   }, {
-    {"Animation", [&](Sprite& s, qmlon::Object* o) { s.addAnimation(qmlon::create(o, initAnimation)); }}
+    {"Animation", qmlon::createAdd(initAnimation, &Sprite::addAnimation)}
   });
 
   qmlon::Initializer<SpriteSheet> initSheet({
-    {"image", [](SpriteSheet& sheet, qmlon::Value::Reference value) { sheet.setImage(value->asString()); }}
+    {"image", qmlon::set(&SpriteSheet::setImage)}
   }, {
-    {"Sprite", [&](SpriteSheet& sheet, qmlon::Object* obj) { sheet.addSprite(qmlon::create(obj, initSprite)); }}
+    {"Sprite", qmlon::createAdd(initSprite, &SpriteSheet::addSprite)}
   });
 
-  return qmlon::create(value, initSheet);
+  initSheet.init(spriteSheet, value);
+}
+
+SpriteSheet::Sprite const& SpriteSheet::getSprite(const std::string& name) const
+{
+  for(int i = 0; i < sprites.size(); ++i)
+  {
+    if(sprites.at(i).getName() == name)
+    {
+      return sprites.at(i);
+    }
+  }
+  
+  throw std::runtime_error("Error Unknown sprite " + name + "!");
+}
+
+void SpriteSheet::addSprite(const SpriteSheet::Sprite& value)
+{
+  sprites.push_back(value);
+  sprites.back().setId(sprites.size() - 1);
 }

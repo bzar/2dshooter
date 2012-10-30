@@ -1,7 +1,6 @@
 #ifndef SKELETONANIMATION_HH
 #define SKELETONANIMATION_HH
 
-#include "skeleton.h"
 #include "animation.h"
 #include "ease.h"
 
@@ -10,7 +9,7 @@
 #include <vector>
 #include <string>
 
-
+#include "skeleton.h"
 
 class SkeletonAnimation : public Animation
 {
@@ -54,12 +53,13 @@ public:
   };
 
 
-  SkeletonAnimation(Skeleton* skeleton);
+  SkeletonAnimation();
 
-  void animate(float const delta);
+  void animate(float const delta, Skeleton* skeleton);
   bool isFinished() const;
   void reset();
-
+  Animation* clone() const;
+  
   void setEasing(Ease::EasingFunction func);
   void setDuration(float const value);
   float getDuration() const;
@@ -68,7 +68,6 @@ public:
   void resetAnimators();
 
 private:
-  Skeleton* skeleton;
   float duration;
   float time;
   int loops;

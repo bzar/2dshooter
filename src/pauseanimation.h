@@ -8,10 +8,11 @@ class PauseAnimation : public Animation
 public:
   PauseAnimation();
 
-  void animate(float const delta);
+  void animate(float const delta, Skeleton* skeleton);
   bool isFinished() const;
   void reset();
-
+  Animation* clone() const;
+  
   void setDuration(float const value);
   void setLoops(int const value);
 

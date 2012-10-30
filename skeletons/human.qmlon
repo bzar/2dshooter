@@ -64,9 +64,20 @@ Skeleton {
     Animation {
       duration: 0.5
       Angle { target: "thigh-left", to: 0.1 }
-      Angle { target: "leg-left", to: 0 }
-      Angle { target: "thigh-right", to: -0.1 }
-      Angle { target: "leg-right", to: 0 }
+      Angle { target: "leg-left", to: -0.05 }
+      Angle { target: "thigh-right", to: -0.05 }
+      Angle { target: "leg-right", to: -0.05 }
+    }
+  }
+
+  Pose {
+    name: "stand-hands"
+    Animation {
+      duration: 0.5
+      Angle { target: "arm-left", to: -0.05 }
+      Angle { target: "forearm-left", to: 0.25 }
+      Angle { target: "arm-right", to: 0.05 }
+      Angle { target: "forearm-right", to: 0.25 }
     }
   }
 

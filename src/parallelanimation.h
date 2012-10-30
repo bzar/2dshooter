@@ -9,8 +9,9 @@
 class ParallelAnimation : public CompoundAnimation
 {
 public:
-  ParallelAnimation(Skeleton* skeleton);
-  void animate(float const delta);
+  ParallelAnimation();
+  void animate(float const delta, Skeleton* skeleton);
+  Animation* clone() const;
 };
 
 #endif

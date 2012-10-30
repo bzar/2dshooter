@@ -10,7 +10,6 @@
 class SpriteSheet
 {
 public:
-  typedef std::shared_ptr<SpriteSheet> Reference;
   class Frame
   {
   public:
@@ -46,20 +45,23 @@ public:
   class Animation
   {
   public:
-    Animation() : id(), fps(30), loop(false), frames() {}
+    Animation() : id(-1), name(), fps(30), loop(false), frames() {}
 
-    std::string const& getId() const { return id; }
+    int getId() const { return id; }
+    std::string const& getName() const { return name; }
     int getFps() const { return fps; }
     bool getLoop() const { return loop; }
     Frame const& getFrame(float const time) const;
 
-    void setId(std::string const& value) { id = value; }
+    void setId(int value) { id = value; }
+    void setName(std::string const& value) { name = value; }
     void setFps(int const value) { fps = value; }
     void setLoop(bool const value) { loop = value; }
     void addFrame(Frame const& value) { frames.push_back(value); }
 
   private:
-    std::string id;
+    int id;
+    std::string name;
     int fps;
     bool loop;
     std::vector<Frame> frames;
@@ -68,38 +70,38 @@ public:
   class Sprite
   {
   public:
-    Sprite() : id(), animations() {}
+    Sprite() : id(), name(), animations() {}
 
-    std::string const& getId() const { return id; }
-    int getAnimationId(std::string const& name) const;
-    Animation const& getAnimation(int const aid) const { return animations.at(aid).animation; };
+    int getId() const { return id; }
+    std::string const& getName() const { return name; }
+    Animation const& getAnimation(std::string const& name) const;
+    Animation const& getAnimation(int const aid) const { return animations.at(aid); };
 
-    void setId(std::string const& value) { id = value; }
-    void addAnimation(Animation const& value) { animations.push_back({value.getId(), value}); }
+    void setId(int value) { id = value; }
+    void setName(std::string const& value) { name = value; }
+    void addAnimation(Animation const& value);
 
   private:
-    struct NamedAnimation
-    {
-      std::string name;
-      Animation animation;
-    };
-    std::string id;
-    std::vector<NamedAnimation> animations;
+    int id;
+    std::string name;
+    std::vector<Animation> animations;
   };
 
+  void initialize(qmlon::Value::Reference value);
+  static void initialize(SpriteSheet& spritesheet, qmlon::Value::Reference value);
+  
   SpriteSheet() : image(), sprites() {}
 
   std::string const& getImage() const { return image; }
-  Sprite const& getSprite(std::string const& sid) const { return sprites.find(sid)->second; };
+  Sprite const& getSprite(int sid) const { return sprites.at(sid); };
+  Sprite const& getSprite(std::string const& name) const;
 
   void setImage(std::string const& value) { image = value; }
-  void addSprite(Sprite const& value) { sprites[value.getId()] = value; }
+  void addSprite(Sprite const& value);
 
-  static SpriteSheet create(std::string const& filename);
-  static SpriteSheet create(qmlon::Value::Reference value);
 private:
   std::string image;
-  std::map<std::string, Sprite> sprites;
+  std::vector<Sprite> sprites;
 };
 
 #endif

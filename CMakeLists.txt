@@ -18,6 +18,7 @@ add_executable(2dshooter ${SOURCES})
 
 target_link_libraries(2dshooter engineworks glfw glhck qmlon ${GLFW_LIBRARIES})
 
+file(COPY puppets DESTINATION .)
 file(COPY skeletons DESTINATION .)
 file(COPY spritesheets DESTINATION .)
 file(COPY img DESTINATION .)

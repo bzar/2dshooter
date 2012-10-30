@@ -1,7 +1,7 @@
 #include "compoundanimation.h"
 
-CompoundAnimation::CompoundAnimation(Skeleton* skeleton) :
-  skeleton(skeleton), loops(1), loop(1), animations()
+CompoundAnimation::CompoundAnimation() :
+  loops(1), loop(1), animations()
 {
 
 }
@@ -33,11 +33,6 @@ void CompoundAnimation::setLoops(int const value)
 void CompoundAnimation::addAnimation(Animation* animation)
 {
   animations.push_back(Animation::Reference(animation));
-}
-
-Skeleton* CompoundAnimation::getSkeleton() const
-{
-  return skeleton;
 }
 
 void CompoundAnimation::resetAnimations()

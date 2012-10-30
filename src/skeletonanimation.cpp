@@ -20,10 +20,10 @@ void SkeletonAnimation::BoneAnimator::execute(Skeleton* skeleton, float const pr
 {
   if(targetId == -1)
   {
-    targetId = skeleton->getBone(targetName)->getId();
+    targetId = skeleton->getBone(targetName).getId();
   }
 
-  Skeleton::Bone* bone = skeleton->getBone(targetId).get();
+  Skeleton::Bone* bone = &skeleton->getBone(targetId);
 
   if(!initialValueSet)
   {
@@ -58,14 +58,14 @@ void SkeletonAnimation::BoneAnimator::reset()
   initialValueSet = false;
 }
 
-SkeletonAnimation::SkeletonAnimation(Skeleton* skeleton) :
-  skeleton(skeleton), duration(1.0), time(0.0), loops(1), loop(1), animators(),
+SkeletonAnimation::SkeletonAnimation() :
+  duration(1.0), time(0.0), loops(1), loop(1), animators(),
   easing(Ease::LINEAR)
 {
 
 }
 
-void SkeletonAnimation::animate(float const delta)
+void SkeletonAnimation::animate(float const delta, Skeleton* skeleton)
 {
   time += delta;
   if(time > duration)
@@ -102,6 +102,12 @@ void SkeletonAnimation::reset()
   time = 0.0;
   loop = 1;
 }
+
+Animation* SkeletonAnimation::clone() const
+{
+  return new SkeletonAnimation(*this);
+}
+
 
 void SkeletonAnimation::setEasing(Ease::EasingFunction func)
 {

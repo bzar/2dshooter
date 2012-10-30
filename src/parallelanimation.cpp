@@ -1,16 +1,16 @@
 #include "parallelanimation.h"
 
-ParallelAnimation::ParallelAnimation(Skeleton* skeleton) :
-  CompoundAnimation(skeleton)
+ParallelAnimation::ParallelAnimation() :
+  CompoundAnimation()
 {
 
 }
 
-void ParallelAnimation::animate(float const delta)
+void ParallelAnimation::animate(float const delta, Skeleton* skeleton)
 {
   for(Animation::Reference& animation : animations)
   {
-    animation->animate(delta);
+    animation->animate(delta, skeleton);
   }
 
   if((loops == INFINITE_LOOPS || loop < loops) && isFinished())
@@ -18,4 +18,15 @@ void ParallelAnimation::animate(float const delta)
     loop += 1;
     resetAnimations();
   }
+}
+
+Animation* ParallelAnimation::clone() const
+{
+  ParallelAnimation* a = new ParallelAnimation(*this);
+
+  for(auto i = a->animations.begin(); i != a->animations.end(); ++i) {
+    *i = Animation::Reference((*i)->clone());
+  }
+
+  return a;
 }

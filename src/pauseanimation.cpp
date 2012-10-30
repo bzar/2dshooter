@@ -6,7 +6,7 @@ PauseAnimation::PauseAnimation() :
 
 }
 
-void PauseAnimation::animate(float const delta)
+void PauseAnimation::animate(float const delta, Skeleton* skeleton)
 {
   time += delta;
   if((loops == INFINITE_LOOPS || loop < loops) && time > duration)
@@ -27,6 +27,12 @@ void PauseAnimation::reset()
   time = 0.0;
   loop = 1;
 }
+
+Animation* PauseAnimation::clone() const
+{
+  return new PauseAnimation(*this);
+}
+
 
 void PauseAnimation::setDuration(float const value)
 {

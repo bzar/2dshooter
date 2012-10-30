@@ -9,9 +9,9 @@
 class CompoundAnimation : public Animation
 {
 public:
-  CompoundAnimation(Skeleton* skeleton);
+  CompoundAnimation();
 
-  virtual void animate(float const delta) = 0;
+  virtual void animate(float const delta, Skeleton* skeleton) = 0;
   virtual bool isFinished() const;
   virtual void reset();
 
@@ -20,10 +20,7 @@ public:
   void addAnimation(Animation* animation);
   void resetAnimations();
 
-  Skeleton* getSkeleton() const;
-
 protected:
-  Skeleton* skeleton;
   int loops;
   int loop;
 

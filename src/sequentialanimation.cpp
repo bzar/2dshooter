@@ -1,19 +1,19 @@
 #include "sequentialanimation.h"
 #include <cmath>
 
-SequentialAnimation::SequentialAnimation(Skeleton* skeleton) :
-  CompoundAnimation(skeleton)
+SequentialAnimation::SequentialAnimation() :
+  CompoundAnimation()
 {
 
 }
 
-void SequentialAnimation::animate(float const delta)
+void SequentialAnimation::animate(float const delta, Skeleton* skeleton)
 {
   for(Animation::Reference& animation : animations)
   {
     if(!animation->isFinished())
     {
-      animation->animate(delta);
+      animation->animate(delta, skeleton);
 
       if((loops == INFINITE_LOOPS || loop < loops) && animation->isFinished() && isFinished())
       {
@@ -23,4 +23,14 @@ void SequentialAnimation::animate(float const delta)
       break;
     }
   }
+}
+
+Animation* SequentialAnimation::clone() const
+{
+  SequentialAnimation* a = new SequentialAnimation(*this);
+  for(auto i = a->animations.begin(); i != a->animations.end(); ++i) {
+    *i = Animation::Reference((*i)->clone());
+  }
+  
+  return a;
 }

@@ -8,7 +8,7 @@
 
 #include "qmloninitializer.h"
 #include <fstream>
-
+#include <iostream>
 namespace
 {
   SkeletonAnimation::Animator* createBoneAnimator(qmlon::Object* obj, std::string const& boneName,
@@ -26,10 +26,9 @@ namespace
   }
 }
 
-Skeleton::Bone::Bone(int const id, Bone* const parent) :
-  id(id), parent(parent), name(), base(), tip(),
-  angle(0), dirty(true), hasDirtyChildren(true),
-  transformation(), children()
+Skeleton::Bone::Bone(int const id, int const parentId) :
+  id(id), parentId(parentId), name(), base(), tip(),
+  angle(0), dirty(true), transformation(), children()
 {
 }
 
@@ -61,23 +60,19 @@ float Skeleton::Bone::getAngle() const
 void Skeleton::Bone::setAngle(float const value)
 {
   angle = value;
-  setAsDirty();
+  dirty = true;
 }
 
 void Skeleton::Bone::changeAngle(float const delta)
 {
   angle += delta;
-  setAsDirty();
+  dirty = true;
 }
 
-void Skeleton::Bone::transform()
+void Skeleton::Bone::transform(Skeleton* skeleton, bool parentDirty)
 {
-  if(dirty && parent && parent->dirty)
-  {
-    parent->transform();
-    return;
-  }
-
+  dirty |= parentDirty;
+  
   if(dirty)
   {
     transformation
@@ -86,20 +81,18 @@ void Skeleton::Bone::transform()
       .rotate(angle)
       .move(base);
 
+    Bone* parent = parentId < 0 ? 0 : &skeleton->getBone(parentId);
     if(parent)
       transformation.apply(parent->transformation);
-
-    dirty = false;
   }
 
-  if(hasDirtyChildren)
+  for(int childId : children)
   {
-    for(Bone::Reference& child : children)
-    {
-      child->transform();
-    }
-    hasDirtyChildren = false;
+    Bone& child = skeleton->getBone(childId);
+    child.transform(skeleton, dirty);
   }
+
+  dirty = false;
 }
 
 Skeleton::Bone::Children const& Skeleton::Bone::getChildren() const
@@ -107,32 +100,22 @@ Skeleton::Bone::Children const& Skeleton::Bone::getChildren() const
   return children;
 }
 
-void Skeleton::Bone::setAsDirty()
+Skeleton::Pose::Pose(int const id) :
+  id(id), name(), active(false), animations()
 {
-  dirty = true;
-  for(Bone::Reference& child : children)
+}
+
+Skeleton::Pose::Pose(const Skeleton::Pose& other) :
+  id(other.id), name(other.name), active(other.active), animations()
+{
+  for(Animation::Reference animation : other.animations)
   {
-    child->setAsDirty();
+    animations.push_back(Animation::Reference(animation->clone()));
   }
-
-  setAsHasDirtyChildren();
 }
 
-void Skeleton::Bone::setAsHasDirtyChildren()
-{
-  if(hasDirtyChildren)
-    return;
-
-  hasDirtyChildren = true;
-
-  if(parent)
-    parent->setAsHasDirtyChildren();
-}
-
-
-
-Skeleton::Pose::Pose(int const id, Skeleton* skeleton) :
-  id(id), skeleton(skeleton), name(), active(false), animations()
+Skeleton::Pose::Pose(Skeleton::Pose&& other) :
+  id(std::move(other.id)), name(std::move(other.name)), active(std::move(other.active)), animations(std::move(other.animations))
 {
 }
 
@@ -151,20 +134,44 @@ bool Skeleton::Pose::isActive() const
   return active;
 }
 
-void Skeleton::Pose::animate(float const delta)
+void Skeleton::Pose::animate(const float delta, Skeleton* skeleton)
 {
   if(active)
   {
-    for(Animation::Reference& animation : animations)
+    for(Animation::Reference animation : animations)
     {
-      animation->animate(delta);
+      animation->animate(delta, skeleton);
     }
   }
 }
 
+Skeleton::Skeleton() : bones(), poses()
+{
+  std::cout << "Skeleton::Skeleton()" << std::endl;
+}
 
-Skeleton::Skeleton(std::string const& filename) :
-  bones()
+Skeleton::Skeleton(const Skeleton& other) : bones(other.bones), poses(other.poses)
+{
+  std::cout << "Skeleton::Skeleton(const Skeleton& other)" << std::endl;
+}
+
+Skeleton::Skeleton(Skeleton&& other) : bones(std::move(other.bones)), poses(std::move(other.poses))
+{
+  std::cout << "Skeleton::Skeleton(Skeleton&& other)" << std::endl;
+
+}
+
+Skeleton::~Skeleton()
+{
+}
+
+
+void Skeleton::initialize(qmlon::Value::Reference value)
+{
+  initialize(*this, value);
+}
+
+void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
 {
   qmlon::Initializer<Animation> ani({
     {"loop", [](Animation& a, qmlon::Value::Reference v) {
@@ -190,7 +197,8 @@ Skeleton::Skeleton(std::string const& filename) :
   }, {
     {"Angle", [&](SkeletonAnimation& animation, qmlon::Object* obj) {
       std::string boneName = obj->getProperty("target")->asString();
-      animation.addAnimator(createBoneAnimator(obj, boneName, [](Bone* b, float const v){ b->setAngle(v); }, [](Bone* b){ return b->getAngle(); }));
+      SkeletonAnimation::Animator* a = createBoneAnimator(obj, boneName, [](Bone* b, float const v){ b->setAngle(v); }, [](Bone* b){ return b->getAngle(); });
+      animation.addAnimator(a);
     }},
   });
 
@@ -201,19 +209,19 @@ Skeleton::Skeleton(std::string const& filename) :
   qmlon::Initializer<CompoundAnimation> cai({
   }, {
     {"Animation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
-      SkeletonAnimation* animation = new SkeletonAnimation(ca.getSkeleton());
+      SkeletonAnimation* animation = new SkeletonAnimation;
       ani.init(*animation, obj);
       ai.init(*animation, obj);
       ca.addAnimation(animation);
     }},
     {"SequentialAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
-      SequentialAnimation* animation = new SequentialAnimation(ca.getSkeleton());
+      SequentialAnimation* animation = new SequentialAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
       ca.addAnimation(animation);
     }},
     {"ParallelAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
-      ParallelAnimation* animation = new ParallelAnimation(ca.getSkeleton());
+      ParallelAnimation* animation = new ParallelAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
       ca.addAnimation(animation);
@@ -230,19 +238,19 @@ Skeleton::Skeleton(std::string const& filename) :
     {"name", qmlon::set(&Pose::name)},
   }, {
     {"Animation", [&](Pose& p, qmlon::Object* obj) {
-      SkeletonAnimation* animation = new SkeletonAnimation(p.skeleton);
+      SkeletonAnimation* animation = new SkeletonAnimation;
       ani.init(*animation, obj);
       ai.init(*animation, obj);
       p.animations.push_back(Animation::Reference(animation));
     }},
     {"SequentialAnimation", [&](Pose& p, qmlon::Object* obj) {
-      SequentialAnimation* animation = new SequentialAnimation(p.skeleton);
+      SequentialAnimation* animation = new SequentialAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
       p.animations.push_back(Animation::Reference(animation));
     }},
     {"ParallelAnimation", [&](Pose& p, qmlon::Object* obj) {
-      ParallelAnimation* animation = new ParallelAnimation(p.skeleton);
+      ParallelAnimation* animation = new ParallelAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
       p.animations.push_back(Animation::Reference(animation));
@@ -261,81 +269,85 @@ Skeleton::Skeleton(std::string const& filename) :
   });
 
   bi.addChildSetter("Bone", [&](Bone& bone, qmlon::Object* object) {
-    Bone::Reference b(new Bone(bones.size(), &bone));
-    bones.push_back(b);
-    bi.init(*b, object);
-    bone.children.push_back(b);
+    int boneId = skeleton.bones.size();
+    int parentId = bone.getId();
+    Bone b(boneId, parentId);
+    bone.children.push_back(b.getId());
+    skeleton.bones.push_back(b);
+    bi.init(b, object);
+    skeleton.bones.at(boneId) = std::move(b);
   });
 
   qmlon::Initializer<Skeleton> si({}, {
     {"Bone", [&](Skeleton& skeleton, qmlon::Object* object) {
-      Bone::Reference b(new Bone(bones.size()));
-      bones.push_back(b);
-      bi.init(*b, object);
+      int boneId = skeleton.bones.size();
+      Bone b(boneId);
+      skeleton.bones.push_back(b);
+      bi.init(b, object);
+      skeleton.bones.at(boneId) = std::move(b);
     }},
     {"Pose", [&](Skeleton& skeleton, qmlon::Object* object) {
-      Pose::Reference p(new Pose(poses.size(), this));
-      pi.init(*p, object);
-      poses.push_back(p);
+      Pose p(skeleton.poses.size());
+      pi.init(p, object);
+      skeleton.poses.push_back(std::move(p));
+      
     }},
   });
 
-  std::ifstream ifs(filename);
-  auto value = qmlon::readValue(ifs);
-  si.init(*this, value);
+  si.init(skeleton, value);
 }
 
-Skeleton::Bone::Reference const Skeleton::getBone(std::string const& name) const
+Skeleton::Bone& Skeleton::getBone(std::string const& name)
 {
-  for(Bone::Reference b : bones)
+  for(Bone& b : bones)
   {
-    if(b->name == name)
+    if(b.name == name)
     {
       return b;
     }
   }
 }
 
-Skeleton::Bone::Reference const Skeleton::getBone(int const id) const
+Skeleton::Bone& Skeleton::getBone(int const id)
 {
   return bones.at(id);
 }
 
-Skeleton::Bones const& Skeleton::getBones() const
+Skeleton::Bones& Skeleton::getBones()
 {
   return bones;
 }
 
-Skeleton::Pose::Reference const Skeleton::getPose(std::string const& name) const
+Skeleton::Pose& Skeleton::getPose(std::string const& name)
 {
-  for(Pose::Reference b : poses)
+  for(Pose& b : poses)
   {
-    if(b->name == name)
+    if(b.name == name)
     {
       return b;
     }
   }
 }
 
-Skeleton::Pose::Reference const Skeleton::getPose(int const id) const
+Skeleton::Pose& Skeleton::getPose(int const id)
 {
   return poses.at(id);
 }
 
-Skeleton::Poses const& Skeleton::getPoses() const
+Skeleton::Poses& Skeleton::getPoses()
 {
   return poses;
 }
 
 void Skeleton::update(float const delta)
 {
-  for(Pose::Reference& pose : poses)
+  for(Pose& pose : poses)
   {
-    pose->animate(delta);
+    pose.animate(delta, this);
   }
 
-  for(Bone::Reference& bone : bones)
+  for(Bone& bone : bones)
   {
-    bone->transform();
+    bone.transform(this);
   }
 }

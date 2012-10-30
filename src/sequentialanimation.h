@@ -9,8 +9,9 @@
 class SequentialAnimation : public CompoundAnimation
 {
 public:
-  SequentialAnimation(Skeleton* skeleton);
-  void animate(float const delta);
+  SequentialAnimation();
+  void animate(float const delta, Skeleton* skeleton);
+  Animation* clone() const;
 };
 
 #endif
