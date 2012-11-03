@@ -68,6 +68,14 @@ document.onkeyup = function(e) {
   }
 };
 
+function scheduleFrame(func) {
+  if (window.requestAnimationFrame) window.requestAnimationFrame(func);
+  else if (window.msRequestAnimationFrame) window.msRequestAnimationFrame(func);
+  else if (window.mozRequestAnimationFrame) window.mozRequestAnimationFrame(func);
+  else if (window.webkitRequestAnimationFrame) window.webkitRequestAnimationFrame(func);
+  else alert("ERROR: requestAnimationFrame not supported!");
+}
+
 function getMousePos(canvas, evt){
   var obj = canvas;
   var top = 0;
@@ -89,7 +97,7 @@ function Engine(canvasId) {
   var ctx = this.canvas.getContext("2d");
   var states = {};
   var currentState = new State();
-  var timerId = null;
+  var running = false;
   var this_ = this;
   
   this.canvas.addEventListener("mousemove", function(evt){
@@ -123,18 +131,18 @@ function Engine(canvasId) {
     currentState.clear(ctx);
     currentState.update(ctx);
     currentState.draw(ctx);
+    if(running) {
+      scheduleFrame(process);
+    }
   }
   
   this.run = function(fps) {
-    this.fps = fps;
-    timerId = setInterval(process, 1000/fps);
+    scheduleFrame(process);
+    running = true;
   };
   
   this.stop = function() {
-    if(timerId !== null) {
-      clearInterval(timerId);
-      timerId = null;
-    }
+    running = false;
   };
   
 }
