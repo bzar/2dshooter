@@ -20,13 +20,13 @@ void ParallelAnimation::animate(float const delta, Skeleton* skeleton)
   }
 }
 
-Animation* ParallelAnimation::clone() const
+Animation::Reference ParallelAnimation::clone() const
 {
   ParallelAnimation* a = new ParallelAnimation(*this);
 
   for(auto i = a->animations.begin(); i != a->animations.end(); ++i) {
-    *i = Animation::Reference((*i)->clone());
+    *i = (*i)->clone();
   }
 
-  return a;
+  return Animation::Reference(a);
 }

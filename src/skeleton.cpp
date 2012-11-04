@@ -12,8 +12,8 @@
 namespace
 {
   SkeletonAnimation::Animator* createBoneAnimator(qmlon::Object* obj, std::string const& boneName,
-                                                  SkeletonAnimation::BoneAnimator::ValueSetter setter,
-                                                  SkeletonAnimation::BoneAnimator::ValueGetter getter)
+                                                  float (Skeleton::Bone::*getter)() const,
+						    void (Skeleton::Bone::*setter)(float))
   {
     bool fromSet = obj->hasProperty("from");
     bool toSet = obj->hasProperty("to");
@@ -22,7 +22,7 @@ namespace
     float to = toSet ? obj->getProperty("to")->asFloat() : 0.0;
     float delta = deltaSet ? obj->getProperty("delta")->asFloat() : 0.0;
 
-    return new SkeletonAnimation::BoneAnimator(boneName, fromSet, from, toSet, to, deltaSet, delta, setter, getter);
+    return new SkeletonAnimation::Animator(boneName, fromSet, from, toSet, to, deltaSet, delta, getter, setter);
   }
 }
 
@@ -105,18 +105,43 @@ Skeleton::Pose::Pose(int const id) :
 {
 }
 
-Skeleton::Pose::Pose(const Skeleton::Pose& other) :
+Skeleton::Pose::Pose(Skeleton::Pose const& other) :
   id(other.id), name(other.name), active(other.active), animations()
 {
   for(Animation::Reference animation : other.animations)
   {
-    animations.push_back(Animation::Reference(animation->clone()));
+    animations.push_back(animation->clone());
   }
 }
 
 Skeleton::Pose::Pose(Skeleton::Pose&& other) :
   id(std::move(other.id)), name(std::move(other.name)), active(std::move(other.active)), animations(std::move(other.animations))
 {
+}
+
+Skeleton::Pose& Skeleton::Pose::operator=(const Skeleton::Pose& other)
+{
+  if(&other != this)
+  {
+    id = other.id;
+    name = other.name;
+    active = other.active;
+    animations = other.animations;
+  }
+  
+  return *this;
+}
+
+Skeleton::Pose& Skeleton::Pose::operator=(Skeleton::Pose&& other)
+{
+  if(&other != this)
+  {
+    id = other.id;
+    name = std::move(other.name);
+    active = other.active;
+    animations = std::move(other.animations);
+  }
+  return *this;
 }
 
 void Skeleton::Pose::activate()
@@ -147,18 +172,14 @@ void Skeleton::Pose::animate(const float delta, Skeleton* skeleton)
 
 Skeleton::Skeleton() : bones(), poses()
 {
-  std::cout << "Skeleton::Skeleton()" << std::endl;
 }
 
 Skeleton::Skeleton(const Skeleton& other) : bones(other.bones), poses(other.poses)
 {
-  std::cout << "Skeleton::Skeleton(const Skeleton& other)" << std::endl;
 }
 
 Skeleton::Skeleton(Skeleton&& other) : bones(std::move(other.bones)), poses(std::move(other.poses))
 {
-  std::cout << "Skeleton::Skeleton(Skeleton&& other)" << std::endl;
-
 }
 
 Skeleton::~Skeleton()
@@ -197,7 +218,7 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
   }, {
     {"Angle", [&](SkeletonAnimation& animation, qmlon::Object* obj) {
       std::string boneName = obj->getProperty("target")->asString();
-      SkeletonAnimation::Animator* a = createBoneAnimator(obj, boneName, [](Bone* b, float const v){ b->setAngle(v); }, [](Bone* b){ return b->getAngle(); });
+      SkeletonAnimation::Animator* a = createBoneAnimator(obj, boneName, &Bone::getAngle, &Bone::setAngle);
       animation.addAnimator(a);
     }},
   });
@@ -212,25 +233,25 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
       SkeletonAnimation* animation = new SkeletonAnimation;
       ani.init(*animation, obj);
       ai.init(*animation, obj);
-      ca.addAnimation(animation);
+      ca.addAnimation(Animation::Reference(animation));
     }},
     {"SequentialAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
       SequentialAnimation* animation = new SequentialAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
-      ca.addAnimation(animation);
+      ca.addAnimation(Animation::Reference(animation));
     }},
     {"ParallelAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
       ParallelAnimation* animation = new ParallelAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
-      ca.addAnimation(animation);
+      ca.addAnimation(Animation::Reference(animation));
     }},
     {"PauseAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
       PauseAnimation* animation = new PauseAnimation;
       ani.init(*animation, obj);
       pai.init(*animation, obj);
-      ca.addAnimation(animation);
+      ca.addAnimation(Animation::Reference(animation));
     }}
   });
 

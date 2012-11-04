@@ -28,9 +28,9 @@ void PauseAnimation::reset()
   loop = 1;
 }
 
-Animation* PauseAnimation::clone() const
+Animation::Reference PauseAnimation::clone() const
 {
-  return new PauseAnimation(*this);
+  return std::make_shared<PauseAnimation>(*this);
 }
 
 

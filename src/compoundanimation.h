@@ -17,7 +17,7 @@ public:
 
   void setLoops(int const value);
 
-  void addAnimation(Animation* animation);
+  void addAnimation(Animation::Reference animation);
   void resetAnimations();
 
 protected:

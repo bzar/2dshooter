@@ -58,13 +58,16 @@ public:
     Pose(Pose const& other);
     Pose(Pose&& other);
     
+    Pose& operator=(Pose const& other);
+    Pose& operator=(Pose&& other);
+    
     void activate();
     void deactivate();
     bool isActive() const;
     void animate(float const delta, Skeleton* skeleton);
 
   private:
-    int const id;
+    int id;
     std::string name;
     bool active;
     Animations animations;

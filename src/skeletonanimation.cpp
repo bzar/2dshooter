@@ -2,58 +2,59 @@
 #include "skeleton.h"
 #include <cmath>
 
-SkeletonAnimation::BoneAnimator::BoneAnimator(std::string const& targetName,
+SkeletonAnimation::Animator::Animator(std::string const& targetName,
                                                 bool fromSet, float from,
                                                 bool toSet, float to,
                                                 bool deltaSet, float delta,
-                                                ValueSetter setter, ValueGetter getter)
+                                                float (Skeleton::Bone::*getter)() const,
+                                                void (Skeleton::Bone::*setter)(float))
   : targetName(targetName), targetId(-1),
     initialValueSet(false), initialValue(0),
     fromSet(fromSet), from(from),
     toSet(toSet), to(to),
     deltaSet(deltaSet), delta(delta),
-    setter(setter), getter(getter)
+    getter(getter), setter(setter)
 {
 }
 
-void SkeletonAnimation::BoneAnimator::execute(Skeleton* skeleton, float const progress)
+void SkeletonAnimation::Animator::execute(Skeleton* skeleton, float const progress)
 {
   if(targetId == -1)
   {
     targetId = skeleton->getBone(targetName).getId();
   }
 
-  Skeleton::Bone* bone = &skeleton->getBone(targetId);
+  Skeleton::Bone& bone = skeleton->getBone(targetId);
 
   if(!initialValueSet)
   {
-    initialValue = getter(bone);
+    initialValue = (bone.*getter)();
     initialValueSet = true;
   }
 
   if(fromSet && toSet)
   {
-    setter(bone, from + (to - from) * progress);
+    (bone.*setter)(from + (to - from) * progress);
   }
   else if(fromSet && deltaSet)
   {
-    setter(bone, from + delta * progress);
+    (bone.*setter)(from + delta * progress);
   }
   else if(toSet && deltaSet)
   {
-    setter(bone, to - delta * (1 - progress));
+    (bone.*setter)(to - delta * (1 - progress));
   }
   else if(toSet)
   {
-    setter(bone, initialValue + (to - initialValue) * progress);
+    (bone.*setter)(initialValue + (to - initialValue) * progress);
   }
   else if(deltaSet)
   {
-    setter(bone, initialValue + delta * progress);
+    (bone.*setter)(initialValue + delta * progress);
   }
 }
 
-void SkeletonAnimation::BoneAnimator::reset()
+void SkeletonAnimation::Animator::reset()
 {
   initialValueSet = false;
 }
@@ -61,6 +62,21 @@ void SkeletonAnimation::BoneAnimator::reset()
 SkeletonAnimation::SkeletonAnimation() :
   duration(1.0), time(0.0), loops(1), loop(1), animators(),
   easing(Ease::LINEAR)
+{
+
+}
+
+SkeletonAnimation::SkeletonAnimation(const SkeletonAnimation& other) :
+  duration(other.duration), time(other.time), loops(other.loops), 
+  loop(other.loop), animators(other.animators), easing(other.easing)
+{
+
+}
+
+SkeletonAnimation::SkeletonAnimation(SkeletonAnimation&& other) :
+  duration(std::move(other.duration)), time(std::move(other.time)), 
+  loops(std::move(other.loops)), loop(std::move(other.loop)),
+  animators(std::move(other.animators)), easing(std::move(other.easing))
 {
 
 }
@@ -103,9 +119,9 @@ void SkeletonAnimation::reset()
   loop = 1;
 }
 
-Animation* SkeletonAnimation::clone() const
+Animation::Reference SkeletonAnimation::clone() const
 {
-  return new SkeletonAnimation(*this);
+  return std::make_shared<SkeletonAnimation>(*this);
 }
 
 

@@ -11,7 +11,7 @@ class ParallelAnimation : public CompoundAnimation
 public:
   ParallelAnimation();
   void animate(float const delta, Skeleton* skeleton);
-  Animation* clone() const;
+  Animation::Reference clone() const;
 };
 
 #endif

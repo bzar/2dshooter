@@ -30,9 +30,9 @@ void CompoundAnimation::setLoops(int const value)
   loops = value;
 }
 
-void CompoundAnimation::addAnimation(Animation* animation)
+void CompoundAnimation::addAnimation(Animation::Reference animation)
 {
-  animations.push_back(Animation::Reference(animation));
+  animations.push_back(animation);
 }
 
 void CompoundAnimation::resetAnimations()

@@ -14,7 +14,7 @@ public:
   virtual bool isFinished() const = 0;
   virtual void setLoops(int const value) = 0;
   virtual void reset() = 0;
-  virtual Animation* clone() const = 0;
+  virtual Reference clone() const = 0;
 };
 
 #include "skeleton.h"

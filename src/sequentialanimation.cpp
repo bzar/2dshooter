@@ -25,12 +25,12 @@ void SequentialAnimation::animate(float const delta, Skeleton* skeleton)
   }
 }
 
-Animation* SequentialAnimation::clone() const
+Animation::Reference SequentialAnimation::clone() const
 {
   SequentialAnimation* a = new SequentialAnimation(*this);
   for(auto i = a->animations.begin(); i != a->animations.end(); ++i) {
-    *i = Animation::Reference((*i)->clone());
+    *i = (*i)->clone();
   }
   
-  return a;
+  return Animation::Reference(a);
 }

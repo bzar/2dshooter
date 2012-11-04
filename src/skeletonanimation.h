@@ -18,21 +18,13 @@ public:
   {
   public:
     typedef std::shared_ptr<Animator> Reference;
-    virtual void execute(Skeleton* skeleton, float const progress) = 0;
-    virtual void reset() = 0;
-  };
 
-  class BoneAnimator : public Animator
-  {
-  public:
-    typedef std::function<float(Skeleton::Bone*)> ValueGetter;
-    typedef std::function<void(Skeleton::Bone*, float const)> ValueSetter;
-
-    BoneAnimator(std::string const& targetName,
+    Animator(std::string const& targetName,
                   bool fromSet, float from,
                   bool toSet, float to,
                   bool deltaSet, float delta,
-                  ValueSetter setter, ValueGetter getter);
+                  float (Skeleton::Bone::*getter)() const,
+                  void (Skeleton::Bone::*setter)(float));
 
     void execute(Skeleton* skeleton, float const progress);
     void reset();
@@ -48,17 +40,19 @@ public:
     float to;
     bool deltaSet;
     float delta;
-    ValueSetter setter;
-    ValueGetter getter;
+    float (Skeleton::Bone::*getter)() const;
+    void (Skeleton::Bone::*setter)(float);
   };
 
 
   SkeletonAnimation();
-
+  SkeletonAnimation(SkeletonAnimation const& other);
+  SkeletonAnimation(SkeletonAnimation&& other);
+  
   void animate(float const delta, Skeleton* skeleton);
   bool isFinished() const;
   void reset();
-  Animation* clone() const;
+  Animation::Reference clone() const;
   
   void setEasing(Ease::EasingFunction func);
   void setDuration(float const value);

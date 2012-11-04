@@ -11,7 +11,7 @@ class SequentialAnimation : public CompoundAnimation
 public:
   SequentialAnimation();
   void animate(float const delta, Skeleton* skeleton);
-  Animation* clone() const;
+  Animation::Reference clone() const;
 };
 
 #endif

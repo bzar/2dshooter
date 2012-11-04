@@ -31,6 +31,7 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
 PuppetEntity::~PuppetEntity()
 {
   glhckObjectFree(debugLines);
+  std::cout << "~PuppetEntity" << std::endl;
 }
 
 
