@@ -27,6 +27,8 @@ public:
     Vec2D getBase() const;
     Vec2D getTip() const;
     float getAngle() const;
+    
+    Transformation& getTransformation();
 
     void setAngle(float const value);
     void changeAngle(float const delta);

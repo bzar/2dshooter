@@ -202,3 +202,8 @@ Vec2D& Vec2D::operator=(Vec2D const& other)
 {
   return assign(other);
 }
+
+std::ostream& operator<<(std::ostream& stream, Vec2D const& value)
+{
+  stream << "Vec2D(" << value.x << ", " << value.y << ")";
+}

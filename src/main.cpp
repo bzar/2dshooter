@@ -13,25 +13,26 @@
 int const WIDTH = 800;
 int const HEIGHT = 480;
 
-int windowCloseCallback(GLFWwindow window);
-void windowResizeCallback(GLFWwindow window, int width, int height);
-int gameloop(GLFWwindow& window);
+int windowCloseCallback(GLFWwindow* window);
+void windowResizeCallback(GLFWwindow* window, int width, int height);
+int gameloop(GLFWwindow* window);
 
 int main(int argc, char** argv)
 {
   if (!glfwInit())
     return EXIT_FAILURE;
 
-  glfwOpenWindowHint(GLFW_DEPTH_BITS, 24);
-  GLFWwindow window = glfwOpenWindow(WIDTH, HEIGHT, GLFW_WINDOWED, "2dshooter", NULL);
+  glfwWindowHint(GLFW_DEPTH_BITS, 24);
+  GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "2dshooter", NULL, NULL);
+  glfwMakeContextCurrent(window);
 
   if(!window)
     return EXIT_FAILURE;
 
   glfwSwapInterval(1);
-  glfwSetWindowCloseCallback(windowCloseCallback);
+  glfwSetWindowCloseCallback(window, windowCloseCallback);
 
-  if(!glhckInit(argc, argv))
+  if(!glhckContextCreate(argc, argv))
     return EXIT_FAILURE;
 
   if(!glhckDisplayCreate(WIDTH, HEIGHT, GLHCK_RENDER_AUTO))
@@ -39,34 +40,34 @@ int main(int argc, char** argv)
 
   int retval = gameloop(window);
 
-  glhckTerminate();
+  glhckContextTerminate();
   glfwTerminate();
 
   return retval;
 }
 
 
-int windowCloseCallback(GLFWwindow window)
+int windowCloseCallback(GLFWwindow* window)
 {
   ew::Engine* engine = static_cast<ew::Engine*>(glfwGetWindowUserPointer(window));
   engine->quit();
   return GL_FALSE;
 }
 
-void windowResizeCallback(GLFWwindow window, int width, int height)
+void windowResizeCallback(GLFWwindow* window, int width, int height)
 {
   glhckDisplayResize(width, height);
 }
 
-int gameloop(GLFWwindow& window)
+int gameloop(GLFWwindow* window)
 {
-  GLFWControlContext controlContext(&window);
-  GlhckGLFWRenderContext renderContext;
+  GLFWControlContext controlContext(window);
+  GlhckGLFWRenderContext renderContext(window);
   GLFWTimeContext timeContext;
   ew::Engine engine(&controlContext, &renderContext, &timeContext);
 
   glfwSetWindowUserPointer(window, &engine);
-  glfwSetWindowSizeCallback(windowResizeCallback);
+  glfwSetWindowSizeCallback(window, windowResizeCallback);
 
   GameState game(&engine);
   engine.addState(0, &game);

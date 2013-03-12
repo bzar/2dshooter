@@ -15,6 +15,9 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
 
   qmlon::Initializer<Part> pai({
     {"name", qmlon::set(&Part::name)},
+    {"bone", [&puppet](Part& part, qmlon::Value::Reference v) {
+      part.boneId = puppet.skeleton.getBone(v->asString()).getId();
+    }},
     {"front", [&puppet](Part& part, qmlon::Value::Reference v) {
       part.frontId = puppet.spriteSheet.getSprite(v->asString()).getId();
     }},
@@ -36,7 +39,7 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
       puppet.spriteSheet.initialize(spriteSheetValue);  
     }}
   }, {
-    {"Part", [&pai](Puppet& puppet, qmlon::Object* obj){
+    {"Part", [&pai](Puppet& puppet, qmlon::Object& obj){
       Part part;
       pai.init(part, obj);
       part.id = puppet.parts.size();
@@ -45,11 +48,38 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
   });
 
   pi.init(puppet, value);
+  
+  for(Part& part : puppet.parts) 
+  {
+    Skeleton::Bone& bone = puppet.skeleton.getBone(part.boneId);
+    SpriteSheet::Sprite sprite = puppet.spriteSheet.getSprite(part.frontId); //TODO: handle back sprites too!
+    SpriteSheet::Frame frame = sprite.getAnimation(0).getFrame(0);
+    
+    Vec2D partOrientation = part.tip - part.base;
+    Vec2D boneOrientation = bone.getTip() - bone.getBase();
+    
+    Transformation spriteBoneTransform = 
+      Transformation::fromBase(boneOrientation, boneOrientation.normal())
+      .apply(Transformation::toBase(partOrientation, partOrientation.normal()));
+    
+    part.textureTransformation
+      .reset()
+      .scale(1.0 / frame.getSize().width, 
+             1.0 / frame.getSize().height)
+      .move(-frame.getHotspot().x, -frame.getHotspot().y)
+      .apply(spriteBoneTransform);
+  }
 }
 
 void Puppet::update(float const delta)
 {
   skeleton.update(delta);
+  
+  for(Part& part : parts)
+  {
+    Skeleton::Bone& bone = skeleton.getBone(part.boneId);
+    part.transformation = Transformation(bone.getTransformation()).apply(part.textureTransformation);
+  }
 }
 
 

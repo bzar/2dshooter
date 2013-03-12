@@ -1,6 +1,8 @@
 #ifndef VEC2D_H
 #define VEC2D_H
 
+#include <ostream>
+
 class Vec2D {
 public:
   Vec2D(float const& x = 0.0, float const& y = 0.0);
@@ -47,4 +49,6 @@ public:
   float x;
   float y;
 };
+
+std::ostream& operator<<(std::ostream& stream, Vec2D const& value);
 #endif

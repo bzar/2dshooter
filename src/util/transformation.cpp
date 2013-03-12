@@ -32,6 +32,17 @@ Transformation& Transformation::reset()
   return *this;
 }
 
+Transformation& Transformation::invert()
+{
+  float detInv = 1.0 / determinant();
+  Transformation adj = adjugate();
+  for(int i = 0; i < NUM_VALUES; ++i)
+  {
+    values[i] = adj.values[i] * detInv;
+  }
+  return *this;
+}
+
 Transformation& Transformation::move(Vec2D const& v)
 {
   float const matrix[] = { 1.0,  0.0, v.x,
@@ -102,4 +113,42 @@ Transformation& Transformation::apply(float const matrix[])
 Vec2D Transformation::transform(Vec2D const& v) const
 {
   return Vec2D(v.x * values[0] + v.y * values[1] + values[2], v.x * values[3] + v.y * values[4] + values[5]);
+}
+
+Transformation Transformation::fromBase(const Vec2D& i, const Vec2D& j)
+{
+  Transformation t;
+  float const values[NUM_VALUES] = {
+    i.x, j.x, 0,
+    i.y, j.y, 0,
+    0,   0,   1
+  };
+  copyArray(values, t.values, NUM_VALUES);
+  return t;
+}
+
+Transformation Transformation::toBase(const Vec2D& i, const Vec2D& j)
+{
+  return fromBase(i, j).invert();
+}
+
+float Transformation::determinant()
+{
+  return (values[0] * values[4] * values[8] + values[1] * values[5] * values[6] + values[2] * values[3] * values[7])
+    - (values[2] * values[4] * values[6] + values[0] * values[5] * values[7] + values[1] * values[3] * values[8]);
+}
+
+Transformation Transformation::adjugate()
+{
+  Transformation t;
+  t.values[0] = values[4] * values[8] - values[5] * values[7];
+  t.values[1] = values[2] * values[7] - values[1] * values[8];
+  t.values[2] = values[1] * values[5] - values[2] * values[4];
+  t.values[3] = values[5] * values[6] - values[3] * values[8];
+  t.values[4] = values[0] * values[8] - values[2] * values[6];
+  t.values[5] = values[2] * values[3] - values[0] * values[5];
+  t.values[6] = values[3] * values[7] - values[4] * values[6];
+  t.values[7] = values[1] * values[6] - values[0] * values[7];
+  t.values[8] = values[0] * values[4] - values[1] * values[3];
+  return t;
 }

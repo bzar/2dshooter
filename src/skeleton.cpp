@@ -11,16 +11,16 @@
 #include <iostream>
 namespace
 {
-  SkeletonAnimation::Animator* createBoneAnimator(qmlon::Object* obj, std::string const& boneName,
+  SkeletonAnimation::Animator* createBoneAnimator(qmlon::Object& obj, std::string const& boneName,
                                                   float (Skeleton::Bone::*getter)() const,
 						    void (Skeleton::Bone::*setter)(float))
   {
-    bool fromSet = obj->hasProperty("from");
-    bool toSet = obj->hasProperty("to");
-    bool deltaSet = obj->hasProperty("delta");
-    float from = fromSet ? obj->getProperty("from")->asFloat() : 0.0;
-    float to = toSet ? obj->getProperty("to")->asFloat() : 0.0;
-    float delta = deltaSet ? obj->getProperty("delta")->asFloat() : 0.0;
+    bool fromSet = obj.hasProperty("from");
+    bool toSet = obj.hasProperty("to");
+    bool deltaSet = obj.hasProperty("delta");
+    float from = fromSet ? obj.getProperty("from")->asFloat() : 0.0;
+    float to = toSet ? obj.getProperty("to")->asFloat() : 0.0;
+    float delta = deltaSet ? obj.getProperty("delta")->asFloat() : 0.0;
 
     return new SkeletonAnimation::Animator(boneName, fromSet, from, toSet, to, deltaSet, delta, getter, setter);
   }
@@ -55,6 +55,11 @@ Vec2D Skeleton::Bone::getTip() const
 float Skeleton::Bone::getAngle() const
 {
   return angle;
+}
+
+Transformation& Skeleton::Bone::getTransformation()
+{
+  return transformation;
 }
 
 void Skeleton::Bone::setAngle(float const value)
@@ -216,8 +221,8 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
       }
     }}
   }, {
-    {"Angle", [&](SkeletonAnimation& animation, qmlon::Object* obj) {
-      std::string boneName = obj->getProperty("target")->asString();
+    {"Angle", [&](SkeletonAnimation& animation, qmlon::Object& obj) {
+      std::string boneName = obj.getProperty("target")->asString();
       SkeletonAnimation::Animator* a = createBoneAnimator(obj, boneName, &Bone::getAngle, &Bone::setAngle);
       animation.addAnimator(a);
     }},
@@ -229,25 +234,25 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
 
   qmlon::Initializer<CompoundAnimation> cai({
   }, {
-    {"Animation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
+    {"Animation", [&](CompoundAnimation& ca, qmlon::Object& obj) {
       SkeletonAnimation* animation = new SkeletonAnimation;
       ani.init(*animation, obj);
       ai.init(*animation, obj);
       ca.addAnimation(Animation::Reference(animation));
     }},
-    {"SequentialAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
+    {"SequentialAnimation", [&](CompoundAnimation& ca, qmlon::Object& obj) {
       SequentialAnimation* animation = new SequentialAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
       ca.addAnimation(Animation::Reference(animation));
     }},
-    {"ParallelAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
+    {"ParallelAnimation", [&](CompoundAnimation& ca, qmlon::Object& obj) {
       ParallelAnimation* animation = new ParallelAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
       ca.addAnimation(Animation::Reference(animation));
     }},
-    {"PauseAnimation", [&](CompoundAnimation& ca, qmlon::Object* obj) {
+    {"PauseAnimation", [&](CompoundAnimation& ca, qmlon::Object& obj) {
       PauseAnimation* animation = new PauseAnimation;
       ani.init(*animation, obj);
       pai.init(*animation, obj);
@@ -258,19 +263,19 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
   qmlon::Initializer<Pose> pi({
     {"name", qmlon::set(&Pose::name)},
   }, {
-    {"Animation", [&](Pose& p, qmlon::Object* obj) {
+    {"Animation", [&](Pose& p, qmlon::Object& obj) {
       SkeletonAnimation* animation = new SkeletonAnimation;
       ani.init(*animation, obj);
       ai.init(*animation, obj);
       p.animations.push_back(Animation::Reference(animation));
     }},
-    {"SequentialAnimation", [&](Pose& p, qmlon::Object* obj) {
+    {"SequentialAnimation", [&](Pose& p, qmlon::Object& obj) {
       SequentialAnimation* animation = new SequentialAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
       p.animations.push_back(Animation::Reference(animation));
     }},
-    {"ParallelAnimation", [&](Pose& p, qmlon::Object* obj) {
+    {"ParallelAnimation", [&](Pose& p, qmlon::Object& obj) {
       ParallelAnimation* animation = new ParallelAnimation;
       ani.init(*animation, obj);
       cai.init(*animation, obj);
@@ -289,7 +294,7 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
     {"tip", qmlon::createSet(vi, &Bone::tip)},
   });
 
-  bi.addChildSetter("Bone", [&](Bone& bone, qmlon::Object* object) {
+  bi.addChildSetter("Bone", [&](Bone& bone, qmlon::Object& object) {
     int boneId = skeleton.bones.size();
     int parentId = bone.getId();
     Bone b(boneId, parentId);
@@ -300,14 +305,14 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
   });
 
   qmlon::Initializer<Skeleton> si({}, {
-    {"Bone", [&](Skeleton& skeleton, qmlon::Object* object) {
+    {"Bone", [&](Skeleton& skeleton, qmlon::Object& object) {
       int boneId = skeleton.bones.size();
       Bone b(boneId);
       skeleton.bones.push_back(b);
       bi.init(b, object);
       skeleton.bones.at(boneId) = std::move(b);
     }},
-    {"Pose", [&](Skeleton& skeleton, qmlon::Object* object) {
+    {"Pose", [&](Skeleton& skeleton, qmlon::Object& object) {
       Pose p(skeleton.poses.size());
       pi.init(p, object);
       skeleton.poses.push_back(std::move(p));
@@ -316,6 +321,11 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
   });
 
   si.init(skeleton, value);
+  
+  for(Bone const& b : skeleton.bones)
+  {
+    std::cout << b.getName() << ": " << b.getBase() << " -> " << b.getTip() << std::endl;
+  }
 }
 
 Skeleton::Bone& Skeleton::getBone(std::string const& name)
