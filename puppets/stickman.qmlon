@@ -7,8 +7,8 @@ Puppet {
     front: "torso"
     back: "torso"
     bone: "spine"
-    base: {}
-    tip: {y: 80}
+    base: {y: 80}
+    tip: {}
   }
 
   Part {
@@ -17,7 +17,7 @@ Puppet {
     back: "head"
     bone: "head"
     base: {}
-    tip: {y: 28}
+    tip: {y: -28}
   }
 
   Part {

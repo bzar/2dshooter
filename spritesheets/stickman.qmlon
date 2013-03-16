@@ -47,8 +47,8 @@ Sheet {
 
       Frame {
         position: Vec2D {x: 80, y: 36}
-        size: Size {width: 16, height: 24}
-        hotspot: Vec2D {x: 8, y: 16}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 8}
       }
     }
   }
@@ -73,8 +73,8 @@ Sheet {
 
       Frame {
         position: Vec2D {x: 136, y: 36}
-        size: Size {width: 16, height: 24}
-        hotspot: Vec2D {x: 8, y: 16}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 8}
       }
     }
   }
@@ -99,8 +99,8 @@ Sheet {
 
       Frame {
         position: Vec2D {x: 80, y: 104}
-        size: Size {width: 16, height: 24}
-        hotspot: Vec2D {x: 8, y: 16}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 8}
       }
     }
   }
@@ -125,8 +125,8 @@ Sheet {
 
       Frame {
         position: Vec2D {x: 136, y: 104}
-        size: Size {width: 16, height: 24}
-        hotspot: Vec2D {x: 8, y: 16}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 8}
       }
     }
   }

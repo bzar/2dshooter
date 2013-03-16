@@ -25,7 +25,7 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
       part.backId = puppet.spriteSheet.getSprite(v->asString()).getId();
     }},
     {"base", qmlon::createSet(vi, &Part::base)},
-    {"tip", qmlon::createSet(vi, &Part::base)},
+    {"tip", qmlon::createSet(vi, &Part::tip)},
     {"z", qmlon::set(&Part::z)}
   }, {});
 
@@ -55,14 +55,19 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
     SpriteSheet::Sprite sprite = puppet.spriteSheet.getSprite(part.frontId); //TODO: handle back sprites too!
     SpriteSheet::Frame frame = sprite.getAnimation(0).getFrame(0);
     
-    Vec2D partOrientation = part.tip - part.base;
+    Transformation invertYAxis = Transformation().scale(1, -1);
+    
+    std::cout << "part.tip: " << part.tip << std::endl;
+    std::cout << "part.base: " << part.base << std::endl;
+    Vec2D partOrientation = invertYAxis.transform(part.tip - part.base);
+    std::cout << "partOrientation: " << partOrientation << std::endl;
     Vec2D boneOrientation = bone.getTip() - bone.getBase();
     
     part.textureTransformation
       .reset()
       .move(-frame.getHotspot().x, -frame.getHotspot().y)
-      .move(part.base.x, part.base.y)
-      .scale(1, -1)
+      .move(-part.base.x, -part.base.y)
+      .apply(invertYAxis)
       .apply(Transformation::fromBase(partOrientation, partOrientation.normal()))
       .apply(Transformation::toBase(boneOrientation, boneOrientation.normal()))
       .move(bone.getBase())
