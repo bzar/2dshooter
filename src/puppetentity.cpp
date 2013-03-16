@@ -106,11 +106,11 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
                1.0 - static_cast<float>(frame.getPosition().y) / height};
 
     partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex2.x, tex2.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p2.x, p2.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p2.x, p2.y}, {0, 0}, {tex2.x, tex2.y}, {255, 255, 255, 255}});
     partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p4.x, p4.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex4.x, tex4.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p4.x, p4.y}, {0, 0}, {tex4.x, tex4.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
   }
 
   glhckGeometrySetVertices(glhckObjectGetGeometry(parts), GLHCK_VERTEX_V2F, partsData.data(), partsData.size());
