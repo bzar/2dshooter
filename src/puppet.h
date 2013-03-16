@@ -30,7 +30,8 @@ public:
   };
 
   typedef std::vector<Part> Parts;
-
+  typedef std::vector<Part const*> PartRefs;
+  
   void initialize(qmlon::Value::Reference value);
   static void initialize(Puppet& puppet, qmlon::Value::Reference value);
   
@@ -45,6 +46,7 @@ public:
   Part const& getPart(std::string const& name) const;
   Part const& getPart(int id) const;
   Parts const& getParts() const;
+  PartRefs getPartsZOrdered() const;
 
 private:
   SpriteSheet spriteSheet;

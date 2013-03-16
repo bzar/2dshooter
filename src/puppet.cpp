@@ -2,6 +2,7 @@
 
 #include "qmlon.h"
 #include <fstream>
+#include <algorithm>
 
 void Puppet::initialize(qmlon::Value::Reference value) {
     initialize(*this, value);
@@ -134,3 +135,17 @@ Puppet::Parts const& Puppet::getParts() const
   return parts;
 }
 
+Puppet::PartRefs Puppet::getPartsZOrdered() const
+{
+  PartRefs ordered;
+  for(Part const& p : parts)
+  {
+    ordered.push_back(&p);
+  }
+  
+  std::stable_sort(ordered.begin(), ordered.end(), [](Part const* a, Part const* b) { 
+    return a->z < b->z;
+  });
+  
+  return ordered;
+}
