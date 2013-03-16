@@ -58,16 +58,16 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
     Vec2D partOrientation = part.tip - part.base;
     Vec2D boneOrientation = bone.getTip() - bone.getBase();
     
-    Transformation spriteBoneTransform = 
-      Transformation::fromBase(boneOrientation, boneOrientation.normal())
-      .apply(Transformation::toBase(partOrientation, partOrientation.normal()));
-    
     part.textureTransformation
       .reset()
-      .scale(1.0 / frame.getSize().width, 
-             1.0 / frame.getSize().height)
       .move(-frame.getHotspot().x, -frame.getHotspot().y)
-      .apply(spriteBoneTransform);
+      .move(part.base.x, part.base.y)
+      .scale(1, -1)
+      .apply(Transformation::fromBase(partOrientation, partOrientation.normal()))
+      .apply(Transformation::toBase(boneOrientation, boneOrientation.normal()))
+      .move(bone.getBase())
+      ;
+      
   }
 }
 
@@ -78,7 +78,11 @@ void Puppet::update(float const delta)
   for(Part& part : parts)
   {
     Skeleton::Bone& bone = skeleton.getBone(part.boneId);
-    part.transformation = Transformation(bone.getTransformation()).apply(part.textureTransformation);
+    part.transformation
+      .reset()
+      .apply(part.textureTransformation)
+      .apply(bone.getTransformation())
+      ;
   }
 }
 

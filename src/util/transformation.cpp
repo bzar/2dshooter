@@ -115,7 +115,7 @@ Vec2D Transformation::transform(Vec2D const& v) const
   return Vec2D(v.x * values[0] + v.y * values[1] + values[2], v.x * values[3] + v.y * values[4] + values[5]);
 }
 
-Transformation Transformation::fromBase(const Vec2D& i, const Vec2D& j)
+Transformation Transformation::toBase(const Vec2D& i, const Vec2D& j)
 {
   Transformation t;
   float const values[NUM_VALUES] = {
@@ -127,9 +127,9 @@ Transformation Transformation::fromBase(const Vec2D& i, const Vec2D& j)
   return t;
 }
 
-Transformation Transformation::toBase(const Vec2D& i, const Vec2D& j)
+Transformation Transformation::fromBase(const Vec2D& i, const Vec2D& j)
 {
-  return fromBase(i, j).invert();
+  return toBase(i, j).invert();
 }
 
 float Transformation::determinant()
@@ -151,4 +151,24 @@ Transformation Transformation::adjugate()
   t.values[7] = values[1] * values[6] - values[0] * values[7];
   t.values[8] = values[0] * values[4] - values[1] * values[3];
   return t;
+}
+
+float const* Transformation::matrix() const
+{
+  return values;
+}
+
+std::ostream& operator<<(std::ostream& stream, Transformation const& value)
+{
+  stream << "Transformation( ";
+  for( unsigned int m = 0; m < value.NUM_ROWS; ++m )
+  {
+    stream << "{";
+    for( unsigned int n = 0; n < value.NUM_COLS; ++n )
+    {
+      stream << value.matrix()[m*value.NUM_COLS + n] << (n < value.NUM_COLS - 1 ? ", " : "");
+    }
+    stream << "} ";
+  }
+  stream << " )";
 }

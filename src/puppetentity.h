@@ -24,7 +24,8 @@ public:
   void setPosition(Vec2D const& pos);
 
 private:
-  glhckObject* debugLines;
+  glhckObject* boneLines;
+  glhckObject* partLines;
 
   Vec2D position;
   Puppet puppet;

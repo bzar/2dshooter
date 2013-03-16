@@ -22,3 +22,5 @@ file(COPY puppets DESTINATION .)
 file(COPY skeletons DESTINATION .)
 file(COPY spritesheets DESTINATION .)
 file(COPY img DESTINATION .)
+
+add_subdirectory(test)
