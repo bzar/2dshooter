@@ -97,20 +97,20 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
     glhckTextureGetInformation(texture, nullptr, &width, &height, nullptr, nullptr, nullptr, nullptr);
     
     Vec2D tex1{static_cast<float>(frame.getPosition().x) / width, 
-               static_cast<float>(frame.getPosition().y) / height};
+               1.0 - static_cast<float>(frame.getPosition().y) / height};
     Vec2D tex2{static_cast<float>(frame.getPosition().x) / width, 
-               static_cast<float>(frame.getPosition().y + frame.getSize().height) / height};
+               1.0 - static_cast<float>(frame.getPosition().y + frame.getSize().height) / height};
     Vec2D tex3{static_cast<float>(frame.getPosition().x + frame.getSize().width) / width, 
-               static_cast<float>(frame.getPosition().y + frame.getSize().height) / height};
+               1.0 - static_cast<float>(frame.getPosition().y + frame.getSize().height) / height};
     Vec2D tex4{static_cast<float>(frame.getPosition().x + frame.getSize().width) / width, 
-               static_cast<float>(frame.getPosition().y) / height};
+               1.0 - static_cast<float>(frame.getPosition().y) / height};
 
     partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p2.x, p2.y}, {0, 0}, {tex2.x, tex2.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex2.x, tex2.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p2.x, p2.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
     partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p4.x, p4.y}, {0, 0}, {tex4.x, tex4.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p4.x, p4.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex4.x, tex4.y}, {255, 255, 255, 255}});
   }
 
   glhckGeometrySetVertices(glhckObjectGetGeometry(parts), GLHCK_VERTEX_V2F, partsData.data(), partsData.size());
@@ -158,11 +158,11 @@ void PuppetEntity::update(float const delta)
     Vec2D p4 = part.transformation.transform({size.width, 0});
     
     partVertices[i * 6].vertex = {p1.x, p1.y};
-    partVertices[i * 6 + 1].vertex = {p2.x, p2.y};
-    partVertices[i * 6 + 2].vertex = {p3.x, p3.y};
+    partVertices[i * 6 + 1].vertex = {p3.x, p3.y};
+    partVertices[i * 6 + 2].vertex = {p2.x, p2.y};
     partVertices[i * 6 + 3].vertex = {p1.x, p1.y};
-    partVertices[i * 6 + 4].vertex = {p3.x, p3.y};
-    partVertices[i * 6 + 5].vertex = {p4.x, p4.y};
+    partVertices[i * 6 + 4].vertex = {p4.x, p4.y};
+    partVertices[i * 6 + 5].vertex = {p3.x, p3.y};
 
     partLineVertices[i * 8].vertex = {p1.x, p1.y};
     partLineVertices[i * 8 + 1].vertex = {p2.x, p2.y};
