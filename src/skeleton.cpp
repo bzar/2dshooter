@@ -321,11 +321,6 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
   });
 
   si.init(skeleton, value);
-  
-  for(Bone const& b : skeleton.bones)
-  {
-    std::cout << b.getName() << ": " << b.getBase() << " -> " << b.getTip() << std::endl;
-  }
 }
 
 Skeleton::Bone& Skeleton::getBone(std::string const& name)

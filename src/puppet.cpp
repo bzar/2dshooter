@@ -57,10 +57,7 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
     
     Transformation invertYAxis = Transformation().scale(1, -1);
     
-    std::cout << "part.tip: " << part.tip << std::endl;
-    std::cout << "part.base: " << part.base << std::endl;
     Vec2D partOrientation = invertYAxis.transform(part.tip - part.base);
-    std::cout << "partOrientation: " << partOrientation << std::endl;
     Vec2D boneOrientation = bone.getTip() - bone.getBase();
     
     part.textureTransformation

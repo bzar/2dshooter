@@ -24,9 +24,12 @@ public:
   void setPosition(Vec2D const& pos);
 
 private:
+  static glhckTextureParameters const TEXTURE_PARAMETERS;
+
   glhckObject* boneLines;
   glhckObject* partLines;
-
+  glhckObject* parts;
+  
   Vec2D position;
   Puppet puppet;
 };
