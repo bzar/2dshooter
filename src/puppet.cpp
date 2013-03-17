@@ -63,6 +63,7 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
     
     part.textureTransformation
       .reset()
+      .scale(frame.getSize().width, frame.getSize().height)
       .move(-frame.getHotspot().x, -frame.getHotspot().y)
       .move(-part.base.x, -part.base.y)
       .apply(invertYAxis)

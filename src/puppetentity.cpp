@@ -23,9 +23,13 @@ glhckTextureParameters const PuppetEntity::TEXTURE_PARAMETERS = {
 
 PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
   ew::Entity(world), ew::Renderable(world), ew::Updatable(world),
+  showBoneLines(false), showPartLines(false), showParts(true),
   boneLines(glhckObjectNew()), partLines(glhckObjectNew()), parts(glhckObjectNew()), 
   position(0, 0), puppet(p)
 {
+  glhckObjectAddChildren(parts, boneLines);
+  glhckObjectAddChildren(parts, partLines);
+  
   glhckObjectNewGeometry(boneLines)->type = GLHCK_LINES;
 
   glhckObjectNewGeometry(partLines)->type = GLHCK_LINES;  
@@ -66,9 +70,9 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
     SpriteSheet::Frame::Size const& size = frame.getSize();
 
     Vec2D p1 = part->transformation.transform({0, 0});
-    Vec2D p2 = part->transformation.transform({0, static_cast<float>(size.height)});
-    Vec2D p3 = part->transformation.transform({static_cast<float>(size.width), static_cast<float>(size.height)});
-    Vec2D p4 = part->transformation.transform({static_cast<float>(size.width), 0});
+    Vec2D p2 = part->transformation.transform({0, 1});
+    Vec2D p3 = part->transformation.transform({1, 1});
+    Vec2D p4 = part->transformation.transform({1, 0});
     
     glhckTexture* texture = glhckObjectGetTexture(parts);
     int width = 0;
@@ -109,66 +113,88 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
 PuppetEntity::~PuppetEntity()
 {
   glhckObjectFree(boneLines);
+  glhckObjectFree(partLines);
+  glhckObjectFree(parts);
 }
 
 
 void PuppetEntity::render(ew::RenderContext* context)
 {
-  glhckObjectDraw(parts);
-//   glhckObjectDraw(partLines);
-//   glhckObjectDraw(boneLines);
+  if(showParts)
+    glhckObjectDraw(parts);
+  
+  if(showPartLines)
+    glhckObjectDraw(partLines);
+  
+  if(showBoneLines)
+    glhckObjectDraw(boneLines);
 }
 
 void PuppetEntity::update(float const delta)
 {
   puppet.update(delta);
-  glhckObjectPositionf(boneLines, position.x, position.y, 0);
-  glhckObjectPositionf(partLines, position.x, position.y, 0);
+
   glhckObjectPositionf(parts, position.x, position.y, 0);
-  
-  glhckVertexData2f* boneVertices = glhckObjectGetGeometry(boneLines)->vertices.v2f;
-  for(int i = 0; i < puppet.getSkeleton().getBones().size(); ++i) 
+
+  if(showBoneLines)
   {
-    Skeleton::Bone& bone = puppet.getSkeleton().getBone(i);
-    Vec2D base = bone.getBase();
-    Vec2D tip = bone.getTip();
-    boneVertices[i * 2].vertex = {base.x, base.y};
-    boneVertices[i * 2 + 1].vertex = {tip.x, tip.y};
+    glhckVertexData2f* boneVertices = glhckObjectGetGeometry(boneLines)->vertices.v2f;
+    for(int i = 0; i < puppet.getSkeleton().getBones().size(); ++i) 
+    {
+      Skeleton::Bone& bone = puppet.getSkeleton().getBone(i);
+      Vec2D base = bone.getBase();
+      Vec2D tip = bone.getTip();
+      boneVertices[i * 2].vertex = {base.x, base.y};
+      boneVertices[i * 2 + 1].vertex = {tip.x, tip.y};
+    }
   }
   
-  glhckVertexData2f* partVertices = glhckObjectGetGeometry(parts)->vertices.v2f;
-  glhckVertexData2f* partLineVertices = glhckObjectGetGeometry(partLines)->vertices.v2f;
-  Puppet::PartRefs partRefs = puppet.getPartsZOrdered();
-  for(int i = 0; i < partRefs.size(); ++i) 
+  if(showPartLines || showParts)
   {
-    Puppet::Part const* part = partRefs.at(i);
-    SpriteSheet::Frame::Size size = puppet.getSpriteSheet().getSprite(part->frontId).getAnimation(0).getFrame(0).getSize();
-    Vec2D p1 = part->transformation.transform({0, 0});
-    Vec2D p2 = part->transformation.transform({0, static_cast<float>(size.height)});
-    Vec2D p3 = part->transformation.transform({static_cast<float>(size.width), static_cast<float>(size.height)});
-    Vec2D p4 = part->transformation.transform({static_cast<float>(size.width), 0});
-    
-    partVertices[i * 6].vertex = {p1.x, p1.y};
-    partVertices[i * 6 + 1].vertex = {p3.x, p3.y};
-    partVertices[i * 6 + 2].vertex = {p2.x, p2.y};
-    partVertices[i * 6 + 3].vertex = {p1.x, p1.y};
-    partVertices[i * 6 + 4].vertex = {p4.x, p4.y};
-    partVertices[i * 6 + 5].vertex = {p3.x, p3.y};
-
-    partLineVertices[i * 8].vertex = {p1.x, p1.y};
-    partLineVertices[i * 8 + 1].vertex = {p2.x, p2.y};
-    partLineVertices[i * 8 + 2].vertex = {p2.x, p2.y};
-    partLineVertices[i * 8 + 3].vertex = {p3.x, p3.y};
-    partLineVertices[i * 8 + 4].vertex = {p3.x, p3.y};
-    partLineVertices[i * 8 + 5].vertex = {p4.x, p4.y};
-    partLineVertices[i * 8 + 6].vertex = {p4.x, p4.y};
-    partLineVertices[i * 8 + 7].vertex = {p1.x, p1.y};
-    
+    glhckVertexData2f* partVertices = glhckObjectGetGeometry(parts)->vertices.v2f;
+    glhckVertexData2f* partLineVertices = glhckObjectGetGeometry(partLines)->vertices.v2f;
+    Puppet::PartRefs partRefs = puppet.getPartsZOrdered();
+    for(int i = 0; i < partRefs.size(); ++i) 
+    {
+      Puppet::Part const* part = partRefs.at(i);
+      SpriteSheet::Frame::Size size = puppet.getSpriteSheet().getSprite(part->frontId).getAnimation(0).getFrame(0).getSize();
+      Vec2D p1 = part->transformation.transform({0, 0});
+      Vec2D p2 = part->transformation.transform({0, 1});
+      Vec2D p3 = part->transformation.transform({1, 1});
+      Vec2D p4 = part->transformation.transform({1, 0});
+      
+      if(showParts)
+      {
+        partVertices[i * 6].vertex = {p1.x, p1.y};
+        partVertices[i * 6 + 1].vertex = {p3.x, p3.y};
+        partVertices[i * 6 + 2].vertex = {p2.x, p2.y};
+        partVertices[i * 6 + 3].vertex = {p1.x, p1.y};
+        partVertices[i * 6 + 4].vertex = {p4.x, p4.y};
+        partVertices[i * 6 + 5].vertex = {p3.x, p3.y};
+      }
+      
+      if(showPartLines)
+      {
+        partLineVertices[i * 8].vertex = {p1.x, p1.y};
+        partLineVertices[i * 8 + 1].vertex = {p2.x, p2.y};
+        partLineVertices[i * 8 + 2].vertex = {p2.x, p2.y};
+        partLineVertices[i * 8 + 3].vertex = {p3.x, p3.y};
+        partLineVertices[i * 8 + 4].vertex = {p3.x, p3.y};
+        partLineVertices[i * 8 + 5].vertex = {p4.x, p4.y};
+        partLineVertices[i * 8 + 6].vertex = {p4.x, p4.y};
+        partLineVertices[i * 8 + 7].vertex = {p1.x, p1.y};
+      }
+    }
   }
 
-  glhckObjectUpdate(parts);
-  glhckObjectUpdate(partLines);
-  glhckObjectUpdate(boneLines);
+  if(showParts)
+    glhckObjectUpdate(parts);
+  
+  if(showPartLines)
+    glhckObjectUpdate(partLines);
+  
+  if(showBoneLines)
+    glhckObjectUpdate(boneLines);
 }
 
 

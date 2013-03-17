@@ -26,6 +26,10 @@ public:
 private:
   static glhckTextureParameters const TEXTURE_PARAMETERS;
 
+  bool showBoneLines;
+  bool showPartLines;
+  bool showParts;
+  
   glhckObject* boneLines;
   glhckObject* partLines;
   glhckObject* parts;

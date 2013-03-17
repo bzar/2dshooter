@@ -1,5 +1,6 @@
 #include "transformation.h"
 #include <cmath>
+#include <cstring>
 float const TAU = 2 * 3.14159265;
 
 float const Transformation::INITIAL_VALUES[] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
@@ -9,10 +10,7 @@ namespace
 {
   void copyArray(float const* from, float* to, int size)
   {
-    for(int i = 0; i < size; ++i)
-    {
-      to[i] = from[i];
-    }
+    std::memcpy(to, from, sizeof(float) * size);
   }
 }
 
@@ -94,18 +92,17 @@ Transformation& Transformation::apply(float const matrix[])
 {
   float old[NUM_VALUES];
   copyArray(values, old, NUM_VALUES);
-  copyArray(ZERO_VALUES, values, NUM_VALUES);
+  values[0] = old[0] * matrix[0] + old[3] * matrix[1] + old[6] * matrix[2];
+  values[1] = old[1] * matrix[0] + old[4] * matrix[1] + old[7] * matrix[2];
+  values[2] = old[2] * matrix[0] + old[5] * matrix[1] + old[8] * matrix[2];
 
-  for( unsigned int m = 0; m < NUM_ROWS; ++m )
-  {
-    for( unsigned int n = 0; n < NUM_COLS; ++n )
-    {
-      for( unsigned int k = 0; k < NUM_ROWS; ++k )
-      {
-        values[m * NUM_ROWS + n] += matrix[m * NUM_ROWS + k] * old[k * NUM_ROWS + n];
-      }
-    }
-  }
+  values[3] = old[0] * matrix[3] + old[3] * matrix[4] + old[6] * matrix[5];
+  values[4] = old[1] * matrix[3] + old[4] * matrix[4] + old[7] * matrix[5];
+  values[5] = old[2] * matrix[3] + old[5] * matrix[4] + old[8] * matrix[5];
+
+  values[6] = old[0] * matrix[6] + old[3] * matrix[7] + old[6] * matrix[8];
+  values[7] = old[1] * matrix[6] + old[4] * matrix[7] + old[7] * matrix[8];
+  values[8] = old[2] * matrix[6] + old[5] * matrix[7] + old[8] * matrix[8];
 
   return *this;
 }
