@@ -64,36 +64,31 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
   Puppet::PartRefs partRefs = puppet.getPartsZOrdered();
   for(Puppet::Part const* part : partRefs)
   {
-    SpriteSheet const& spriteSheet = puppet.getSpriteSheet();
-    SpriteSheet::Sprite const& sprite = spriteSheet.getSprite(part->frontId); //TODO: handle back sprites too!
-    SpriteSheet::Frame const& frame = sprite.getAnimation(0).getFrame(0);
-    SpriteSheet::Frame::Size const& size = frame.getSize();
-
-    Vec2D p1 = part->transformation.transform({0, 0});
-    Vec2D p2 = part->transformation.transform({0, 1});
-    Vec2D p3 = part->transformation.transform({1, 1});
-    Vec2D p4 = part->transformation.transform({1, 0});
-    
     glhckTexture* texture = glhckObjectGetTexture(parts);
     int width = 0;
     int height = 0;
     glhckTextureGetInformation(texture, nullptr, &width, &height, nullptr, nullptr, nullptr, nullptr);
 
-    Vec2D tex1{static_cast<float>(frame.getPosition().x) / width, 
-               1.0f - static_cast<float>(frame.getPosition().y) / height};
-    Vec2D tex2{static_cast<float>(frame.getPosition().x) / width, 
-               1.0f - static_cast<float>(frame.getPosition().y + frame.getSize().height) / height};
-    Vec2D tex3{static_cast<float>(frame.getPosition().x + frame.getSize().width) / width, 
-               1.0f - static_cast<float>(frame.getPosition().y + frame.getSize().height) / height};
-    Vec2D tex4{static_cast<float>(frame.getPosition().x + frame.getSize().width) / width, 
-               1.0f - static_cast<float>(frame.getPosition().y) / height};
+    auto genTexCoord = [&](Vec2D const& imagePosition) {
+      return Vec2D{imagePosition.x / width, 1.0f - imagePosition.y / height};
+    };
+    
+    Vec2D tex1 = genTexCoord(part->imagePosition.topLeft);
+    Vec2D tex2 = genTexCoord(part->imagePosition.bottomLeft);
+    Vec2D tex3 = genTexCoord(part->imagePosition.bottomRight);
+    Vec2D tex4 = genTexCoord(part->imagePosition.topRight);
 
+    Vec2D const& p1 = part->position.topLeft;
+    Vec2D const& p2 = part->position.bottomLeft;
+    Vec2D const& p3 = part->position.bottomRight;
+    Vec2D const& p4 = part->position.topRight;
+    
     partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
     partsData.push_back({{p2.x, p2.y}, {0, 0}, {tex2.x, tex2.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p4.x, p4.y}, {0, 0}, {tex4.x, tex4.y}, {255, 255, 255, 255}});
     partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p4.x, p4.y}, {0, 0}, {tex4.x, tex4.y}, {255, 255, 255, 255}});
 
     // left: green, bottom: yellow, right: cyan, top: magenta
     partLineData.push_back({{p1.x, p1.y}, {0, 0}, {0, 0}, {0, 255, 0, 255}});
@@ -157,25 +152,25 @@ void PuppetEntity::update(float const delta)
     for(int i = 0; i < partRefs.size(); ++i) 
     {
       Puppet::Part const* part = partRefs.at(i);
-      SpriteSheet::Frame::Size size = puppet.getSpriteSheet().getSprite(part->frontId).getAnimation(0).getFrame(0).getSize();
-      Vec2D p1 = part->transformation.transform({0, 0});
-      Vec2D p2 = part->transformation.transform({0, 1});
-      Vec2D p3 = part->transformation.transform({1, 1});
-      Vec2D p4 = part->transformation.transform({1, 0});
+      
+      Vec2D const& p1 = part->position.topLeft;
+      Vec2D const& p2 = part->position.bottomLeft;
+      Vec2D const& p3 = part->position.bottomRight;
+      Vec2D const& p4 = part->position.topRight;
       
       if(showParts)
       {
-        partVertices[i * 6].vertex = {p1.x, p1.y};
-        partVertices[i * 6 + 1].vertex = {p3.x, p3.y};
-        partVertices[i * 6 + 2].vertex = {p2.x, p2.y};
+        partVertices[i * 6 + 0].vertex = {p1.x, p1.y};
+        partVertices[i * 6 + 1].vertex = {p2.x, p2.y};
+        partVertices[i * 6 + 2].vertex = {p3.x, p3.y};
         partVertices[i * 6 + 3].vertex = {p1.x, p1.y};
-        partVertices[i * 6 + 4].vertex = {p4.x, p4.y};
-        partVertices[i * 6 + 5].vertex = {p3.x, p3.y};
+        partVertices[i * 6 + 4].vertex = {p3.x, p3.y};
+        partVertices[i * 6 + 5].vertex = {p4.x, p4.y};
       }
       
       if(showPartLines)
       {
-        partLineVertices[i * 8].vertex = {p1.x, p1.y};
+        partLineVertices[i * 8 + 0].vertex = {p1.x, p1.y};
         partLineVertices[i * 8 + 1].vertex = {p2.x, p2.y};
         partLineVertices[i * 8 + 2].vertex = {p2.x, p2.y};
         partLineVertices[i * 8 + 3].vertex = {p3.x, p3.y};

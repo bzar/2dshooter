@@ -26,9 +26,11 @@ public:
     std::string const& getName() const;
     Vec2D getBase() const;
     Vec2D getTip() const;
+    Vec2D getNonTransformedBase() const;
+    Vec2D getNonTransformedTip() const;
     float getAngle() const;
     
-    Transformation& getTransformation();
+    Transformation const& getTransformation() const;
 
     void setAngle(float const value);
     void changeAngle(float const delta);
@@ -67,6 +69,7 @@ public:
     void deactivate();
     bool isActive() const;
     void animate(float const delta, Skeleton* skeleton);
+    void reset();
 
   private:
     int id;

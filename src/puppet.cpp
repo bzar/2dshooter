@@ -52,26 +52,8 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
   
   for(Part& part : puppet.parts) 
   {
-    Skeleton::Bone& bone = puppet.skeleton.getBone(part.boneId);
-    SpriteSheet::Sprite sprite = puppet.spriteSheet.getSprite(part.frontId); //TODO: handle back sprites too!
-    SpriteSheet::Frame frame = sprite.getAnimation(0).getFrame(0);
-    
-    Transformation invertYAxis = Transformation().scale(1, -1);
-    
-    Vec2D partOrientation = invertYAxis.transform(part.tip - part.base);
-    Vec2D boneOrientation = bone.getTip() - bone.getBase();
-    
-    part.textureTransformation
-      .reset()
-      .scale(frame.getSize().width, frame.getSize().height)
-      .move(-frame.getHotspot().x, -frame.getHotspot().y)
-      .move(-part.base.x, -part.base.y)
-      .apply(invertYAxis)
-      .apply(Transformation::fromBase(partOrientation, partOrientation.normal()))
-      .apply(Transformation::toBase(boneOrientation, boneOrientation.normal()))
-      .move(bone.getBase())
-      ;
-      
+    puppet.updatePartPosition(part);
+    puppet.updatePartImagePosition(part);
   }
 }
 
@@ -81,12 +63,7 @@ void Puppet::update(float const delta)
   
   for(Part& part : parts)
   {
-    Skeleton::Bone& bone = skeleton.getBone(part.boneId);
-    part.transformation
-      .reset()
-      .apply(part.textureTransformation)
-      .apply(bone.getTransformation())
-      ;
+    updatePartPosition(part);
   }
 }
 
@@ -126,9 +103,16 @@ Puppet::Part const& Puppet::getPart(std::string const& name) const
   throw std::runtime_error("Could not find part!");
 }
 
-Puppet::Part const& Puppet::getPart(int id) const
+Puppet::Part const& Puppet::getPart(const int id) const
 {
   return parts.at(id);
+}
+
+SpriteSheet::Frame const& Puppet::getPartFrame(const int id)
+{
+  Part const& part = getPart(id);
+  bool const flipped = flipX != flipY;
+  spriteSheet.getSprite(flipped ? part.backId : part.frontId).getAnimation(0).getFrame(0);
 }
 
 Puppet::Parts const& Puppet::getParts() const
@@ -149,4 +133,48 @@ Puppet::PartRefs Puppet::getPartsZOrdered() const
   });
   
   return ordered;
+}
+
+void Puppet::updatePartPosition(Part& part)
+{
+  Skeleton::Bone const& bone = skeleton.getBone(part.boneId);
+  part.transformation
+    .reset()
+    .apply(part.textureTransformation)
+    .apply(bone.getTransformation());
+
+  part.position.topLeft = part.transformation.transform({0, 1});
+  part.position.topRight = part.transformation.transform({1, 1});
+  part.position.bottomLeft = part.transformation.transform({0, 0});
+  part.position.bottomRight = part.transformation.transform({1, 0});
+}
+
+void Puppet::updatePartImagePosition(Puppet::Part& part)
+{
+  SpriteSheet::Frame const& frame = getPartFrame(part.id);
+  Skeleton::Bone const& bone = skeleton.getBone(part.boneId);
+  
+  Transformation const invertYAxis = Transformation().scale(1, -1);
+  
+  Vec2D partOrientation = invertYAxis.transform(part.tip - part.base);
+  Vec2D boneOrientation = bone.getNonTransformedTip() - bone.getNonTransformedBase();
+  
+  part.textureTransformation
+    .reset()
+    .scale(frame.getSize().width, frame.getSize().height)
+    .move(-frame.getHotspot().x, -frame.getHotspot().y)
+    .move(-part.base.x, -part.base.y)
+    .apply(invertYAxis)
+    .apply(Transformation::fromBase(partOrientation, partOrientation.normal()))
+    .apply(Transformation::toBase(boneOrientation, boneOrientation.normal()))
+    .move(bone.getNonTransformedBase());
+  
+  part.imagePosition.topLeft = {static_cast<float>(frame.getPosition().x), 
+                                static_cast<float>(frame.getPosition().y)};
+  part.imagePosition.topRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
+                                 static_cast<float>(frame.getPosition().y)};
+  part.imagePosition.bottomLeft = {static_cast<float>(frame.getPosition().x), 
+                                   static_cast<float>(frame.getPosition().y) + frame.getSize().height};
+  part.imagePosition.bottomRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
+                                    static_cast<float>(frame.getPosition().y) + frame.getSize().height};
 }

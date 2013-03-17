@@ -52,12 +52,22 @@ Vec2D Skeleton::Bone::getTip() const
   return transformation.transform(tip);
 }
 
+Vec2D Skeleton::Bone::getNonTransformedBase() const
+{
+  return base;
+}
+
+Vec2D Skeleton::Bone::getNonTransformedTip() const
+{
+  return tip;
+}
+
 float Skeleton::Bone::getAngle() const
 {
   return angle;
 }
 
-Transformation& Skeleton::Bone::getTransformation()
+Transformation const& Skeleton::Bone::getTransformation() const
 {
   return transformation;
 }
@@ -174,6 +184,15 @@ void Skeleton::Pose::animate(const float delta, Skeleton* skeleton)
     }
   }
 }
+
+void Skeleton::Pose::reset()
+{
+    for(Animation::Reference animation : animations)
+    {
+      animation->reset();
+    }
+}
+
 
 Skeleton::Skeleton() : bones(), poses()
 {

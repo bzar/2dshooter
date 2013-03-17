@@ -16,7 +16,7 @@ class Puppet
 public:
   struct Part
   {
-    Part() : id(-1), name(), boneId(-1), frontId(-1), backId(-1), base(), tip(), z(0), transformation(), textureTransformation() {}
+    Part() : id(-1), name(), boneId(-1), frontId(-1), backId(-1), base(), tip(), z(0), transformation(), textureTransformation(), position(), imagePosition() {}
     int id;
     std::string name;
     int boneId;
@@ -27,6 +27,16 @@ public:
     int z;
     Transformation transformation;
     Transformation textureTransformation;
+    
+    struct Geometry {
+      Vec2D topLeft;
+      Vec2D bottomLeft;
+      Vec2D bottomRight;
+      Vec2D topRight;
+    };
+    
+    Geometry position;
+    Geometry imagePosition;
   };
 
   typedef std::vector<Part> Parts;
@@ -44,11 +54,16 @@ public:
   Skeleton& getSkeleton();
 
   Part const& getPart(std::string const& name) const;
-  Part const& getPart(int id) const;
+  Part const& getPart(int const id) const;
+  SpriteSheet::Frame const& getPartFrame(int const id);
+  
   Parts const& getParts() const;
   PartRefs getPartsZOrdered() const;
 
 private:
+  void updatePartPosition(Part& part);
+  void updatePartImagePosition(Part& part);
+  
   SpriteSheet spriteSheet;
   Skeleton skeleton;
   Parts parts;
