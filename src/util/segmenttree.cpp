@@ -75,6 +75,11 @@ bool SegmentTree::query(Segment const& segment, ResultHandler const& handler) co
 
 void SegmentTree::construct()
 {
+  if(segments.empty())
+  {
+    return;
+  }
+  
   float minx = 0;
   float miny = 0;
   float maxx = 0;
@@ -193,7 +198,11 @@ void SegmentTree::deconstruct()
     nodes.swap(temp);
   }
 
-  root = 0;
+  rect.setLeft(0);
+  rect.setTop(0);
+  rect.setWidth(0);
+  rect.setHeight(0);
+  root = nullptr;
 }
 
 void SegmentTree::print()

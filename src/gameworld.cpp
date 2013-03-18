@@ -3,7 +3,7 @@
 
 GameWorld::GameWorld() :
   ew::World(), ew::RenderableWorld(), ew::UpdatableWorld(), ew::CollidableWorld(),
-  ew::ControllableWorld(),
+  ew::ControllableWorld(), ew::VectorTerrainWorld(),
   camera(glhckCameraNew())
 {
   Human* human = new Human(this);
@@ -11,6 +11,11 @@ GameWorld::GameWorld() :
   human->setPosition({0, 0});
   human->setPose("walk", true);
   human->setPose("walk-hands", true);
+  
   glhckObjectPositionf(glhckCameraGetObject(camera), 0, 0, 100);
   glhckCameraUpdate(camera);
+  
+  const std::list<Segment> segments = {{{-20, -5}, {20, -5}}};
+  SegmentTree segmentTree(segments);
+  setSegmentTree(segmentTree);
 }
