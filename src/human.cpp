@@ -116,8 +116,7 @@ bool Human::vectorTerrainCollision(Segment const& segment, float const timeDelta
       Vec2D rest = getPosition() + velocity - collisionPoint;
 
       velocity = tox.addi(rest.projectioni(segmentDelta))
-                    .subtracti(segmentNormal.scale(10.0));
-      
+                    .subtracti(segmentNormal.scale(0.1));
       return true;
     }
   }

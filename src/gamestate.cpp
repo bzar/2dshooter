@@ -7,5 +7,5 @@ GameState::GameState(ew::Engine* engine) :
   control(&world, engine->getControlContext()),
   vectorTerrain(&world)
 {
-  setPhases({&control, &update, &collide, &render, &vectorTerrain});
+  setPhases({&control, &vectorTerrain, &update, &collide, &render});
 }
