@@ -9,7 +9,8 @@ GameWorld::GameWorld() :
   Human* human = new Human(this);
 
   human->setPosition({0, 0});
-  
+  human->setPose("walk", true);
+  human->setPose("walk-hands", true);
   glhckObjectPositionf(glhckCameraGetObject(camera), 0, 0, 100);
   glhckCameraUpdate(camera);
 }

@@ -25,45 +25,52 @@ void Human::control(ew::ControlContext* context)
 {
   if(context->keyPush(GLFW_KEY_D))
   {
-    getPuppet().getSkeleton().getPose("walk").reset();
-    getPuppet().getSkeleton().getPose("walk").activate();
+    setPose("walk", true);
   }
   
   if(context->keyPush(GLFW_KEY_C))
   {
-    getPuppet().getSkeleton().getPose("walk").deactivate();
+    setPose("walk", false);
   }
   
   if(context->keyPush(GLFW_KEY_F))
   {
-    getPuppet().getSkeleton().getPose("walk-hands").reset();
-    getPuppet().getSkeleton().getPose("walk-hands").activate();
+    setPose("walk-hands", true);
   }
   
   if(context->keyPush(GLFW_KEY_V))
   {
-    getPuppet().getSkeleton().getPose("walk-hands").deactivate();
+    setPose("walk-hands", false);
   }
   
   if(context->keyPush(GLFW_KEY_A))
   {
-    getPuppet().getSkeleton().getPose("stand").reset();
-    getPuppet().getSkeleton().getPose("stand").activate();
+    setPose("stand", true);
   }
   
   if(context->keyPush(GLFW_KEY_Z))
   {
-    getPuppet().getSkeleton().getPose("stand").deactivate();
+    setPose("stand", false);
   }
   
   if(context->keyPush(GLFW_KEY_S))
   {
-    getPuppet().getSkeleton().getPose("stand-hands").reset();
-    getPuppet().getSkeleton().getPose("stand-hands").activate();
+    setPose("stand-hands", true);
   }
   
   if(context->keyPush(GLFW_KEY_X))
   {
-    getPuppet().getSkeleton().getPose("stand-hands").deactivate();
+    setPose("stand-hands", false);
   }
+  
+  if(context->keyPush(GLFW_KEY_W))
+  {
+    setFlipX(!getPuppet().getFlipX());
+  }
+  
+  if(context->keyPush(GLFW_KEY_E))
+  {
+    setFlipY(!getPuppet().getFlipY());
+  }
+
 }

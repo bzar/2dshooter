@@ -23,6 +23,7 @@ glhckTextureParameters const PuppetEntity::TEXTURE_PARAMETERS = {
 
 PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
   ew::Entity(world), ew::Renderable(world), ew::Updatable(world),
+  dirtyVertices(true),
   showBoneLines(false), showPartLines(false), showParts(true),
   boneLines(glhckObjectNew()), partLines(glhckObjectNew()), parts(glhckObjectNew()), 
   position(0, 0), puppet(p)
@@ -40,7 +41,141 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
   glhckTexture* partsTexture = glhckTextureNew(puppet.getSpriteSheet().getImage().data(), 0, &TEXTURE_PARAMETERS);
   glhckObjectTexture(parts, partsTexture);
   glhckTextureFree(partsTexture);
+}
+
+PuppetEntity::~PuppetEntity()
+{
+  glhckObjectFree(boneLines);
+  glhckObjectFree(partLines);
+  glhckObjectFree(parts);
+}
+
+
+void PuppetEntity::render(ew::RenderContext* context)
+{
+  if(showParts)
+    glhckObjectDraw(parts);
   
+  if(showPartLines)
+    glhckObjectDraw(partLines);
+  
+  if(showBoneLines)
+    glhckObjectDraw(boneLines);
+}
+
+void PuppetEntity::update(float const delta)
+{
+  puppet.update(delta);
+
+  glhckObjectPositionf(parts, position.x, position.y, 0);
+
+  if(dirtyVertices)
+  {
+    refreshVertices();
+  }
+  else
+  {
+    if(showBoneLines)
+    {
+      glhckVertexData2f* boneVertices = glhckObjectGetGeometry(boneLines)->vertices.v2f;
+      for(int i = 0; i < puppet.getSkeleton().getBones().size(); ++i) 
+      {
+        Skeleton::Bone& bone = puppet.getSkeleton().getBone(i);
+        Vec2D base = bone.getBase();
+        Vec2D tip = bone.getTip();
+        boneVertices[i * 2].vertex = {base.x, base.y};
+        boneVertices[i * 2 + 1].vertex = {tip.x, tip.y};
+      }
+    }
+    
+    if(showPartLines || showParts)
+    {
+      glhckVertexData2f* partVertices = glhckObjectGetGeometry(parts)->vertices.v2f;
+      glhckVertexData2f* partLineVertices = glhckObjectGetGeometry(partLines)->vertices.v2f;
+      Puppet::PartRefs partRefs = puppet.getPartsZOrdered();
+      for(int i = 0; i < partRefs.size(); ++i) 
+      {
+        Puppet::Part const* part = partRefs.at(i);
+        
+        Vec2D const& p1 = part->position.topLeft;
+        Vec2D const& p2 = part->position.bottomLeft;
+        Vec2D const& p3 = part->position.bottomRight;
+        Vec2D const& p4 = part->position.topRight;
+        
+        if(showParts)
+        {
+          partVertices[i * 6 + 0].vertex = {p1.x, p1.y};
+          partVertices[i * 6 + 1].vertex = {p2.x, p2.y};
+          partVertices[i * 6 + 2].vertex = {p3.x, p3.y};
+          partVertices[i * 6 + 3].vertex = {p1.x, p1.y};
+          partVertices[i * 6 + 4].vertex = {p3.x, p3.y};
+          partVertices[i * 6 + 5].vertex = {p4.x, p4.y};
+        }
+        
+        if(showPartLines)
+        {
+          partLineVertices[i * 8 + 0].vertex = {p1.x, p1.y};
+          partLineVertices[i * 8 + 1].vertex = {p2.x, p2.y};
+          partLineVertices[i * 8 + 2].vertex = {p2.x, p2.y};
+          partLineVertices[i * 8 + 3].vertex = {p3.x, p3.y};
+          partLineVertices[i * 8 + 4].vertex = {p3.x, p3.y};
+          partLineVertices[i * 8 + 5].vertex = {p4.x, p4.y};
+          partLineVertices[i * 8 + 6].vertex = {p4.x, p4.y};
+          partLineVertices[i * 8 + 7].vertex = {p1.x, p1.y};
+        }
+      }
+    }
+  }
+
+  if(showParts)
+    glhckObjectUpdate(parts);
+  
+  if(showPartLines)
+    glhckObjectUpdate(partLines);
+  
+  if(showBoneLines)
+    glhckObjectUpdate(boneLines);
+}
+
+
+Puppet const& PuppetEntity::getPuppet()
+{
+  return puppet;
+}
+
+void PuppetEntity::setPosition(const Vec2D& pos)
+{
+  position = pos;
+}
+
+void PuppetEntity::setPose(const std::string& name, bool const state)
+{
+  Skeleton::Pose& pose = puppet.getSkeleton().getPose(name);
+  if(state)
+  {
+    pose.reset();
+    pose.activate();
+  }
+  else
+  {
+    pose.deactivate();
+  }
+}
+
+void PuppetEntity::setFlipX(bool value)
+{
+  puppet.setFlipX(value);
+  dirtyVertices = true;
+}
+
+void PuppetEntity::setFlipY(bool value)
+{
+  puppet.setFlipY(value);
+  dirtyVertices = true;
+}
+
+void PuppetEntity::refreshVertices()
+{
   // Set initial bone geometry
   std::vector<glhckVertexData2f> boneLineData;
 
@@ -103,102 +238,6 @@ PuppetEntity::PuppetEntity(const Puppet& p, GameWorld* world) :
 
   glhckGeometrySetVertices(glhckObjectGetGeometry(parts), GLHCK_VERTEX_V2F, partsData.data(), partsData.size());
   glhckGeometrySetVertices(glhckObjectGetGeometry(partLines), GLHCK_VERTEX_V2F, partLineData.data(), partLineData.size());
-}
-
-PuppetEntity::~PuppetEntity()
-{
-  glhckObjectFree(boneLines);
-  glhckObjectFree(partLines);
-  glhckObjectFree(parts);
-}
-
-
-void PuppetEntity::render(ew::RenderContext* context)
-{
-  if(showParts)
-    glhckObjectDraw(parts);
   
-  if(showPartLines)
-    glhckObjectDraw(partLines);
-  
-  if(showBoneLines)
-    glhckObjectDraw(boneLines);
-}
-
-void PuppetEntity::update(float const delta)
-{
-  puppet.update(delta);
-
-  glhckObjectPositionf(parts, position.x, position.y, 0);
-
-  if(showBoneLines)
-  {
-    glhckVertexData2f* boneVertices = glhckObjectGetGeometry(boneLines)->vertices.v2f;
-    for(int i = 0; i < puppet.getSkeleton().getBones().size(); ++i) 
-    {
-      Skeleton::Bone& bone = puppet.getSkeleton().getBone(i);
-      Vec2D base = bone.getBase();
-      Vec2D tip = bone.getTip();
-      boneVertices[i * 2].vertex = {base.x, base.y};
-      boneVertices[i * 2 + 1].vertex = {tip.x, tip.y};
-    }
-  }
-  
-  if(showPartLines || showParts)
-  {
-    glhckVertexData2f* partVertices = glhckObjectGetGeometry(parts)->vertices.v2f;
-    glhckVertexData2f* partLineVertices = glhckObjectGetGeometry(partLines)->vertices.v2f;
-    Puppet::PartRefs partRefs = puppet.getPartsZOrdered();
-    for(int i = 0; i < partRefs.size(); ++i) 
-    {
-      Puppet::Part const* part = partRefs.at(i);
-      
-      Vec2D const& p1 = part->position.topLeft;
-      Vec2D const& p2 = part->position.bottomLeft;
-      Vec2D const& p3 = part->position.bottomRight;
-      Vec2D const& p4 = part->position.topRight;
-      
-      if(showParts)
-      {
-        partVertices[i * 6 + 0].vertex = {p1.x, p1.y};
-        partVertices[i * 6 + 1].vertex = {p2.x, p2.y};
-        partVertices[i * 6 + 2].vertex = {p3.x, p3.y};
-        partVertices[i * 6 + 3].vertex = {p1.x, p1.y};
-        partVertices[i * 6 + 4].vertex = {p3.x, p3.y};
-        partVertices[i * 6 + 5].vertex = {p4.x, p4.y};
-      }
-      
-      if(showPartLines)
-      {
-        partLineVertices[i * 8 + 0].vertex = {p1.x, p1.y};
-        partLineVertices[i * 8 + 1].vertex = {p2.x, p2.y};
-        partLineVertices[i * 8 + 2].vertex = {p2.x, p2.y};
-        partLineVertices[i * 8 + 3].vertex = {p3.x, p3.y};
-        partLineVertices[i * 8 + 4].vertex = {p3.x, p3.y};
-        partLineVertices[i * 8 + 5].vertex = {p4.x, p4.y};
-        partLineVertices[i * 8 + 6].vertex = {p4.x, p4.y};
-        partLineVertices[i * 8 + 7].vertex = {p1.x, p1.y};
-      }
-    }
-  }
-
-  if(showParts)
-    glhckObjectUpdate(parts);
-  
-  if(showPartLines)
-    glhckObjectUpdate(partLines);
-  
-  if(showBoneLines)
-    glhckObjectUpdate(boneLines);
-}
-
-
-Puppet& PuppetEntity::getPuppet()
-{
-  return puppet;
-}
-
-void PuppetEntity::setPosition(const Vec2D& pos)
-{
-  position = pos;
+  dirtyVertices = false;
 }

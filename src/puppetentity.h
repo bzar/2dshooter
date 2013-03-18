@@ -19,13 +19,19 @@ public:
 
   void render(ew::RenderContext* context);
   void update(float const delta);
-  Puppet& getPuppet();
-  
+  Puppet const& getPuppet();
+  void setPose(std::string const& name, bool const state);
+  void setFlipX(bool value);
+  void setFlipY(bool value);
   void setPosition(Vec2D const& pos);
 
 private:
   static glhckTextureParameters const TEXTURE_PARAMETERS;
 
+  void refreshVertices();
+
+  bool dirtyVertices;
+  
   bool showBoneLines;
   bool showPartLines;
   bool showParts;

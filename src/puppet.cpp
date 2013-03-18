@@ -52,8 +52,7 @@ void Puppet::initialize(Puppet& puppet, qmlon::Value::Reference value) {
   
   for(Part& part : puppet.parts) 
   {
-    puppet.updatePartPosition(part);
-    puppet.updatePartImagePosition(part);
+    puppet.updatePart(part);
   }
 }
 
@@ -63,7 +62,7 @@ void Puppet::update(float const delta)
   
   for(Part& part : parts)
   {
-    updatePartPosition(part);
+    updatePart(part);
   }
 }
 
@@ -71,11 +70,31 @@ void Puppet::update(float const delta)
 void Puppet::setFlipX(bool const value)
 {
   flipX = value;
+
+  for(Part& part : parts)
+  {
+    part.framePartTransformationIsDirty = true;
+  }
 }
 
 void Puppet::setFlipY(bool const value)
 {
   flipY = value;
+
+  for(Part& part : parts)
+  {
+    part.framePartTransformationIsDirty = true;
+  }
+}
+
+bool Puppet::getFlipX() const
+{
+  return flipX;
+}
+
+bool Puppet::getFlipY() const
+{
+  return flipY;
 }
 
 
@@ -128,53 +147,79 @@ Puppet::PartRefs Puppet::getPartsZOrdered() const
     ordered.push_back(&p);
   }
   
-  std::stable_sort(ordered.begin(), ordered.end(), [](Part const* a, Part const* b) { 
-    return a->z < b->z;
+  bool const flipped = flipX != flipY;
+  std::stable_sort(ordered.begin(), ordered.end(), [flipped](Part const* a, Part const* b) { 
+    return a->z < b->z != flipped;
   });
   
   return ordered;
 }
 
-void Puppet::updatePartPosition(Part& part)
+void Puppet::updatePart(Part& part)
 {
   Skeleton::Bone const& bone = skeleton.getBone(part.boneId);
+  
+  if(part.framePartTransformationIsDirty)
+  {
+    SpriteSheet::Frame const& frame = getPartFrame(part.id);
+    
+    part.framePartTransformation
+      .reset()
+      .scale(frame.getSize().width, frame.getSize().height)
+      .move(-frame.getHotspot().x, -frame.getHotspot().y)
+      .move(-part.base.x, -part.base.y)
+      .scale(1, -1);
+
+    part.imagePosition.topLeft = {static_cast<float>(frame.getPosition().x), 
+                                  static_cast<float>(frame.getPosition().y)};
+    part.imagePosition.topRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
+                                  static_cast<float>(frame.getPosition().y)};
+    part.imagePosition.bottomLeft = {static_cast<float>(frame.getPosition().x), 
+                                    static_cast<float>(frame.getPosition().y) + frame.getSize().height};
+    part.imagePosition.bottomRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
+                                      static_cast<float>(frame.getPosition().y) + frame.getSize().height};
+  }
+    
+  if(part.partBoneTransformationIsDirty)
+  {
+    Vec2D partOrientation = part.tip - part.base;
+    partOrientation.y = -partOrientation.y;
+    Vec2D boneOrientation = bone.getNonTransformedTip() - bone.getNonTransformedBase();
+
+    part.partBoneTransformation
+      .reset()
+      .apply(Transformation::fromBase(partOrientation, partOrientation.normal()))
+      .apply(Transformation::toBase(boneOrientation, boneOrientation.normal()))
+      .move(bone.getNonTransformedBase());
+  }
+
   part.transformation
     .reset()
-    .apply(part.textureTransformation)
+    .apply(part.framePartTransformation)
+    .apply(part.partBoneTransformation)
     .apply(bone.getTransformation());
 
-  part.position.topLeft = part.transformation.transform({0, 1});
-  part.position.topRight = part.transformation.transform({1, 1});
-  part.position.bottomLeft = part.transformation.transform({0, 0});
-  part.position.bottomRight = part.transformation.transform({1, 0});
-}
-
-void Puppet::updatePartImagePosition(Puppet::Part& part)
-{
-  SpriteSheet::Frame const& frame = getPartFrame(part.id);
-  Skeleton::Bone const& bone = skeleton.getBone(part.boneId);
+  part.position.topLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 0.0f : 1.0f});
+  part.position.topRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 0.0f : 1.0f});
+  part.position.bottomLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 1.0f : 0.0f});
+  part.position.bottomRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 1.0f : 0.0f});
   
-  Transformation const invertYAxis = Transformation().scale(1, -1);
+  if(flipX)
+  {
+    part.position.topLeft.x = -part.position.topLeft.x;
+    part.position.topRight.x = -part.position.topRight.x;
+    part.position.bottomLeft.x = -part.position.bottomLeft.x;
+    part.position.bottomRight.x = -part.position.bottomRight.x;
+  }
   
-  Vec2D partOrientation = invertYAxis.transform(part.tip - part.base);
-  Vec2D boneOrientation = bone.getNonTransformedTip() - bone.getNonTransformedBase();
+  if(flipY)
+  {
+    part.position.topLeft.y = -part.position.topLeft.y;
+    part.position.topRight.y = -part.position.topRight.y;
+    part.position.bottomLeft.y = -part.position.bottomLeft.y;
+    part.position.bottomRight.y = -part.position.bottomRight.y;
+  }
   
-  part.textureTransformation
-    .reset()
-    .scale(frame.getSize().width, frame.getSize().height)
-    .move(-frame.getHotspot().x, -frame.getHotspot().y)
-    .move(-part.base.x, -part.base.y)
-    .apply(invertYAxis)
-    .apply(Transformation::fromBase(partOrientation, partOrientation.normal()))
-    .apply(Transformation::toBase(boneOrientation, boneOrientation.normal()))
-    .move(bone.getNonTransformedBase());
-  
-  part.imagePosition.topLeft = {static_cast<float>(frame.getPosition().x), 
-                                static_cast<float>(frame.getPosition().y)};
-  part.imagePosition.topRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
-                                 static_cast<float>(frame.getPosition().y)};
-  part.imagePosition.bottomLeft = {static_cast<float>(frame.getPosition().x), 
-                                   static_cast<float>(frame.getPosition().y) + frame.getSize().height};
-  part.imagePosition.bottomRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
-                                    static_cast<float>(frame.getPosition().y) + frame.getSize().height};
+  part.framePartTransformationIsDirty = false;
+  part.partBoneTransformationIsDirty = false;
 }
