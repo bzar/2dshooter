@@ -9,7 +9,8 @@ ew::UID const Human::ID = ew::getUID();
 std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 
 Human::Human(GameWorld* world) :
-  ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world)
+  ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world),
+  movingLeft(false), movingRight(false)
 {
 }
 
@@ -21,56 +22,39 @@ Puppet Human::createPuppet()
   return puppet;
 }
 
-void Human::control(ew::ControlContext* context)
+void Human::update(const float delta)
 {
-  if(context->keyPush(GLFW_KEY_D))
-  {
-    setPose("walk", true);
-  }
-  
-  if(context->keyPush(GLFW_KEY_C))
-  {
-    setPose("walk", false);
-  }
-  
-  if(context->keyPush(GLFW_KEY_F))
-  {
-    setPose("walk-hands", true);
-  }
-  
-  if(context->keyPush(GLFW_KEY_V))
-  {
-    setPose("walk-hands", false);
-  }
-  
-  if(context->keyPush(GLFW_KEY_A))
-  {
-    setPose("stand", true);
-  }
-  
-  if(context->keyPush(GLFW_KEY_Z))
+  if(movingLeft)
   {
     setPose("stand", false);
-  }
-  
-  if(context->keyPush(GLFW_KEY_S))
-  {
-    setPose("stand-hands", true);
-  }
-  
-  if(context->keyPush(GLFW_KEY_X))
-  {
     setPose("stand-hands", false);
+    setPose("walk", true);
+    setPose("walk-hands", true);
+    setFlipX(true);
+    setPosition(getPosition() + Vec2D(-10, 0).scale(delta));
+  }
+  else if(movingRight)
+  {
+    setPose("stand", false);
+    setPose("stand-hands", false);
+    setPose("walk", true);
+    setPose("walk-hands", true);
+    setFlipX(false);
+    setPosition(getPosition() + Vec2D(10, 0).scale(delta));
+  }
+  else
+  {
+    setPose("walk", false);
+    setPose("walk-hands", false);
+    setPose("stand", true);
+    setPose("stand-hands", true);        
   }
   
-  if(context->keyPush(GLFW_KEY_W))
-  {
-    setFlipX(!getPuppet().getFlipX());
-  }
-  
-  if(context->keyPush(GLFW_KEY_E))
-  {
-    setFlipY(!getPuppet().getFlipY());
-  }
+  PuppetEntity::update(delta);
+}
 
+void Human::control(ew::ControlContext* context)
+{
+  movingLeft = context->keyDown(GLFW_KEY_LEFT);
+  movingRight = context->keyDown(GLFW_KEY_RIGHT);
 }

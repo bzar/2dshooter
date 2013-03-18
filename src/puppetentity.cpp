@@ -148,17 +148,22 @@ void PuppetEntity::setPosition(const Vec2D& pos)
   position = pos;
 }
 
+Vec2D const& PuppetEntity::getPosition() const
+{
+  return position;
+}
+
 void PuppetEntity::setPose(const std::string& name, bool const state)
 {
   Skeleton::Pose& pose = puppet.getSkeleton().getPose(name);
   if(state)
   {
-    pose.reset();
     pose.activate();
   }
   else
   {
     pose.deactivate();
+    pose.reset();
   }
 }
 

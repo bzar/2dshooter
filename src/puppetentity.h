@@ -18,12 +18,13 @@ public:
   ~PuppetEntity();
 
   void render(ew::RenderContext* context);
-  void update(float const delta);
+  virtual void update(float const delta);
   Puppet const& getPuppet();
   void setPose(std::string const& name, bool const state);
   void setFlipX(bool value);
   void setFlipY(bool value);
   void setPosition(Vec2D const& pos);
+  Vec2D const& getPosition() const;
 
 private:
   static glhckTextureParameters const TEXTURE_PARAMETERS;

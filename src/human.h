@@ -13,11 +13,15 @@ public:
   static ew::UID const ID;
   ew::UID getEntityId() const { return ID; }
 
+  virtual void update(float const delta);
   virtual void control(ew::ControlContext* context);
   
 private:
   static std::string const PUPPET_FILE;
   static Puppet createPuppet();
+  
+  bool movingLeft;
+  bool movingRight;
 };
 
 #endif
