@@ -15,7 +15,7 @@ GameWorld::GameWorld() :
   glhckObjectPositionf(glhckCameraGetObject(camera), 0, 0, 100);
   glhckCameraUpdate(camera);
   
-  const std::list<Segment> segments = {{{-20, -5}, {20, -5}}};
+  const std::list<Segment> segments = {{{-200, -5}, {200, -5}}};
   SegmentTree segmentTree(segments);
   setSegmentTree(segmentTree);
 }

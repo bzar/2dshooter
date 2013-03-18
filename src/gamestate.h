@@ -6,6 +6,7 @@
 #include "ew/collidephase.h"
 #include "ew/renderphase.h"
 #include "ew/controlphase.h"
+#include "vectorterrainphase.h"
 
 #include "gameworld.h"
 
@@ -20,5 +21,6 @@ private:
   ew::CollidePhase collide;
   ew::RenderPhase render;
   ew::ControlPhase control;
+  ew::VectorTerrainPhase vectorTerrain;
 };
 #endif

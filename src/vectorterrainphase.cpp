@@ -7,6 +7,9 @@ void ew::VectorTerrainPhase::execute(float const delta)
   
   for(VectorTerrainCollidable* v : world->getVectorTerrainCollidables())
   {
-    // handle terrain collisions
+    Segment const segment{v->getPosition(), v->getPosition() + v->getVelocity()};
+    segmentTree.query(segment, [v, delta](Segment const& s){
+      return v->vectorTerrainCollision(s, delta);
+    });
   }
 }

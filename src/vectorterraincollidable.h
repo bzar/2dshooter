@@ -3,6 +3,7 @@
 
 #include "ew/entity.h"
 #include "vectorterrainworld.h"
+#include "util/vec2d.h"
 
 namespace ew
 {
@@ -14,7 +15,9 @@ namespace ew
       vectorTerrainWorld->registerVectorTerrainCollidable(this);
     }
     virtual ~VectorTerrainCollidable() { if(vectorTerrainWorld != nullptr) vectorTerrainWorld->unregisterVectorTerrainCollidable(this); }
-    //virtual void update(float const delta) = 0;
+    virtual Vec2D const& getPosition() = 0;
+    virtual Vec2D const& getVelocity() = 0;
+    virtual bool vectorTerrainCollision(Segment const& segment, float const timeDelta) = 0;
     void vectorTerrainCollidableUnregistered() { vectorTerrainWorld = nullptr; }
 
   private:
