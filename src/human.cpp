@@ -51,8 +51,9 @@ void Human::update(const float delta)
     velocity.x = 0;
   }
   
+  velocity.y -= 5 * 9.81 * delta;
+
   setPosition(getPosition() + velocity.scale(delta));
-  velocity.y -= 9.81 * delta;
   PuppetEntity::update(delta);
 }
 
@@ -60,6 +61,8 @@ void Human::control(ew::ControlContext* context)
 {
   movingLeft = context->keyDown(GLFW_KEY_LEFT);
   movingRight = context->keyDown(GLFW_KEY_RIGHT);
+  if(context->keyPush(GLFW_KEY_R))
+    setPosition({0, 0});
 }
 
 Vec2D const& Human::getPosition()
@@ -103,7 +106,7 @@ bool Human::vectorTerrainCollision(Segment const& segment, float const timeDelta
   */
 
   Vec2D relativeVelocity = getVelocity().scale(timeDelta);
-  Segment relativeMotion(getPosition(), getPosition() + relativeVelocity);
+  Segment relativeMotion(getPosition() - relativeVelocity, getPosition() );
   if(segment.intersects(relativeMotion))
   {
     Vec2D segmentDelta = segment.delta();
@@ -113,10 +116,10 @@ bool Human::vectorTerrainCollision(Segment const& segment, float const timeDelta
       Vec2D segmentNormal = segmentDelta.normal().uniti();
       
       Vec2D tox = collisionPoint - getPosition();
-      Vec2D rest = getPosition() + velocity - collisionPoint;
+      Vec2D rest = relativeVelocity - tox;
 
-      velocity = tox.addi(rest.projectioni(segmentDelta))
-                    .subtracti(segmentNormal.scale(0.1));
+      velocity = rest.projectioni(segmentDelta);
+      setPosition(collisionPoint + velocity + segmentNormal.scale(-0.1));
       return true;
     }
   }

@@ -7,9 +7,12 @@ void ew::VectorTerrainPhase::execute(float const delta)
   
   for(VectorTerrainCollidable* v : world->getVectorTerrainCollidables())
   {
-    Segment const segment{v->getPosition(), v->getPosition() + v->getVelocity()};
-    segmentTree.query(segment, [v, delta](Segment const& s){
-      return v->vectorTerrainCollision(s, delta);
-    });
+    bool collisions = true;
+    while(collisions) {
+      Segment const segment{v->getPosition() - v->getVelocity().scale(delta), v->getPosition()};
+      collisions = segmentTree.query(segment, [v, delta](Segment const& s){
+        return v->vectorTerrainCollision(s, delta);
+      });
+    }
   }
 }
