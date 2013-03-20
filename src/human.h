@@ -19,7 +19,7 @@ public:
   
   virtual Vec2D const& getPosition();
   virtual Vec2D const& getVelocity();
-  virtual bool vectorTerrainCollision(const Segment& segment, const float timeDelta);
+  virtual bool vectorTerrainCollision(const Segment& segment, Vec2D const& collisionPoint, const float timeDelta);
   
 private:
   static std::string const PUPPET_FILE;

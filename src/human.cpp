@@ -5,6 +5,12 @@
 
 #include "GL/glfw3.h"
 
+namespace
+{
+  float const EPSILON = 0.00001;
+  float const ONE_MINUS_EPSILON = 0.999999;
+}
+
 ew::UID const Human::ID = ew::getUID();
 std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 
@@ -31,7 +37,7 @@ void Human::update(const float delta)
     setPose("walk", true);
     setPose("walk-hands", true);
     setFlipX(true);
-    velocity.x = -10;
+    velocity.x = -20;
   }
   else if(movingRight)
   {
@@ -40,7 +46,7 @@ void Human::update(const float delta)
     setPose("walk", true);
     setPose("walk-hands", true);
     setFlipX(false);
-    velocity.x = 10;
+    velocity.x = 20;
   }
   else
   {
@@ -75,53 +81,15 @@ Vec2D const& Human::getVelocity()
   return velocity;
 }
 
-bool Human::vectorTerrainCollision(Segment const& segment, float const timeDelta)
+bool Human::vectorTerrainCollision(Segment const& segment, Vec2D const& collisionPoint, float const timeDelta)
 {
-  /*
-  Vec2D relativeVelocity = (human.getVelocity() - group.getVelocity()).scalei(timeDelta);
-  Segment relativeMotion(human.getPosition(), human.getPosition() + relativeVelocity);
-  if(segment.intersects(relativeMotion))
-  {
-    Vec2D segmentDelta = segment.delta();
-    if(segmentDelta.cross(relativeVelocity) < 0)
-    {
-      Vec2D collisionPoint = segment.intersectionPoint(relativeMotion);
-      Vec2D segmentNormal = segmentDelta.normal().uniti();
-      
-      Vec2D tox = collisionPoint - human.getPosition();
-      Vec2D rest = human.getPosition() + human.velocity - collisionPoint;
-
-      human.setVelocity(tox.addi(rest.projectioni(segmentDelta))
-                        .subtracti(segmentNormal.scale(0.1))
-                        .addi(group.getVelocity()));
-      
-      if(segmentNormal.dot(human.shooterWorld->getGravity().unit()) > 0.5) {
-        human.setOnGround(true);
-      }
-      
-      return true;
-    }
-  }
-  return false;
-  */
-
-  Vec2D relativeVelocity = getVelocity().scale(timeDelta);
-  Segment relativeMotion(getPosition() - relativeVelocity, getPosition() );
-  if(segment.intersects(relativeMotion))
-  {
-    Vec2D segmentDelta = segment.delta();
-    if(segmentDelta.cross(relativeVelocity) < 0)
-    {
-      Vec2D collisionPoint = segment.intersectionPoint(relativeMotion);
-      Vec2D segmentNormal = segmentDelta.normal().uniti();
-      
-      Vec2D tox = collisionPoint - getPosition();
-      Vec2D rest = relativeVelocity - tox;
-
-      velocity = rest.projectioni(segmentDelta);
-      setPosition(collisionPoint + velocity + segmentNormal.scale(-0.1));
-      return true;
-    }
-  }
-  return false;
+  Vec2D relativeVelocity = velocity.scale(timeDelta);
+  Vec2D segmentDelta = segment.delta();
+  Vec2D segmentNormal = segmentDelta.normal().uniti();
+  Vec2D rest = getPosition() - collisionPoint;
+  
+  relativeVelocity = rest.projectioni(segmentDelta).scalei(ONE_MINUS_EPSILON);
+  setPosition(collisionPoint + relativeVelocity + segmentNormal.scale(-EPSILON));
+  velocity = relativeVelocity.scale(1.0f/timeDelta);
+  return true;
 }

@@ -17,7 +17,7 @@ namespace ew
     virtual ~VectorTerrainCollidable() { if(vectorTerrainWorld != nullptr) vectorTerrainWorld->unregisterVectorTerrainCollidable(this); }
     virtual Vec2D const& getPosition() = 0;
     virtual Vec2D const& getVelocity() = 0;
-    virtual bool vectorTerrainCollision(Segment const& segment, float const timeDelta) = 0;
+    virtual bool vectorTerrainCollision(Segment const& segment, Vec2D const& collisionPoint, float const timeDelta) = 0;
     void vectorTerrainCollidableUnregistered() { vectorTerrainWorld = nullptr; }
 
   private:
