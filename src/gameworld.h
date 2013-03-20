@@ -16,6 +16,7 @@ class GameWorld : public ew::RenderableWorld, public ew::UpdatableWorld,
 {
 public:
   GameWorld();
+  glhckCamera* getCamera();
 
 private:
   glhckCamera* camera;

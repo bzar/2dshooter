@@ -30,7 +30,7 @@ void ew::VectorTerrainPhase::execute(float const delta)
             float distanceSquared = (collisionPoint - relativeMotion.a).lengthSquared();
             if(closestDistanceSquared < 0 || distanceSquared < closestDistanceSquared)
             {
-              if(segmentDelta.dot(v->getVelocity().normal()) != 0)
+              if(segmentDelta.unit().dot(v->getVelocity().unit().normal()) != 0)
               {
                 closestDistanceSquared = distanceSquared;
                 closestCollisionPoint = collisionPoint;

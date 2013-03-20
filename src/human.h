@@ -25,8 +25,10 @@ private:
   static std::string const PUPPET_FILE;
   static Puppet createPuppet();
   
+  GameWorld* world;
   bool movingLeft;
   bool movingRight;
+  bool jumping;
   
   Vec2D velocity;
 };

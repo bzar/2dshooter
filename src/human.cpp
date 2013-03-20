@@ -15,8 +15,8 @@ ew::UID const Human::ID = ew::getUID();
 std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 
 Human::Human(GameWorld* world) :
-  ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), velocity(),
-  movingLeft(false), movingRight(false)
+  ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), 
+  world(world), velocity(), movingLeft(false), movingRight(false), jumping(false)
 {
 }
 
@@ -56,17 +56,29 @@ void Human::update(const float delta)
     setPose("stand-hands", true);        
     velocity.x = 0;
   }
+
+  if(jumping)
+  {
+    velocity.y = 20;
+  }
   
   velocity.y -= 5 * 9.81 * delta;
 
   setPosition(getPosition() + velocity.scale(delta));
   PuppetEntity::update(delta);
+
+  glhckObject* camera = glhckCameraGetObject(world->getCamera());
+  glhckObjectPositionf(camera, getPosition().x, getPosition().y, 100);
+  glhckObjectTargetf(camera, getPosition().x, getPosition().y, 0);
+  glhckCameraUpdate(world->getCamera());
 }
 
 void Human::control(ew::ControlContext* context)
 {
   movingLeft = context->keyDown(GLFW_KEY_LEFT);
   movingRight = context->keyDown(GLFW_KEY_RIGHT);
+  jumping = context->keyDown(GLFW_KEY_SPACE);
+  
   if(context->keyPush(GLFW_KEY_R))
     setPosition({0, 0});
 }
