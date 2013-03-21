@@ -9,6 +9,7 @@ namespace
 {
   float const EPSILON = 0.00001;
   float const ONE_MINUS_EPSILON = 0.999999;
+  float const ONE_PLUS_EPSILON = 1.00001;
 }
 
 ew::UID const Human::ID = ew::getUID();
@@ -100,8 +101,9 @@ bool Human::vectorTerrainCollision(Segment const& segment, Vec2D const& collisio
   Vec2D segmentNormal = segmentDelta.normal().uniti();
   Vec2D rest = getPosition() - collisionPoint;
   
-  relativeVelocity = rest.projectioni(segmentDelta).scalei(ONE_MINUS_EPSILON);
-  setPosition(collisionPoint + relativeVelocity + segmentNormal.scale(-EPSILON));
+  relativeVelocity = rest.projectioni(segmentDelta);
+  setPosition(collisionPoint + relativeVelocity.scale(ONE_MINUS_EPSILON) + segmentNormal.scale(-EPSILON));
   velocity = relativeVelocity.scale(1.0f/timeDelta);
+  
   return true;
 }

@@ -15,4 +15,6 @@ public:
   Vec2D b;
 };
 
+std::ostream& operator<<(std::ostream& stream, Segment const& value);
+
 #endif

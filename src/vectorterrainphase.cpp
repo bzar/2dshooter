@@ -1,5 +1,6 @@
 #include "vectorterrainphase.h"
 #include "vectorterraincollidable.h"
+#include <iostream>
 
 void ew::VectorTerrainPhase::execute(float const delta)
 {
@@ -23,19 +24,16 @@ void ew::VectorTerrainPhase::execute(float const delta)
         if(segment.intersects(relativeMotion))
         {
           Vec2D segmentDelta = segment.delta();
-          if(segmentDelta.cross(relativeVelocity) < 0)
+          if(segmentDelta.cross(relativeVelocity) <= 0)
           {
             Vec2D collisionPoint = segment.intersectionPoint(relativeMotion);
-            collisions = true;
             float distanceSquared = (collisionPoint - relativeMotion.a).lengthSquared();
             if(closestDistanceSquared < 0 || distanceSquared < closestDistanceSquared)
             {
-              if(segmentDelta.unit().dot(v->getVelocity().unit().normal()) != 0)
-              {
-                closestDistanceSquared = distanceSquared;
-                closestCollisionPoint = collisionPoint;
-                closest = segment;
-              }
+              collisions = true;
+              closestDistanceSquared = distanceSquared;
+              closestCollisionPoint = collisionPoint;
+              closest = segment;
             }
           }
         }

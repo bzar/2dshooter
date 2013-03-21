@@ -1,6 +1,6 @@
 Level {
   name: "TestLevel"
-  start: {x:290, y:10}
+  start: {x:320, y:0}
 
   Line {
     vertices: [{x:0, y:0}, {x:800, y:0}, {x:800, y:480}, {x:0, y:480}, {x:0, y:0}]
@@ -15,7 +15,7 @@ Level {
   }
   
   Line {
-    vertices: [{x:300, y:0}, {x:400, y:50}]
+    vertices: [{x:300, y:0}, {x:400, y:50}, {x:310, y:0}]
   }
 
 }

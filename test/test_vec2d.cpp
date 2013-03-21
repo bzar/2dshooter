@@ -1,5 +1,7 @@
 #include "util/vec2d.h"
 #include "util/transformation.h"
+#include "util/segment.h"
+
 #include <iostream>
 #include <cstdlib>
 
@@ -24,5 +26,14 @@ int main()
   std::cout << "toBase: expected Vec2D(-50, 50), got " << toBase.transform(v) << std::endl;
   std::cout << "fromToBase: expected Vec2D(0.5, -0.5), got " << fromToBase.transform(v) << std::endl;
   std::cout << "toFromToBase: expected Vec2D(0.5, -0.5), got " << toFromBase.transform(v) << std::endl;
+  
+  Segment s1({0, 0}, {10, 0});
+  Segment s2({0, 5}, {0, 0});
+  
+  std::cout << "Segments " << s1 << " and " << s2 << (s1.intersects(s2) ? " intersect" : " don't intersect") << std::endl;
+  
+  
+  
+  
   return EXIT_SUCCESS;
 }

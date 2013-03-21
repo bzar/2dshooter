@@ -49,3 +49,8 @@ Vec2D Segment::intersectionPoint(Segment const& other) const
 
   return Vec2D(0, 0);
 }
+
+std::ostream& operator<<(std::ostream& stream, Segment const& value)
+{
+  stream << "Segment(" << value.a << ", " << value.b << ")";
+}
