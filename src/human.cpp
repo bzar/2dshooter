@@ -7,9 +7,9 @@
 
 namespace
 {
-  float const EPSILON = 0.00001;
-  float const ONE_MINUS_EPSILON = 0.999999;
-  float const ONE_PLUS_EPSILON = 1.00001;
+  float const EPSILON = 0.001;
+  float const ONE_MINUS_EPSILON = 0.999;
+  float const ONE_PLUS_EPSILON = 1.001;
 }
 
 ew::UID const Human::ID = ew::getUID();
