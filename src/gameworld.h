@@ -17,9 +17,11 @@ class GameWorld : public ew::RenderableWorld, public ew::UpdatableWorld,
 public:
   GameWorld();
   glhckCamera* getCamera();
+  Vec2D const& getGravity() const;
 
 private:
   glhckCamera* camera;
+  Vec2D gravity;
 };
 
 #endif

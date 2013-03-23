@@ -4,18 +4,16 @@
 
 void ew::VectorTerrainPhase::execute(float const delta)
 {
-  SegmentTree const& segmentTree = world->getSegmentTree();
-
   for(VectorTerrainCollidable* v : world->getVectorTerrainCollidables())
   {
     bool collisions = false;
     do 
     {
-      Vec2D relativeVelocity = v->getVelocity().scale(delta);
-      Segment const relativeMotion{v->getPosition() - relativeVelocity, v->getPosition()};
+      Segment const relativeMotion(v->getPosition() - v->getVelocity().scale(delta), v->getPosition());
       
       std::tuple<Segment, bool> collision = world->getFirstColliding(relativeMotion);
       collisions = std::get<1>(collision);
+
       if(collisions)
       {
         Segment closest = std::get<0>(collision);

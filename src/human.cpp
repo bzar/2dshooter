@@ -17,7 +17,7 @@ std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 
 Human::Human(GameWorld* world) :
   ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), 
-  world(world), velocity(), movingLeft(false), movingRight(false), jumping(false)
+  world(world), velocity(), movingLeft(false), movingRight(false), jumping(false), onGround(false)
 {
 }
 
@@ -38,7 +38,7 @@ void Human::update(const float delta)
     setPose("walk", true);
     setPose("walk-hands", true);
     setFlipX(true);
-    velocity.x = -20;
+    velocity.x = -40;
   }
   else if(movingRight)
   {
@@ -47,7 +47,7 @@ void Human::update(const float delta)
     setPose("walk", true);
     setPose("walk-hands", true);
     setFlipX(false);
-    velocity.x = 20;
+    velocity.x = 40;
   }
   else
   {
@@ -58,18 +58,19 @@ void Human::update(const float delta)
     velocity.x = 0;
   }
 
-  if(jumping)
+  if(jumping && onGround)
   {
-    velocity.y = 20;
+    velocity.y = 200;
   }
   
-  velocity.y -= 5 * 9.81 * delta;
+  velocity += world->getGravity() * delta;
 
+  onGround = false;
   setPosition(getPosition() + velocity.scale(delta));
   PuppetEntity::update(delta);
 
   glhckObject* camera = glhckCameraGetObject(world->getCamera());
-  glhckObjectPositionf(camera, getPosition().x, getPosition().y, 100);
+  glhckObjectPositionf(camera, getPosition().x, getPosition().y, 150);
   glhckObjectTargetf(camera, getPosition().x, getPosition().y, 0);
   glhckCameraUpdate(world->getCamera());
 }
@@ -99,6 +100,8 @@ bool Human::vectorTerrainCollision(Segment const& segment, Vec2D const& collisio
   Vec2D relativeVelocity = velocity.scale(timeDelta);
   Vec2D segmentDelta = segment.delta();
   Vec2D segmentNormal = segmentDelta.normal().uniti();
+
+  onGround |= segmentDelta.cross(world->getGravity()) < 0;
 
   if(world->getCollideCount({collisionPoint, collisionPoint + segmentNormal.scale(-EPSILON)}) > 0)
   {

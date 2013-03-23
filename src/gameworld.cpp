@@ -6,7 +6,7 @@
 GameWorld::GameWorld() :
   ew::World(), ew::RenderableWorld(), ew::UpdatableWorld(), ew::CollidableWorld(),
   ew::ControllableWorld(), ew::VectorTerrainWorld(),
-  camera(glhckCameraNew())
+  camera(glhckCameraNew()), gravity(0, 50 * -9.81)
 {
   Human* human = new Human(this);
   glhckObjectPositionf(glhckCameraGetObject(camera), 0, 0, 300);
@@ -25,4 +25,9 @@ GameWorld::GameWorld() :
 glhckCamera* GameWorld::getCamera()
 {
   return camera;
+}
+
+const Vec2D &GameWorld::getGravity() const
+{
+  return gravity;
 }
