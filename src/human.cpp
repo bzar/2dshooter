@@ -99,11 +99,19 @@ bool Human::vectorTerrainCollision(Segment const& segment, Vec2D const& collisio
   Vec2D relativeVelocity = velocity.scale(timeDelta);
   Vec2D segmentDelta = segment.delta();
   Vec2D segmentNormal = segmentDelta.normal().uniti();
-  Vec2D rest = getPosition() - collisionPoint;
-  
-  relativeVelocity = rest.projectioni(segmentDelta);
-  setPosition(collisionPoint + relativeVelocity.scale(ONE_MINUS_EPSILON) + segmentNormal.scale(-EPSILON));
-  velocity = relativeVelocity.scale(1.0f/timeDelta);
-  
+
+  if(world->getCollideCount({collisionPoint, collisionPoint + segmentNormal.scale(-EPSILON)}) > 0)
+  {
+    setPosition(getPosition() - relativeVelocity);
+    velocity = Vec2D();
+    return false;
+  }
+  else
+  {
+    Vec2D rest = getPosition() - collisionPoint;
+    relativeVelocity = rest.projectioni(segmentDelta);
+    velocity = relativeVelocity.scale(1.0f/timeDelta);
+    setPosition(collisionPoint + relativeVelocity.scale(ONE_MINUS_EPSILON) + segmentNormal.scale(-EPSILON));
+  }
   return true;
 }

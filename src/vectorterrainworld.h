@@ -4,6 +4,7 @@
 #include "ew/world.h"
 #include "util/segmenttree.h"
 #include <set>
+#include <tuple>
 
 namespace ew
 {
@@ -20,6 +21,10 @@ namespace ew
     std::set<VectorTerrainCollidable*> const& getVectorTerrainCollidables();
     void setSegmentTree(SegmentTree const& segmentTree);
     SegmentTree const& getSegmentTree() const;
+
+    SegmentTree::SegmentList getColliding(Segment const& motion);
+    std::tuple<Segment, bool> getFirstColliding(Segment const& motion);
+    int getCollideCount(Segment const& motion);
 
   private:
     std::set<VectorTerrainCollidable*> vectorTerrainCollidablesToInsert;

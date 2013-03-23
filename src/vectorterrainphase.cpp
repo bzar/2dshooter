@@ -5,7 +5,7 @@
 void ew::VectorTerrainPhase::execute(float const delta)
 {
   SegmentTree const& segmentTree = world->getSegmentTree();
-  
+
   for(VectorTerrainCollidable* v : world->getVectorTerrainCollidables())
   {
     bool collisions = false;
@@ -14,36 +14,15 @@ void ew::VectorTerrainPhase::execute(float const delta)
       Vec2D relativeVelocity = v->getVelocity().scale(delta);
       Segment const relativeMotion{v->getPosition() - relativeVelocity, v->getPosition()};
       
-      Segment closest;
-      Vec2D closestCollisionPoint;
-      float closestDistanceSquared = -1;
-      collisions = false;
-      
-      // Find closest terrain collision
-      segmentTree.query(relativeMotion, [&](Segment const& segment){
-        if(segment.intersects(relativeMotion))
-        {
-          Vec2D segmentDelta = segment.delta();
-          if(segmentDelta.cross(relativeVelocity) <= 0)
-          {
-            Vec2D collisionPoint = segment.intersectionPoint(relativeMotion);
-            float distanceSquared = (collisionPoint - relativeMotion.a).lengthSquared();
-            if(closestDistanceSquared < 0 || distanceSquared < closestDistanceSquared)
-            {
-              collisions = true;
-              closestDistanceSquared = distanceSquared;
-              closestCollisionPoint = collisionPoint;
-              closest = segment;
-            }
-          }
-        }
-        return false;
-      });
-      
+      std::tuple<Segment, bool> collision = world->getFirstColliding(relativeMotion);
+      collisions = std::get<1>(collision);
       if(collisions)
       {
+        Segment closest = std::get<0>(collision);
+        Vec2D closestCollisionPoint = closest.intersectionPoint(relativeMotion);
         v->vectorTerrainCollision(closest, closestCollisionPoint, delta);
       }
     } while(collisions);
   }
 }
+
