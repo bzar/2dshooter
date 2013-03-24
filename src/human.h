@@ -29,8 +29,10 @@ private:
   bool movingLeft;
   bool movingRight;
   bool jumping;
+  bool shooting;
   bool onGround;
   
+  float shootDelay;
   Vec2D velocity;
 };
 

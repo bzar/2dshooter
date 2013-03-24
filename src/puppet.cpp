@@ -108,6 +108,10 @@ Skeleton& Puppet::getSkeleton()
   return skeleton;
 }
 
+Skeleton const& Puppet::getSkeleton() const
+{
+  return skeleton;
+}
 
 Puppet::Part const& Puppet::getPart(std::string const& name) const
 {

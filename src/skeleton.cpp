@@ -342,6 +342,17 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
   si.init(skeleton, value);
 }
 
+const Skeleton::Bone &Skeleton::getBone(const std::string &name) const
+{
+  for(Bone const& b : bones)
+  {
+    if(b.name == name)
+    {
+      return b;
+    }
+  }
+}
+
 Skeleton::Bone& Skeleton::getBone(std::string const& name)
 {
   for(Bone& b : bones)

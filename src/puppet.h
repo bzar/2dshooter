@@ -62,7 +62,7 @@ public:
 
   SpriteSheet& getSpriteSheet();
   Skeleton& getSkeleton();
-
+  Skeleton const& getSkeleton() const;
   Part const& getPart(std::string const& name) const;
   Part const& getPart(int const id) const;
   SpriteSheet::Frame const& getPartFrame(int const id);

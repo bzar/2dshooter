@@ -1,4 +1,6 @@
 #include "human.h"
+#include "bullet.h"
+
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -17,7 +19,8 @@ std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 
 Human::Human(GameWorld* world) :
   ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), 
-  world(world), velocity(), movingLeft(false), movingRight(false), jumping(false), onGround(false)
+  world(world), movingLeft(false), movingRight(false), jumping(false), shooting(false), onGround(false),
+  velocity(), shootDelay(0)
 {
 }
 
@@ -62,6 +65,23 @@ void Human::update(const float delta)
   {
     velocity.y = 200;
   }
+
+  if(shootDelay > 0)
+  {
+    shootDelay -= delta;
+  }
+
+  if(shooting && shootDelay <= 0)
+  {
+    Puppet::Part const& rightHand = getPuppet().getPart("forearm-right");
+    Vec2D bulletPosition = rightHand.position.topRight;
+    Vec2D bulletDirection = (rightHand.position.topRight - rightHand.position.bottomRight).uniti();
+
+    Bullet* bullet = new Bullet(world);
+    bullet->setPosition(getPosition() + bulletPosition);
+    bullet->setVelocity(bulletDirection * 200);
+    shootDelay = 0.25;
+  }
   
   velocity += world->getGravity() * delta;
 
@@ -80,7 +100,7 @@ void Human::control(ew::ControlContext* context)
   movingLeft = context->keyDown(GLFW_KEY_LEFT);
   movingRight = context->keyDown(GLFW_KEY_RIGHT);
   jumping = context->keyDown(GLFW_KEY_SPACE);
-  
+  shooting = context->keyDown(GLFW_KEY_C);
   if(context->keyPush(GLFW_KEY_R))
     setPosition({0, 0});
 }

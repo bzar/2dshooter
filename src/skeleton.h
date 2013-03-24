@@ -89,6 +89,7 @@ public:
   void initialize(qmlon::Value::Reference value);
   static void initialize(Skeleton& skeleton, qmlon::Value::Reference value);
   
+  Bone const& getBone(std::string const& name) const;
   Bone& getBone(std::string const& name);
   Bone& getBone(int const id);
   Bones& getBones();
