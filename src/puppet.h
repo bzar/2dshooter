@@ -76,7 +76,5 @@ private:
   SpriteSheet spriteSheet;
   Skeleton skeleton;
   Parts parts;
-  bool flipX = false;
-  bool flipY = false;
 };
 #endif

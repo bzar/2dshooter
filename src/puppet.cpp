@@ -69,7 +69,7 @@ void Puppet::update(float const delta)
 
 void Puppet::setFlipX(bool const value)
 {
-  flipX = value;
+  skeleton.setFlipX(value);
 
   for(Part& part : parts)
   {
@@ -79,7 +79,7 @@ void Puppet::setFlipX(bool const value)
 
 void Puppet::setFlipY(bool const value)
 {
-  flipY = value;
+  skeleton.setFlipY(value);
 
   for(Part& part : parts)
   {
@@ -89,12 +89,12 @@ void Puppet::setFlipY(bool const value)
 
 bool Puppet::getFlipX() const
 {
-  return flipX;
+  return skeleton.getFlipX();
 }
 
 bool Puppet::getFlipY() const
 {
-  return flipY;
+  return skeleton.getFlipY();
 }
 
 
@@ -134,7 +134,7 @@ Puppet::Part const& Puppet::getPart(const int id) const
 SpriteSheet::Frame const& Puppet::getPartFrame(const int id)
 {
   Part const& part = getPart(id);
-  bool const flipped = flipX != flipY;
+  bool const flipped = skeleton.getFlipX() != skeleton.getFlipY();
   spriteSheet.getSprite(flipped ? part.backId : part.frontId).getAnimation(0).getFrame(0);
 }
 
@@ -151,7 +151,7 @@ Puppet::PartRefs Puppet::getPartsZOrdered() const
     ordered.push_back(&p);
   }
   
-  bool const flipped = flipX != flipY;
+  bool const flipped = skeleton.getFlipX() != skeleton.getFlipY();
   std::stable_sort(ordered.begin(), ordered.end(), [flipped](Part const* a, Part const* b) { 
     return a->z < b->z != flipped;
   });
@@ -203,27 +203,13 @@ void Puppet::updatePart(Part& part)
     .apply(part.partBoneTransformation)
     .apply(bone.getTransformation());
 
+  bool flipX = skeleton.getFlipX();
+  bool flipY = skeleton.getFlipY();
   part.position.topLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 0.0f : 1.0f});
   part.position.topRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 0.0f : 1.0f});
   part.position.bottomLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 1.0f : 0.0f});
   part.position.bottomRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 1.0f : 0.0f});
-  
-  if(flipX)
-  {
-    part.position.topLeft.x = -part.position.topLeft.x;
-    part.position.topRight.x = -part.position.topRight.x;
-    part.position.bottomLeft.x = -part.position.bottomLeft.x;
-    part.position.bottomRight.x = -part.position.bottomRight.x;
-  }
-  
-  if(flipY)
-  {
-    part.position.topLeft.y = -part.position.topLeft.y;
-    part.position.topRight.y = -part.position.topRight.y;
-    part.position.bottomLeft.y = -part.position.bottomLeft.y;
-    part.position.bottomRight.y = -part.position.bottomRight.y;
-  }
-  
+
   part.framePartTransformationIsDirty = false;
   part.partBoneTransformationIsDirty = false;
 }

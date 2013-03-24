@@ -57,7 +57,7 @@ void Human::update(const float delta)
     setPose("walk", false);
     setPose("walk-hands", false);
     setPose("stand", true);
-    setPose("stand-hands", true);        
+    setPose("stand-hands", true);
     velocity.x = 0;
   }
 
@@ -71,18 +71,28 @@ void Human::update(const float delta)
     shootDelay -= delta;
   }
 
+  if(shooting)
+  {
+    setPose("walk-hands", false);
+    setPose("stand-hands", false);
+    setPose("rifle-hip", true);
+  }
+  else
+  {
+    setPose("rifle-hip", false);
+  }
   if(shooting && shootDelay <= 0)
   {
-    Puppet::Part const& rightHand = getPuppet().getPart("forearm-right");
-    Vec2D bulletPosition = rightHand.position.topRight;
-    Vec2D bulletDirection = (rightHand.position.topRight - rightHand.position.bottomRight).uniti();
+    Skeleton::Bone const& leftHand = getPuppet().getSkeleton().getBone("forearm-left");
+    Vec2D bulletPosition = getPosition() + leftHand.getTip();
+    Vec2D bulletDirection = (leftHand.getTip() - leftHand.getBase()).uniti();
 
     Bullet* bullet = new Bullet(world);
-    bullet->setPosition(getPosition() + bulletPosition);
+    bullet->setPosition(bulletPosition);
     bullet->setVelocity(bulletDirection * 200);
     shootDelay = 0.25;
   }
-  
+
   velocity += world->getGravity() * delta;
 
   onGround = false;

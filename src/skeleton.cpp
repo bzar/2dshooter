@@ -98,7 +98,13 @@ void Skeleton::Bone::transform(Skeleton* skeleton, bool parentDirty)
 
     Bone* parent = parentId < 0 ? 0 : &skeleton->getBone(parentId);
     if(parent)
+    {
       transformation.apply(parent->transformation);
+    }
+    else if(skeleton->getFlipX() || skeleton->getFlipY())
+    {
+      transformation.scale(skeleton->getFlipX() ? -1 : 1, skeleton->getFlipY() ? -1 : 1);
+    }
   }
 
   for(int childId : children)
@@ -194,15 +200,15 @@ void Skeleton::Pose::reset()
 }
 
 
-Skeleton::Skeleton() : bones(), poses()
+Skeleton::Skeleton() : bones(), poses(), flipX(false), flipY(false)
 {
 }
 
-Skeleton::Skeleton(const Skeleton& other) : bones(other.bones), poses(other.poses)
+Skeleton::Skeleton(const Skeleton& other) : bones(other.bones), poses(other.poses), flipX(other.flipX), flipY(other.flipY)
 {
 }
 
-Skeleton::Skeleton(Skeleton&& other) : bones(std::move(other.bones)), poses(std::move(other.poses))
+Skeleton::Skeleton(Skeleton&& other) : bones(std::move(other.bones)), poses(std::move(other.poses)), flipX(other.flipX), flipY(other.flipY)
 {
 }
 
@@ -393,6 +399,40 @@ Skeleton::Pose& Skeleton::getPose(int const id)
 Skeleton::Poses& Skeleton::getPoses()
 {
   return poses;
+}
+
+void Skeleton::setFlipX(bool const value)
+{
+  if(flipX != value)
+  {
+    flipX = value;
+    for(Bone& bone : bones)
+    {
+      bone.dirty = true;
+    }
+  }
+}
+
+void Skeleton::setFlipY(bool const value)
+{
+  if(flipY != value)
+  {
+    flipY = value;
+    for(Bone& bone : bones)
+    {
+      bone.dirty = true;
+    }
+  }
+}
+
+bool Skeleton::getFlipX() const
+{
+  return flipX;
+}
+
+bool Skeleton::getFlipY() const
+{
+  return flipY;
 }
 
 void Skeleton::update(float const delta)

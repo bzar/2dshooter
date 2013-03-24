@@ -98,11 +98,19 @@ public:
   Pose& getPose(int const id);
   Poses& getPoses();
 
+  void setFlipX(bool const value);
+  void setFlipY(bool const value);
+
+  bool getFlipX() const;
+  bool getFlipY() const;
+
   void update(float const delta);
 
 private:
   Bones bones;
   Poses poses;
+  bool flipX;
+  bool flipY;
 };
 
 #endif

@@ -82,6 +82,29 @@ Skeleton {
   }
 
   Pose {
+    name: "rifle-aim"
+    Animation {
+      duration: 0.2
+      Angle { target: "arm-left", to: 0.15 }
+      Angle { target: "forearm-left", to: 0.20 }
+      Angle { target: "arm-right", to: 0.05 }
+      Angle { target: "forearm-right", to: 0.40 }
+    }
+  }
+
+  Pose {
+    name: "rifle-hip"
+    Animation {
+      duration: 0.2
+      /* forearm = acos(sqrt(2) - cos(arm)) - arm, arm = 0.1*tau, forearm = 0.073358294*tau */
+      Angle { target: "arm-left", to: 0.1 }
+      Angle { target: "forearm-left", to: 0.073358294 }
+      Angle { target: "arm-right", to: -0.125 }
+      Angle { target: "forearm-right", to: 0.25 }
+    }
+  }
+
+  Pose {
     name: "walk"
     SequentialAnimation {
       loop: true
