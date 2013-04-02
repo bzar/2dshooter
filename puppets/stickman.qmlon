@@ -41,6 +41,16 @@ Puppet {
   }
 
   Part {
+    name: "rifle"
+    front: "rifle"
+    back: "rifle"
+    bone: "item-right"
+    base: {y: 8}
+    tip: {x: 12, y: 8}
+    z: 2
+  }
+  
+  Part {
     name: "arm-right"
     front: "arm-front"
     back: "arm-back"

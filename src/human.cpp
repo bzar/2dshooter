@@ -19,7 +19,7 @@ std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 
 Human::Human(GameWorld* world) :
   ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), 
-  world(world), movingLeft(false), movingRight(false), jumping(false), shooting(false), onGround(false),
+  world(world), movingLeft(false), movingRight(false), jumping(false), shooting(false), aiming(false), onGround(false),
   velocity(), shootDelay(0)
 {
 }
@@ -75,17 +75,19 @@ void Human::update(const float delta)
   {
     setPose("walk-hands", false);
     setPose("stand-hands", false);
-    setPose("rifle-hip", true);
+    setPose(aiming ? "rifle-aim" : "rifle-hip", true);
+    setPose(aiming ? "rifle-hip" : "rifle-aim", false);
   }
   else
   {
     setPose("rifle-hip", false);
+    setPose("rifle-aim", false);
   }
   if(shooting && shootDelay <= 0)
   {
-    Skeleton::Bone const& leftHand = getPuppet().getSkeleton().getBone("forearm-left");
-    Vec2D bulletPosition = getPosition() + leftHand.getTip();
-    Vec2D bulletDirection = (leftHand.getTip() - leftHand.getBase()).uniti();
+    Skeleton::Bone const& weapon = getPuppet().getSkeleton().getBone("item-right");
+    Vec2D bulletDirection = (weapon.getTip() - weapon.getBase()).uniti();
+    Vec2D bulletPosition = getPosition() + weapon.getTip() + bulletDirection.scale(7);
 
     Bullet* bullet = new Bullet(world);
     bullet->setPosition(bulletPosition);
@@ -111,6 +113,7 @@ void Human::control(ew::ControlContext* context)
   movingRight = context->keyDown(GLFW_KEY_RIGHT);
   jumping = context->keyDown(GLFW_KEY_SPACE);
   shooting = context->keyDown(GLFW_KEY_C);
+  aiming = context->keyDown(GLFW_KEY_X);
   if(context->keyPush(GLFW_KEY_R))
     setPosition({0, 0});
 }

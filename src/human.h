@@ -29,6 +29,7 @@ private:
   bool movingLeft;
   bool movingRight;
   bool jumping;
+  bool aiming;
   bool shooting;
   bool onGround;
   

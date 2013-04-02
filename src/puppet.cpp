@@ -162,7 +162,9 @@ Puppet::PartRefs Puppet::getPartsZOrdered() const
 void Puppet::updatePart(Part& part)
 {
   Skeleton::Bone const& bone = skeleton.getBone(part.boneId);
-  
+  bool flipX = skeleton.getFlipX();
+  bool flipY = skeleton.getFlipY();
+
   if(part.framePartTransformationIsDirty)
   {
     SpriteSheet::Frame const& frame = getPartFrame(part.id);
@@ -174,14 +176,36 @@ void Puppet::updatePart(Part& part)
       .move(-part.base.x, -part.base.y)
       .scale(1, -1);
 
-    part.imagePosition.topLeft = {static_cast<float>(frame.getPosition().x), 
+    part.imagePosition.topLeft = {static_cast<float>(frame.getPosition().x),
                                   static_cast<float>(frame.getPosition().y)};
-    part.imagePosition.topRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
+    part.imagePosition.topRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width,
                                   static_cast<float>(frame.getPosition().y)};
-    part.imagePosition.bottomLeft = {static_cast<float>(frame.getPosition().x), 
+    part.imagePosition.bottomLeft = {static_cast<float>(frame.getPosition().x),
                                     static_cast<float>(frame.getPosition().y) + frame.getSize().height};
-    part.imagePosition.bottomRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width, 
+    part.imagePosition.bottomRight = {static_cast<float>(frame.getPosition().x) + frame.getSize().width,
                                       static_cast<float>(frame.getPosition().y) + frame.getSize().height};
+
+    if(flipX)
+    {
+      Vec2D temp = part.imagePosition.topLeft;
+      part.imagePosition.topLeft = part.imagePosition.topRight;
+      part.imagePosition.topRight = temp;
+
+      temp = part.imagePosition.bottomLeft;
+      part.imagePosition.bottomLeft = part.imagePosition.bottomRight;
+      part.imagePosition.bottomRight = temp;
+    }
+
+    if(flipY)
+    {
+      Vec2D temp = part.imagePosition.topLeft;
+      part.imagePosition.topLeft = part.imagePosition.bottomLeft;
+      part.imagePosition.bottomLeft = temp;
+
+      temp = part.imagePosition.topRight;
+      part.imagePosition.topRight = part.imagePosition.bottomRight;
+      part.imagePosition.bottomRight = temp;
+    }
   }
     
   if(part.partBoneTransformationIsDirty)
@@ -203,12 +227,10 @@ void Puppet::updatePart(Part& part)
     .apply(part.partBoneTransformation)
     .apply(bone.getTransformation());
 
-  bool flipX = skeleton.getFlipX();
-  bool flipY = skeleton.getFlipY();
-  part.position.topLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 0.0f : 1.0f});
-  part.position.topRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 0.0f : 1.0f});
-  part.position.bottomLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 1.0f : 0.0f});
-  part.position.bottomRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 1.0f : 0.0f});
+  part.position.topLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 1.0f : 0.0f});
+  part.position.topRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 1.0f : 0.0f});
+  part.position.bottomLeft = part.transformation.transform({flipX ? 1.0f : 0.0f, flipY ? 0.0f : 1.0f});
+  part.position.bottomRight = part.transformation.transform({flipX ? 0.0f : 1.0f, flipY ? 0.0f : 1.0f});
 
   part.framePartTransformationIsDirty = false;
   part.partBoneTransformationIsDirty = false;

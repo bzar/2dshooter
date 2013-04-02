@@ -130,4 +130,17 @@ Sheet {
       }
     }
   }
+  Sprite {
+    id: "rifle"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 3, y: 171}
+        size: Size {width: 150, height: 44}
+        hotspot: Vec2D {x: 35, y: 17}
+      }
+    }
+  }
 }

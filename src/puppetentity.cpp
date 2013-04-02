@@ -105,11 +105,11 @@ void PuppetEntity::update(float const delta)
         if(showParts)
         {
           partVertices[i * 6 + 0].vertex = {p1.x, p1.y};
-          partVertices[i * 6 + 1].vertex = {p2.x, p2.y};
-          partVertices[i * 6 + 2].vertex = {p3.x, p3.y};
+          partVertices[i * 6 + 1].vertex = {p3.x, p3.y};
+          partVertices[i * 6 + 2].vertex = {p2.x, p2.y};
           partVertices[i * 6 + 3].vertex = {p1.x, p1.y};
-          partVertices[i * 6 + 4].vertex = {p3.x, p3.y};
-          partVertices[i * 6 + 5].vertex = {p4.x, p4.y};
+          partVertices[i * 6 + 4].vertex = {p4.x, p4.y};
+          partVertices[i * 6 + 5].vertex = {p3.x, p3.y};
         }
         
         if(showPartLines)
@@ -224,11 +224,11 @@ void PuppetEntity::refreshVertices()
     Vec2D const& p4 = part->position.topRight;
     
     partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
     partsData.push_back({{p2.x, p2.y}, {0, 0}, {tex2.x, tex2.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
     partsData.push_back({{p1.x, p1.y}, {0, 0}, {tex1.x, tex1.y}, {255, 255, 255, 255}});
-    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
     partsData.push_back({{p4.x, p4.y}, {0, 0}, {tex4.x, tex4.y}, {255, 255, 255, 255}});
+    partsData.push_back({{p3.x, p3.y}, {0, 0}, {tex3.x, tex3.y}, {255, 255, 255, 255}});
 
     // left: green, bottom: yellow, right: cyan, top: magenta
     partLineData.push_back({{p1.x, p1.y}, {0, 0}, {0, 0}, {0, 255, 0, 255}});

@@ -13,7 +13,7 @@ namespace
 {
   SkeletonAnimation::Animator* createBoneAnimator(qmlon::Object& obj, std::string const& boneName,
                                                   float (Skeleton::Bone::*getter)() const,
-						    void (Skeleton::Bone::*setter)(float))
+                                                  void (Skeleton::Bone::*setter)(float))
   {
     bool fromSet = obj.hasProperty("from");
     bool toSet = obj.hasProperty("to");
