@@ -69,6 +69,7 @@ Skeleton {
     name: "stand"
     Animation {
       duration: 0.5
+      Origin { to: {y: 0} }
       Angle { target: "thigh-left", to: 0.1 }
       Angle { target: "leg-left", to: -0.05 }
       Angle { target: "thigh-right", to: -0.05 }
@@ -114,6 +115,10 @@ Skeleton {
 
   Pose {
     name: "walk"
+    Animation {
+      duration: 0.5
+      Origin { to: {y: 0} }
+    }
     SequentialAnimation {
       loop: true
       Animation {
@@ -147,6 +152,17 @@ Skeleton {
         Angle { target: "arm-right", to: -0.1 }
         Angle { target: "forearm-right", to: 0 }
       }
+    }
+  }
+  
+  Pose {
+    name: "crouch"
+    Animation {
+      Origin { to: {y: 3} }
+      Angle { target: "thigh-left", to: 0.25 }
+      Angle { target: "leg-left", to: -0.25 }
+      Angle { target: "thigh-right", to: 0 }
+      Angle { target: "leg-right", to: -0.25 }
     }
   }
 }

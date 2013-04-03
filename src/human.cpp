@@ -19,7 +19,8 @@ std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 
 Human::Human(GameWorld* world) :
   ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), 
-  world(world), movingLeft(false), movingRight(false), jumping(false), shooting(false), aiming(false), onGround(false),
+  world(world), movingLeft(false), movingRight(false), jumping(false), crouching(false),
+  shooting(false), aiming(false), onGround(false),
   velocity(), shootDelay(0)
 {
 }
@@ -34,21 +35,23 @@ Puppet Human::createPuppet()
 
 void Human::update(const float delta)
 {
-  if(movingLeft)
+  if(movingLeft && !crouching)
   {
     setPose("stand", false);
     setPose("stand-hands", false);
     setPose("walk", true);
     setPose("walk-hands", true);
+    setPose("crouch", false);
     setFlipX(true);
     velocity.x = -40;
   }
-  else if(movingRight)
+  else if(movingRight && !crouching)
   {
     setPose("stand", false);
     setPose("stand-hands", false);
     setPose("walk", true);
     setPose("walk-hands", true);
+    setPose("crouch", false);
     setFlipX(false);
     velocity.x = 40;
   }
@@ -56,8 +59,10 @@ void Human::update(const float delta)
   {
     setPose("walk", false);
     setPose("walk-hands", false);
-    setPose("stand", true);
     setPose("stand-hands", true);
+
+    setPose(crouching ? "crouch" : "stand", true);
+    setPose(!crouching ? "crouch" : "stand", false);
     velocity.x = 0;
   }
 
@@ -112,6 +117,7 @@ void Human::control(ew::ControlContext* context)
   movingLeft = context->keyDown(GLFW_KEY_LEFT);
   movingRight = context->keyDown(GLFW_KEY_RIGHT);
   jumping = context->keyDown(GLFW_KEY_SPACE);
+  crouching = context->keyDown(GLFW_KEY_Z);
   shooting = context->keyDown(GLFW_KEY_C);
   aiming = context->keyDown(GLFW_KEY_X);
   if(context->keyPush(GLFW_KEY_R))

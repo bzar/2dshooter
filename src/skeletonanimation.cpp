@@ -2,22 +2,19 @@
 #include "skeleton.h"
 #include <cmath>
 
-SkeletonAnimation::Animator::Animator(std::string const& targetName,
+SkeletonAnimation::BoneAnimator::BoneAnimator(std::string const& targetName,
                                                 bool fromSet, float from,
                                                 bool toSet, float to,
                                                 bool deltaSet, float delta,
                                                 float (Skeleton::Bone::*getter)() const,
                                                 void (Skeleton::Bone::*setter)(float))
-  : targetName(targetName), targetId(-1),
-    initialValueSet(false), initialValue(0),
-    fromSet(fromSet), from(from),
-    toSet(toSet), to(to),
-    deltaSet(deltaSet), delta(delta),
+  : ValueAnimator<float>(fromSet, from, toSet, to, deltaSet, delta),
+    targetName(targetName), targetId(-1),
     getter(getter), setter(setter)
 {
 }
 
-void SkeletonAnimation::Animator::execute(Skeleton* skeleton, float const progress)
+float SkeletonAnimation::BoneAnimator::getValue(Skeleton* skeleton)
 {
   if(targetId == -1)
   {
@@ -25,38 +22,33 @@ void SkeletonAnimation::Animator::execute(Skeleton* skeleton, float const progre
   }
 
   Skeleton::Bone& bone = skeleton->getBone(targetId);
-
-  if(!initialValueSet)
-  {
-    initialValue = (bone.*getter)();
-    initialValueSet = true;
-  }
-
-  if(fromSet && toSet)
-  {
-    (bone.*setter)(from + (to - from) * progress);
-  }
-  else if(fromSet && deltaSet)
-  {
-    (bone.*setter)(from + delta * progress);
-  }
-  else if(toSet && deltaSet)
-  {
-    (bone.*setter)(to - delta * (1 - progress));
-  }
-  else if(toSet)
-  {
-    (bone.*setter)(initialValue + (to - initialValue) * progress);
-  }
-  else if(deltaSet)
-  {
-    (bone.*setter)(initialValue + delta * progress);
-  }
+  return (bone.*getter)();
 }
 
-void SkeletonAnimation::Animator::reset()
+void SkeletonAnimation::BoneAnimator::setValue(Skeleton* skeleton, float const value)
 {
-  initialValueSet = false;
+  if(targetId == -1)
+  {
+    targetId = skeleton->getBone(targetName).getId();
+  }
+
+  Skeleton::Bone& bone = skeleton->getBone(targetId);
+  return (bone.*setter)(value);
+}
+
+void SkeletonAnimation::OriginAnimator::setValue(Skeleton *skeleton, const Vec2D value)
+{
+  skeleton->setOrigin(value);
+}
+
+SkeletonAnimation::OriginAnimator::OriginAnimator(bool fromSet, const Vec2D &from, bool toSet, const Vec2D &to, bool deltaSet, const Vec2D &delta)
+  : ValueAnimator<Vec2D>(fromSet, from, toSet, to, deltaSet, delta)
+{
+}
+
+Vec2D SkeletonAnimation::OriginAnimator::getValue(Skeleton *skeleton)
+{
+  return skeleton->getOrigin();
 }
 
 SkeletonAnimation::SkeletonAnimation() :
@@ -101,7 +93,7 @@ void SkeletonAnimation::animate(float const delta, Skeleton* skeleton)
 
   float progress = time < duration ? easing(time / duration) : 1.0;
 
-  for(Animator::Reference animator : animators)
+  for(BoneAnimator::Reference animator : animators)
   {
     animator->execute(skeleton, progress);
   }

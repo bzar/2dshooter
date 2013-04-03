@@ -11,7 +11,7 @@
 #include <iostream>
 namespace
 {
-  SkeletonAnimation::Animator* createBoneAnimator(qmlon::Object& obj, std::string const& boneName,
+  SkeletonAnimation::BoneAnimator* createBoneAnimator(qmlon::Object& obj, std::string const& boneName,
                                                   float (Skeleton::Bone::*getter)() const,
                                                   void (Skeleton::Bone::*setter)(float))
   {
@@ -22,7 +22,19 @@ namespace
     float to = toSet ? obj.getProperty("to")->asFloat() : 0.0;
     float delta = deltaSet ? obj.getProperty("delta")->asFloat() : 0.0;
 
-    return new SkeletonAnimation::Animator(boneName, fromSet, from, toSet, to, deltaSet, delta, getter, setter);
+    return new SkeletonAnimation::BoneAnimator(boneName, fromSet, from, toSet, to, deltaSet, delta, getter, setter);
+  }
+
+  SkeletonAnimation::OriginAnimator* createOriginAnimator(qmlon::Object& obj, qmlon::Initializer<Vec2D>& vi)
+  {
+    bool fromSet = obj.hasProperty("from");
+    bool toSet = obj.hasProperty("to");
+    bool deltaSet = obj.hasProperty("delta");
+    Vec2D from = fromSet ? qmlon::create(obj.getProperty("from")->asObject(), vi) : Vec2D();
+    Vec2D to = toSet ? qmlon::create(obj.getProperty("to")->asObject(), vi) : Vec2D();
+    Vec2D delta = deltaSet ? qmlon::create(obj.getProperty("delta")->asObject(), vi) : Vec2D();
+
+    return new SkeletonAnimation::OriginAnimator(fromSet, from, toSet, to, deltaSet, delta);
   }
 }
 
@@ -101,9 +113,14 @@ void Skeleton::Bone::transform(Skeleton* skeleton, bool parentDirty)
     {
       transformation.apply(parent->transformation);
     }
-    else if(skeleton->getFlipX() || skeleton->getFlipY())
+    else
     {
-      transformation.scale(skeleton->getFlipX() ? -1 : 1, skeleton->getFlipY() ? -1 : 1);
+      transformation.move(skeleton->getOrigin().neg());
+
+      if(skeleton->getFlipX() || skeleton->getFlipY())
+      {
+        transformation.scale(skeleton->getFlipX() ? -1 : 1, skeleton->getFlipY() ? -1 : 1);
+      }
     }
   }
 
@@ -224,6 +241,11 @@ void Skeleton::initialize(qmlon::Value::Reference value)
 
 void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
 {
+  qmlon::Initializer<Vec2D> vi({
+    {"x", qmlon::set(&Vec2D::x)},
+    {"y", qmlon::set(&Vec2D::y)}
+  });
+
   qmlon::Initializer<Animation> ani({
     {"loop", [](Animation& a, qmlon::Value::Reference v) {
       if(v->isBoolean())
@@ -248,7 +270,11 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
   }, {
     {"Angle", [&](SkeletonAnimation& animation, qmlon::Object& obj) {
       std::string boneName = obj.getProperty("target")->asString();
-      SkeletonAnimation::Animator* a = createBoneAnimator(obj, boneName, &Bone::getAngle, &Bone::setAngle);
+      SkeletonAnimation::BoneAnimator* a = createBoneAnimator(obj, boneName, &Bone::getAngle, &Bone::setAngle);
+      animation.addAnimator(a);
+    }},
+    {"Origin", [&](SkeletonAnimation& animation, qmlon::Object& obj) {
+      SkeletonAnimation::OriginAnimator* a = createOriginAnimator(obj, vi);
       animation.addAnimator(a);
     }},
   });
@@ -306,11 +332,6 @@ void Skeleton::initialize(Skeleton& skeleton, qmlon::Value::Reference value)
       cai.init(*animation, obj);
       p.animations.push_back(Animation::Reference(animation));
     }},
-  });
-
-  qmlon::Initializer<Vec2D> vi({
-    {"x", qmlon::set(&Vec2D::x)},
-    {"y", qmlon::set(&Vec2D::y)}
   });
 
   qmlon::Initializer<Bone> bi({
@@ -406,10 +427,7 @@ void Skeleton::setFlipX(bool const value)
   if(flipX != value)
   {
     flipX = value;
-    for(Bone& bone : bones)
-    {
-      bone.dirty = true;
-    }
+    setAllBonesDirty();
   }
 }
 
@@ -418,10 +436,7 @@ void Skeleton::setFlipY(bool const value)
   if(flipY != value)
   {
     flipY = value;
-    for(Bone& bone : bones)
-    {
-      bone.dirty = true;
-    }
+    setAllBonesDirty();
   }
 }
 
@@ -445,5 +460,24 @@ void Skeleton::update(float const delta)
   for(Bone& bone : bones)
   {
     bone.transform(this);
+  }
+}
+
+void Skeleton::setOrigin(const Vec2D &value)
+{
+  origin = value;
+  setAllBonesDirty();
+}
+
+const Vec2D &Skeleton::getOrigin() const
+{
+  return origin;
+}
+
+void Skeleton::setAllBonesDirty()
+{
+  for(Bone& bone : bones)
+  {
+    bone.dirty = true;
   }
 }

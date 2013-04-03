@@ -106,11 +106,17 @@ public:
 
   void update(float const delta);
 
+  void setOrigin(Vec2D const& value);
+  Vec2D const& getOrigin() const;
+
 private:
+  void setAllBonesDirty();
+
   Bones bones;
   Poses poses;
   bool flipX;
   bool flipY;
+  Vec2D origin;
 };
 
 #endif
