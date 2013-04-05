@@ -20,7 +20,7 @@ std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
 Human::Human(GameWorld* world) :
   ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), 
   world(world), movingLeft(false), movingRight(false), jumping(false), crouching(false),
-  shooting(false), aiming(false), onGround(false),
+  shooting(false), aiming(false), aimingUp(false), aimingDown(false), onGround(false),
   velocity(), shootDelay(0)
 {
 }
@@ -76,17 +76,39 @@ void Human::update(const float delta)
     shootDelay -= delta;
   }
 
-  if(shooting)
+  Skeleton::Bone& aimBone = getPuppet().getSkeleton().getBone("arms-aim");
+  float currentAim = aimBone.getAngle();
+
+  if(aiming)
   {
+    if(aimingUp && !aimingDown && currentAim < 0.20) {
+      aimBone.changeAngle(0.5*delta);
+    } else if(aimingDown && !aimingUp && currentAim > -0.20) {
+      aimBone.changeAngle(-0.5*delta);
+    }
     setPose("walk-hands", false);
     setPose("stand-hands", false);
-    setPose(aiming ? "rifle-aim" : "rifle-hip", true);
-    setPose(aiming ? "rifle-hip" : "rifle-aim", false);
+    setPose("rifle-hip", false);
+    setPose("rifle-aim", true);
+    setPose("aim-front", false);
+  }
+  else
+  {
+    setPose("rifle-aim", false);
+    setPose("aim-front", true);
+  }
+
+  if(shooting)
+  {
+    if(!aiming) {
+      setPose("rifle-hip", true);
+    }
+    setPose("walk-hands", false);
+    setPose("stand-hands", false);
   }
   else
   {
     setPose("rifle-hip", false);
-    setPose("rifle-aim", false);
   }
   if(shooting && shootDelay <= 0)
   {
@@ -120,6 +142,9 @@ void Human::control(ew::ControlContext* context)
   crouching = context->keyDown(GLFW_KEY_Z);
   shooting = context->keyDown(GLFW_KEY_C);
   aiming = context->keyDown(GLFW_KEY_X);
+  aimingUp = context->keyDown(GLFW_KEY_UP);
+  aimingDown = context->keyDown(GLFW_KEY_DOWN);
+
   if(context->keyPush(GLFW_KEY_R))
     setPosition({0, 0});
 }

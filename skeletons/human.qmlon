@@ -11,31 +11,43 @@ Skeleton {
     }
 
     Bone {
-      name: "arm-left"
+      name: "arms-aim"
       base: {y: 14}
-      tip: {y: 10}
-
+      tip: {x: 1, y: 14}
+      
       Bone {
-        name: "forearm-left"
-        base: {y: 10}
-        tip: {y: 6}
-      }
-    }
+        name: "arm-left"
+        base: {y: 14}
+        tip: {y: 10}
 
-    Bone {
-      name: "arm-right"
-      base: {y: 14}
-      tip: {y: 10}
-
-      Bone {
-        name: "forearm-right"
-        base: {y: 10}
-        tip: {y: 6}
-        
         Bone {
-          name: "item-right"
-          base: {y: 6}
-          tip: {y: 5}
+          name: "forearm-left"
+          base: {y: 10}
+          tip: {y: 6}
+
+          Bone {
+            name: "item-left"
+            base: {y: 6}
+            tip: {y: 5}
+          }
+        }
+      }
+
+      Bone {
+        name: "arm-right"
+        base: {y: 14}
+        tip: {y: 10}
+
+        Bone {
+          name: "forearm-right"
+          base: {y: 10}
+          tip: {y: 6}
+          
+          Bone {
+            name: "item-right"
+            base: {y: 6}
+            tip: {y: 5}
+          }
         }
       }
     }
@@ -88,6 +100,14 @@ Skeleton {
     }
   }
 
+  Pose {
+    name: "aim-front"
+    Animation {
+      duration: 0.1
+      Angle { target: "arms-aim", to: 0 }
+    }
+  }
+  
   Pose {
     name: "rifle-aim"
     Animation {
@@ -158,6 +178,7 @@ Skeleton {
   Pose {
     name: "crouch"
     Animation {
+      duration: 0.2
       Origin { to: {y: 3} }
       Angle { target: "thigh-left", to: 0.25 }
       Angle { target: "leg-left", to: -0.25 }

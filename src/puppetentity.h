@@ -19,7 +19,7 @@ public:
 
   void render(ew::RenderContext* context);
   virtual void update(float const delta);
-  Puppet const& getPuppet();
+  Puppet& getPuppet();
   void setPose(std::string const& name, bool const state);
   void setFlipX(bool value);
   void setFlipY(bool value);

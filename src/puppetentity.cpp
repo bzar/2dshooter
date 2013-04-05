@@ -138,7 +138,7 @@ void PuppetEntity::update(float const delta)
 }
 
 
-Puppet const& PuppetEntity::getPuppet()
+Puppet& PuppetEntity::getPuppet()
 {
   return puppet;
 }

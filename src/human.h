@@ -31,6 +31,8 @@ private:
   bool jumping;
   bool crouching;
   bool aiming;
+  bool aimingUp;
+  bool aimingDown;
   bool shooting;
   bool onGround;
   
