@@ -1,0 +1,16 @@
+Sheet {
+  image: "img/grass.png"
+
+  Sprite {
+    id: "grass"
+    
+    Animation {
+      id: "default"
+      
+      Frame {
+        position: Vec2D {x: 0, y: 0}
+        size: Size {width: 28, height: 28}
+      }
+    }
+  }
+}

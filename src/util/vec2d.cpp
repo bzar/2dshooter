@@ -76,6 +76,15 @@ Vec2D Vec2D::projection(Vec2D const& other) const
   Vec2D direction = other.unit();
   return direction.scalei(dot(direction));
 }
+
+// n.projection(m) = m, m.reverseProjection(n.unit()) = n
+Vec2D Vec2D::reverseProjection(const Vec2D &other) const
+{
+  Vec2D nu = other.unit();
+  float l = length();
+  return nu.scalei(l / nu.dot(scale(1.0f/l)));
+}
+
 Vec2D Vec2D::rotate(float const& amount) const
 {
   float sn = sin(amount * TAU);
@@ -110,6 +119,14 @@ Vec2D& Vec2D::projectioni(Vec2D const& other)
   Vec2D direction = other.unit();
   return assign(direction.scalei(dot(direction)));
 }
+
+Vec2D &Vec2D::reverseProjectioni(const Vec2D &other)
+{
+  Vec2D nu = other.unit();
+  float l = length();
+  return assign(nu.scalei(l / nu.dot(scalei(1.0f/l))));
+}
+
 Vec2D& Vec2D::rotatei(float const& amount)
 {
   float sn = sin(amount * TAU);

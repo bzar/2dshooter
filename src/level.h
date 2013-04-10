@@ -5,22 +5,29 @@
 #include "util/segment.h"
 
 #include <string>
-#include <list>
+#include <vector>
 
 class Level
 {
 public:
+  struct Line {
+    std::vector<Vec2D> vertices;
+    std::string terrain;
+  };
+
   Level(std::string const& filename);
+
   std::string const& getFilename() const;
   std::string const& getName() const;
   Vec2D const& getStartPosition() const;
-  std::list<Segment> const& getSegments() const;
-  
+
+  std::vector<Line> const& getLines() const;
+
 private:
   std::string filename;
   std::string name;
   Vec2D startPosition;
-  std::list<Segment> segments;
+  std::vector<Line> lines;
 };
 
 #endif

@@ -20,12 +20,14 @@ public:
   Vec2D unit() const;
   Vec2D normal() const;
   Vec2D projection(Vec2D const& other) const;
+  Vec2D reverseProjection(Vec2D const& other) const;
   Vec2D rotate(float const& amount) const;
   Vec2D rotateAround(Vec2D const& other, float const& amount) const;
 
   Vec2D& uniti();
   Vec2D& normali();
   Vec2D& projectioni(Vec2D const& other);
+  Vec2D& reverseProjectioni(Vec2D const& other);
   Vec2D& rotatei(float const& amount);
   Vec2D& rotateAroundi(Vec2D const& other, float const& amount);
 

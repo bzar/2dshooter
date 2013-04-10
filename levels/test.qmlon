@@ -4,25 +4,31 @@ Level {
 
   Line {
     vertices: [{x:0, y:0}, {x:8000, y:0}, {x:8000, y:480}, {x:0, y:480}, {x:0, y:0}]
+    terrain: "terrains/grass.qmlon"
   }
 
   Line {
     vertices: [{x:20, y:0}, {x:20, y:10}, {x:30, y:10}, {x:30, y:0}]
+    terrain: "terrains/grass.qmlon"
   }
 
   Line {
     vertices: [{x:50, y:0}, {x:175, y:50}, {x:200, y:50}, {x:200, y:40}, {x:220, y:40}, {x:220, y:30}, {x:230, y:30}, {x:230, y:20}, {x:240, y:20}, {x:240, y:10}, {x:250, y:10}, {x:250, y:0}]
+    terrain: "terrains/grass.qmlon"
   }
   
   Line {
     vertices: [{x:300, y:0}, {x:400, y:50}, {x:310, y:0}]
+    terrain: "terrains/grass.qmlon"
   }
 
   Line {
     vertices: [{x:450, y:0}, {x:500, y:50}, {x:510, y:50}, {x:530, y:0}, {x:550, y:50}, {x:560, y:50}, {x:610, y:0}]
+    terrain: "terrains/grass.qmlon"
   }
 
   Line {
     vertices: [{x:3000, y:0}, {x:3100, y:50}, {x:3010, y:0}]
+    terrain: "terrains/grass.qmlon"
   }
 }

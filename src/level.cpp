@@ -4,34 +4,32 @@
 #include "qmloninitializershelpers.h"
 
 Level::Level(const std::string& filename) :
-  filename(filename), name(), startPosition(), segments()
+  filename(filename), name(), startPosition(), lines()
 {
   qmlon::Initializer<Vec2D> vi({
     {"x", qmlon::set(&Vec2D::x)},
     {"y", qmlon::set(&Vec2D::y)},
   });
-    
+
+  qmlon::Initializer<Line> lii({
+    {"terrain", qmlon::set(&Line::terrain)},
+    {"vertices", [&vi](Line& line, qmlon::Value::Reference value) {
+      qmlon::Value::List const& vertices = value->asList();
+      for(qmlon::Value::Reference v : vertices)
+      {
+        Vec2D vertex = qmlon::create(v, vi);
+        line.vertices.push_back(vertex);
+      }
+    }}
+  });
+
   qmlon::Initializer<Level> li({
     {"name", qmlon::set(&Level::name)},
     {"start", qmlon::createSet(vi, &Level::startPosition)}
   }, {
     {"Line", [&](Level& level, qmlon::Object& o) {
-      qmlon::Value::List const& vertices = o.getProperty("vertices")->asList();
-      Vec2D current;
-      Vec2D previous;
-      bool first = true;
-      for(qmlon::Value::Reference v : vertices)
-      {
-        previous = current;
-        current = qmlon::create(v, vi);
-        if(first)
-        {
-          first = false;
-          continue;
-        }
-        
-        level.segments.push_back({previous, current});
-      }
+      Line line = qmlon::create(o, lii);
+      level.lines.push_back(line);
     }}
   });
   
@@ -49,9 +47,9 @@ std::string const& Level::getName() const
   return name;
 }
 
-std::list< Segment > const& Level::getSegments() const
+const std::vector<Level::Line> &Level::getLines() const
 {
-  return segments;
+  return lines;
 }
 
 Vec2D const& Level::getStartPosition() const

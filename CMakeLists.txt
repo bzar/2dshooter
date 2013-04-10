@@ -23,5 +23,6 @@ file(COPY skeletons DESTINATION .)
 file(COPY spritesheets DESTINATION .)
 file(COPY img DESTINATION .)
 file(COPY levels DESTINATION .)
+file(COPY terrains DESTINATION .)
 
 add_subdirectory(test)
