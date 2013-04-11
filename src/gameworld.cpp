@@ -34,7 +34,7 @@ GameWorld::GameWorld() :
   human->setPosition(level.getStartPosition());
   SegmentTree segmentTree(segments);
   setSegmentTree(segmentTree);
-  new VectorTerrain(this, segments, 0, 0);
+  //new VectorTerrain(this, segments, 0, 0);
   new LevelTerrain(this, level, -1, 0);
 }
 

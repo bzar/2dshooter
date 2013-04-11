@@ -21,9 +21,11 @@ public:
   void render(ew::RenderContext* context);
 
 private:
+  static glhckTextureParameters const TEXTURE_PARAMETERS;
+
   void addFilledPolygon(std::vector<Vec2D> const& vertices);
-  void addEdgePolygons(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge);
-  void addEdgePolygon(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge);
+  void addEdgePolygons(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge, SpriteSheet const& spriteSheet);
+  void addEdgePolygon(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge, SpriteSheet const& spriteSheet);
 
   std::vector<glhckObject*> objects;
 };
