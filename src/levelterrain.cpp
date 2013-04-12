@@ -95,8 +95,8 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
 {
   std::vector<glhckVertexData2f> vertexData;
 
-  float l1 = 0;
-  float l2 = 0;
+  float l = 0;
+
   Vec2D prev1;
   Vec2D prev2;
 
@@ -126,12 +126,23 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
 
     if(i > 0)
     {
-      l1 += v1.subtract(prev1).length();
-      l2 += v2.subtract(prev2).length();
+      float pl = l;
+      l += v1.subtract(prev1).length();
+      Vec2D delta = v1 - prev1;
+      Vec2D direction = delta.unit();
+      float l2 = (v2 - v1).dot(direction) + l;
+      float pl2 = (prev2 - prev1).dot(direction) + pl;
+
+      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {pl/edge.width, 1}, {255,255,255,255}});
+      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {l2/edge.width, 0}, {255,255,255,255}});
+      vertexData.push_back({{prev2.x, prev2.y}, {0, 0, 0}, {pl2/edge.width, 0}, {255,255,255,255}});
+
+      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {pl/edge.width, 1}, {255,255,255,255}});
+      vertexData.push_back({{v1.x, v1.y}, {0, 0, 0}, {l/edge.width, 1}, {255,255,255,255}});
+      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {l2/edge.width, 0}, {255,255,255,255}});
+
     }
 
-    vertexData.push_back({{v1.x, v1.y}, {0, 0, 0}, {l1/edge.width, 1}, {255,255,255,255}});
-    vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {l2/edge.width, 0}, {255,255,255,255}});
 
     prev1 = v1;
     prev2 = v2;
@@ -143,7 +154,7 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
   glhckObjectTexture(o, tex);
   glhckTextureFree(tex);
   //glhckObjectMaterialFlags(o, GLHCK_MATERIAL_COLOR);
-  g->type = GLHCK_TRIANGLE_STRIP;
+  g->type = GLHCK_TRIANGLES;
   glhckGeometrySetVertices(g, GLHCK_VERTEX_V2F, vertexData.data(), vertexData.size());
   glhckObjectUpdate(o);
 

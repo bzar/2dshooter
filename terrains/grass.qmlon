@@ -6,6 +6,6 @@ Terrain {
     fromAngle: 0
     toAngle: 1
     sprite: "grass"
-    width: 8
+    width: 4
   }
 }
