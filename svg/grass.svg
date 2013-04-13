@@ -11,7 +11,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="64"
-   height="64"
+   height="32"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
@@ -21,6 +21,16 @@
    inkscape:export-ydpi="90">
   <defs
      id="defs4">
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#sand_bitmap"
+       id="pattern3097"
+       patternTransform="translate(0,32.00002)" />
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#sand_bitmap"
+       id="pattern3016"
+       patternTransform="translate(64,-7.8171874e-6)" />
     <pattern
        inkscape:stockid="Sand (bitmap)"
        id="pattern5386"
@@ -88,7 +98,8 @@
        y1="0"
        x2="32"
        y2="24"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,1020.3622)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3759-9"
@@ -112,10 +123,11 @@
     <filter
        inkscape:collect="always"
        id="filter3821"
-       x="-0.048940689"
+       x="-0.048940688"
        width="1.0978814"
-       y="-0.1305084"
-       height="1.2610168">
+       y="-0.13050839"
+       height="1.2610168"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="1.305085"
@@ -149,12 +161,12 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.15"
-     inkscape:cx="31.998203"
-     inkscape:cy="33.532969"
+     inkscape:zoom="13.8125"
+     inkscape:cx="67.972002"
+     inkscape:cy="32.101104"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="false"
+     showgrid="true"
      inkscape:window-width="1920"
      inkscape:window-height="1180"
      inkscape:window-x="1918"
@@ -178,7 +190,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -186,38 +198,22 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-988.36218)">
-    <rect
-       style="opacity:0.90000000000000002;color:#000000;fill:#a05a2c;fill-opacity:1;fill-rule:nonzero;stroke:#5c5c5c;stroke-width:0.10000000000000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="rect2987"
-       width="64"
-       height="64"
-       x="0"
-       y="0"
-       transform="translate(0,988.36218)" />
-    <rect
-       style="opacity:0.18965517000000001;color:#000000;fill:url(#sand_bitmap);fill-opacity:1.0;fill-rule:nonzero;stroke:none;stroke-width:0.10000000000000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="rect2987-2"
-       width="64"
-       height="64"
-       x="0"
-       y="988.36218" />
+     transform="translate(0,-1020.3622)">
     <path
        style="fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter3821)"
-       d="m 0,988.36218 64,0 0,8 -16,8.00002 -8,-8.00002 -8,16.00002 -16,-16.00002 -8,16.00002 -8,-16.00002 z"
+       d="m 0,1020.3622 64,0 0,8 -16,8 -8,-8 -8,16 -16,-16 -8,16 -8,-16 z"
        id="path2989-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccccc" />
     <path
-       style="fill:url(#linearGradient3765);stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
-       d="M 0,0 64,0 64,8 48,16 40,8 32,24 16,8 8,24 0,8 z"
+       style="fill:url(#linearGradient3765);fill-opacity:1;stroke:none"
+       d="m 0,1020.3622 64,0 0,8 -16,8 -8,-8 -8,16 -16,-16 -8,16 -8,-16 z"
        id="path2989"
        inkscape:connector-curvature="0"
-       transform="translate(0,988.36218)"
        sodipodi:nodetypes="cccccccccc" />
     <path
-       style="fill:url(#sand_bitmap);fill-opacity:1;stroke:none;opacity:0.15086207"
-       d="m 0,988.36218 64,0 0,8 -16,8.00002 -8,-8.00002 -8,16.00002 -16,-16.00002 -8,16.00002 -8,-16.00002 z"
+       style="opacity:0.15086209;fill:url(#pattern3097);fill-opacity:1;stroke:none"
+       d="m 0,1020.3622 64,0 0,8 -16,8 -8,-8 -8,16 -16,-16 -8,16 -8,-16 z"
        id="path2989-8"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccccc" />

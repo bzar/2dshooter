@@ -1,7 +1,6 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "spritesheet.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -12,15 +11,15 @@ public:
   struct Edge {
     float fromAngle;
     float toAngle;
-    std::string sprite;
+    std::string image;
     float width;
   };
 
   Terrain();
   static Terrain load(std::string const& filename);
 
-  SpriteSheet const& getSpriteSheet() const;
-  bool getFilled() const;
+  std::string const& getFill() const;
+  float getFillScale() const;
   std::vector<Edge> const& getEdges() const;
 
 
@@ -28,8 +27,8 @@ private:
 
   static std::map<std::string, Terrain> cache;
 
-  SpriteSheet spriteSheet;
-  bool filled;
+  std::string fill;
+  float fillScale;
   std::vector<Edge> edges;
 };
 

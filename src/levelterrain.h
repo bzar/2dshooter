@@ -23,9 +23,9 @@ public:
 private:
   static glhckTextureParameters const TEXTURE_PARAMETERS;
 
-  void addFilledPolygon(std::vector<Vec2D> const& vertices);
-  void addEdgePolygons(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge, SpriteSheet const& spriteSheet);
-  void addEdgePolygon(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge, SpriteSheet const& spriteSheet);
+  void addFilledPolygon(std::vector<Vec2D> const& vertices, std::string const& image, float const scale);
+  void addEdgePolygons(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge);
+  void addEdgePolygon(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge);
 
   std::vector<glhckObject*> objects;
 };

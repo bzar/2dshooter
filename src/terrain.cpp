@@ -1,11 +1,10 @@
 #include "terrain.h"
 #include "qmloninitializer.h"
-#include <iostream>
 
 std::map<std::string, Terrain> Terrain::cache;
 
 Terrain::Terrain() :
-  spriteSheet(), filled(false), edges()
+  fill(), fillScale(1), edges()
 {
 }
 
@@ -20,17 +19,13 @@ Terrain Terrain::load(const std::string &filename)
   qmlon::Initializer<Edge> ei({
     {"fromAngle", qmlon::set(&Edge::fromAngle)},
     {"toAngle", qmlon::set(&Edge::toAngle)},
-    {"sprite", qmlon::set(&Edge::sprite)},
+    {"image", qmlon::set(&Edge::image)},
     {"width", qmlon::set(&Edge::width)},
   });
 
   qmlon::Initializer<Terrain> ti({
-    {"spritesheet", [](Terrain& terrain, qmlon::Value::Reference v) {
-       std::string spriteSheetFilename = v->asString();
-       qmlon::Value::Reference spriteSheetValue = qmlon::readFile(spriteSheetFilename);
-       terrain.spriteSheet.initialize(spriteSheetValue);
-    }},
-    {"filled", qmlon::set(&Terrain::filled)}
+    {"fill", qmlon::set(&Terrain::fill)},
+    {"fillScale", qmlon::set(&Terrain::fillScale)}
   }, {
    {"Edge", [&ei](Terrain& terrain, qmlon::Object& o) {
       terrain.edges.push_back(qmlon::create(o, ei));
@@ -45,17 +40,18 @@ Terrain Terrain::load(const std::string &filename)
   return terrain;
 }
 
-const SpriteSheet &Terrain::getSpriteSheet() const
+std::string const& Terrain::getFill() const
 {
-  return spriteSheet;
-}
-
-bool Terrain::getFilled() const
-{
-  return filled;
+  return fill;
 }
 
 const std::vector<Terrain::Edge> &Terrain::getEdges() const
 {
   return edges;
+}
+
+
+float Terrain::getFillScale() const
+{
+  return fillScale;
 }

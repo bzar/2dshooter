@@ -1,11 +1,11 @@
 Terrain {
-  spritesheet: "spritesheets/grass.qmlon"
-  filled: false
+  fill: "img/dirt.png"
+  fillScale: 16
   
   Edge {
     fromAngle: 0
     toAngle: 1
-    sprite: "grass"
+    image: "img/grass.png"
     width: 4
   }
 }

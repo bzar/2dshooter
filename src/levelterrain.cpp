@@ -1,4 +1,5 @@
 #include "levelterrain.h"
+#include "util/polygon.h"
 
 ew::UID const LevelTerrain::ID = ew::getUID();
 
@@ -25,14 +26,14 @@ LevelTerrain::LevelTerrain(GameWorld* world, Level const& level, const int zInde
   for(Level::Line const& line : level.getLines())
   {
     Terrain terrain = Terrain::load(line.terrain);
-    if(terrain.getFilled())
+    if(!terrain.getFill().empty())
     {
-      addFilledPolygon(line.vertices);
+      addFilledPolygon(line.vertices, terrain.getFill(), terrain.getFillScale());
     }
 
     for(Terrain::Edge const& edge : terrain.getEdges())
     {
-      addEdgePolygons(line.vertices, edge, terrain.getSpriteSheet());
+      addEdgePolygons(line.vertices, edge);
     }
   }
 }
@@ -46,15 +47,43 @@ void LevelTerrain::render(ew::RenderContext* context)
 {
   for(glhckObject* o : objects)
   {
-    glhckObjectDraw(o);
+    glhckObjectRender(o);
   }
 }
 
-void LevelTerrain::addFilledPolygon(const std::vector<Vec2D> &vertices)
+void LevelTerrain::addFilledPolygon(const std::vector<Vec2D> &vertices, std::string const& image, float const scale)
 {
+  Polygon polygon(vertices);
+  std::vector<Triangle> triangles = polygon.triangulate();
+
+  if(triangles.empty())
+  {
+    return;
+  }
+
+  std::vector<glhckVertexData2f> vertexData;
+
+  for(Triangle const& t : triangles)
+  {
+    vertexData.push_back({{t.a.x, t.a.y}, {0, 0, 0}, {t.a.x/scale, t.a.y/scale}, {255,255,255,255}});
+    vertexData.push_back({{t.b.x, t.b.y}, {0, 0, 0}, {t.b.x/scale, t.b.y/scale}, {255,255,255,255}});
+    vertexData.push_back({{t.c.x, t.c.y}, {0, 0, 0}, {t.c.x/scale, t.c.y/scale}, {255,255,255,255}});
+  }
+
+  glhckObject* o = glhckObjectNew();
+  glhckGeometry* g = glhckObjectNewGeometry(o);
+  glhckTexture* tex = glhckTextureNew(image.data(), 0, &TEXTURE_PARAMETERS);
+  glhckObjectTexture(o, tex);
+  glhckTextureFree(tex);
+  //glhckObjectMaterialFlags(o, GLHCK_MATERIAL_COLOR);
+  g->type = GLHCK_TRIANGLES;
+  glhckGeometrySetVertices(g, GLHCK_VERTEX_V2F, vertexData.data(), vertexData.size());
+  glhckObjectUpdate(o);
+
+  objects.push_back(o);
 }
 
-void LevelTerrain::addEdgePolygons(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge, SpriteSheet const& spriteSheet)
+void LevelTerrain::addEdgePolygons(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge)
 {
   std::vector<Vec2D> edgeVertices;
 
@@ -80,18 +109,18 @@ void LevelTerrain::addEdgePolygons(const std::vector<Vec2D> &vertices, const Ter
     }
     else if(!edgeVertices.empty())
     {
-      addEdgePolygon(edgeVertices, edge, spriteSheet);
+      addEdgePolygon(edgeVertices, edge);
       edgeVertices.clear();
     }
   }
 
   if(!edgeVertices.empty())
   {
-    addEdgePolygon(edgeVertices, edge, spriteSheet);
+    addEdgePolygon(edgeVertices, edge);
   }
 }
 
-void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge, SpriteSheet const& spriteSheet)
+void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge)
 {
   std::vector<glhckVertexData2f> vertexData;
 
@@ -99,6 +128,12 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
 
   Vec2D prev1;
   Vec2D prev2;
+
+  glhckTexture* tex = glhckTextureNew(edge.image.data(), 0, &TEXTURE_PARAMETERS);
+  int imageWidth = 0;
+  int imageHeight = 0;
+  glhckTextureGetInformation(tex, nullptr, &imageWidth, &imageHeight, nullptr, nullptr, nullptr, nullptr);
+  float aspectRatio = static_cast<float>(imageHeight) / imageWidth;
 
   for(int i = 0; i < vertices.size(); ++i)
   {
@@ -133,13 +168,13 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
       float l2 = (v2 - v1).dot(direction) + l;
       float pl2 = (prev2 - prev1).dot(direction) + pl;
 
-      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {pl/edge.width, 1}, {255,255,255,255}});
-      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {l2/edge.width, 0}, {255,255,255,255}});
-      vertexData.push_back({{prev2.x, prev2.y}, {0, 0, 0}, {pl2/edge.width, 0}, {255,255,255,255}});
+      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {aspectRatio*pl/edge.width, 1}, {255,255,255,255}});
+      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {aspectRatio*l2/edge.width, 0}, {255,255,255,255}});
+      vertexData.push_back({{prev2.x, prev2.y}, {0, 0, 0}, {aspectRatio*pl2/edge.width, 0}, {255,255,255,255}});
 
-      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {pl/edge.width, 1}, {255,255,255,255}});
-      vertexData.push_back({{v1.x, v1.y}, {0, 0, 0}, {l/edge.width, 1}, {255,255,255,255}});
-      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {l2/edge.width, 0}, {255,255,255,255}});
+      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {aspectRatio*pl/edge.width, 1}, {255,255,255,255}});
+      vertexData.push_back({{v1.x, v1.y}, {0, 0, 0}, {aspectRatio*l/edge.width, 1}, {255,255,255,255}});
+      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {aspectRatio*l2/edge.width, 0}, {255,255,255,255}});
 
     }
 
@@ -150,7 +185,6 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
 
   glhckObject* o = glhckObjectNew();
   glhckGeometry* g = glhckObjectNewGeometry(o);
-  glhckTexture* tex = glhckTextureNew(spriteSheet.getImage().data(), 0, &TEXTURE_PARAMETERS);
   glhckObjectTexture(o, tex);
   glhckTextureFree(tex);
   //glhckObjectMaterialFlags(o, GLHCK_MATERIAL_COLOR);
