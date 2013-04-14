@@ -19,6 +19,7 @@ Terrain Terrain::load(const std::string &filename)
   qmlon::Initializer<Edge> ei({
     {"fromAngle", qmlon::set(&Edge::fromAngle)},
     {"toAngle", qmlon::set(&Edge::toAngle)},
+    {"offset", qmlon::set(&Edge::offset)},
     {"image", qmlon::set(&Edge::image)},
     {"width", qmlon::set(&Edge::width)},
   });

@@ -9,9 +9,9 @@
 
 namespace
 {
-  float const EPSILON = 0.001;
-  float const ONE_MINUS_EPSILON = 0.999;
-  float const ONE_PLUS_EPSILON = 1.001;
+  float const EPSILON = 0.0001;
+  float const ONE_MINUS_EPSILON = 1.0 - EPSILON;
+  float const ONE_PLUS_EPSILON = 1.0 + EPSILON;
 }
 
 ew::UID const Human::ID = ew::getUID();
@@ -125,7 +125,8 @@ void Human::update(const float delta)
   velocity += world->getGravity() * delta;
 
   onGround = false;
-  setPosition(getPosition() + velocity.scale(delta));
+  Vec2D const frameVelocity = velocity.scale(delta);
+  setPosition(getPosition() + frameVelocity);
   PuppetEntity::update(delta);
 
   glhckObject* camera = glhckCameraGetObject(world->getCamera());

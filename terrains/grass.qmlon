@@ -3,9 +3,17 @@ Terrain {
   fillScale: 16
   
   Edge {
-    fromAngle: 0
-    toAngle: 1
+    fromAngle: 0.001
+    toAngle: 0.499
     image: "img/grass.png"
+    width: 4
+  }
+  
+  Edge {
+    fromAngle: 0.501
+    toAngle: 0.999
+    offset: -4
+    image: "img/dirt-bottom.png"
     width: 4
   }
 }

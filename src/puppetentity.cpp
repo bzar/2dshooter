@@ -54,13 +54,13 @@ PuppetEntity::~PuppetEntity()
 void PuppetEntity::render(ew::RenderContext* context)
 {
   if(showParts)
-    glhckObjectDraw(parts);
+    glhckObjectRender(parts);
   
   if(showPartLines)
-    glhckObjectDraw(partLines);
+    glhckObjectRender(partLines);
   
   if(showBoneLines)
-    glhckObjectDraw(boneLines);
+    glhckObjectRender(boneLines);
 }
 
 void PuppetEntity::update(float const delta)

@@ -137,26 +137,42 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
 
   for(int i = 0; i < vertices.size(); ++i)
   {
-    Vec2D const& v1 = vertices.at(i);
+    Vec2D v1 = vertices.at(i);
     Vec2D v2;
 
     if(i == 0)
     {
       Vec2D const& n = vertices.at(i + 1);
-      v2 = v1.add(n.subtract(v1).normali().uniti() * edge.width);
+      Vec2D const normal = n.subtract(v1).normali().uniti();
+
+      if(edge.offset != 0)
+      {
+        v1 += normal * edge.offset;
+      }
+      v2 = v1.add(normal * edge.width);
     }
     else if(i == vertices.size() - 1)
     {
       Vec2D const& p = vertices.at(i - 1);
-      v2 = v1.add(v1.subtract(p).normali().uniti() * edge.width);
+      Vec2D const normal = v1.subtract(p).normali().uniti();
+
+      if(edge.offset != 0)
+      {
+        v1 += normal * edge.offset;
+      }
+      v2 = v1.add(normal * edge.width);
     }
     else
     {
       Vec2D const& p = vertices.at(i - 1);
       Vec2D const& n = vertices.at(i + 1);
-      Vec2D const nw = v1.subtract(p).normali().uniti() * edge.width;
+      Vec2D const normal = v1.subtract(p).normali().uniti();
       Vec2D const d = (p - v1).uniti() + (n - v1).uniti();
-      v2 = v1 + nw.reverseProjection(d);
+      if(edge.offset != 0)
+      {
+        v1 += (normal * edge.offset).reverseProjection(d);
+      }
+      v2 = v1 + (normal * edge.width).reverseProjection(d);
     }
 
     if(i > 0)
@@ -165,19 +181,24 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
       l += v1.subtract(prev1).length();
       Vec2D delta = v1 - prev1;
       Vec2D direction = delta.unit();
+
       float l2 = (v2 - v1).dot(direction) + l;
       float pl2 = (prev2 - prev1).dot(direction) + pl;
 
-      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {aspectRatio*pl/edge.width, 1}, {255,255,255,255}});
-      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {aspectRatio*l2/edge.width, 0}, {255,255,255,255}});
-      vertexData.push_back({{prev2.x, prev2.y}, {0, 0, 0}, {aspectRatio*pl2/edge.width, 0}, {255,255,255,255}});
+      float const tl = aspectRatio * l / edge.width;
+      float const tpl = aspectRatio * pl / edge.width;
+      float const tl2 = aspectRatio * l2 / edge.width;
+      float const tpl2 = aspectRatio * pl2 / edge.width;
 
-      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {aspectRatio*pl/edge.width, 1}, {255,255,255,255}});
-      vertexData.push_back({{v1.x, v1.y}, {0, 0, 0}, {aspectRatio*l/edge.width, 1}, {255,255,255,255}});
-      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {aspectRatio*l2/edge.width, 0}, {255,255,255,255}});
+      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {tpl, 1}, {255,255,255,255}});
+      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {tl2, 0}, {255,255,255,255}});
+      vertexData.push_back({{prev2.x, prev2.y}, {0, 0, 0}, {tpl2, 0}, {255,255,255,255}});
+
+      vertexData.push_back({{prev1.x, prev1.y}, {0, 0, 0}, {tpl, 1}, {255,255,255,255}});
+      vertexData.push_back({{v1.x, v1.y}, {0, 0, 0}, {tl, 1}, {255,255,255,255}});
+      vertexData.push_back({{v2.x, v2.y}, {0, 0, 0}, {tl2, 0}, {255,255,255,255}});
 
     }
-
 
     prev1 = v1;
     prev2 = v2;

@@ -9,8 +9,10 @@ class Terrain
 {
 public:
   struct Edge {
+    Edge() : fromAngle(0), toAngle(1), offset(0), image(), width(1) {}
     float fromAngle;
     float toAngle;
+    float offset;
     std::string image;
     float width;
   };

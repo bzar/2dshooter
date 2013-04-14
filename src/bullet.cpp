@@ -11,7 +11,7 @@ Bullet::Bullet(GameWorld* world) : ew::Entity(world), ew::Renderable(world), ew:
 void Bullet::render(ew::RenderContext *context)
 {
   glhckObjectColorb(o, isRicochet ? 128 : 255, isRicochet ? 128 : 255, isRicochet ? 128 : 255, 255);
-  glhckObjectDraw(o);
+  glhckObjectRender(o);
 }
 
 void Bullet::update(const float delta)
