@@ -110,19 +110,6 @@
          offset="1"
          id="stop3763-2" />
     </linearGradient>
-    <filter
-       inkscape:collect="always"
-       id="filter3821"
-       x="-0.048940688"
-       width="1.0978814"
-       y="-0.13050839"
-       height="1.2610168"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.305085"
-         id="feGaussianBlur3823" />
-    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3759-1"
@@ -147,7 +134,7 @@
        inkscape:collect="always"
        xlink:href="#sand_bitmap-7"
        id="pattern3016"
-       patternTransform="translate(0,-1.2617187e-5)" />
+       patternTransform="translate(0,-1.7817187e-5)" />
     <pattern
        inkscape:stockid="Sand (bitmap)"
        id="sand_bitmap-7"
@@ -174,7 +161,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="13.8125"
      inkscape:cx="39.494984"
-     inkscape:cy="75.120447"
+     inkscape:cy="40.369316"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -201,7 +188,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -211,7 +198,7 @@
      id="layer1"
      transform="translate(0,-988.36218)">
     <rect
-       style="opacity:0.9;color:#000000;fill:#a05a2c;fill-opacity:1;fill-rule:nonzero;stroke:#5c5c5c;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="opacity:1;color:#000000;fill:#a05a2c;fill-opacity:1;fill-rule:nonzero;stroke:#5c5c5c;stroke-width:0.10000000000000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect2987"
        width="64"
        height="64"

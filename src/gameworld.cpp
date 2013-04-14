@@ -2,6 +2,7 @@
 #include "human.h"
 #include "vectorterrain.h"
 #include "levelterrain.h"
+#include "parallaxbackground.h"
 #include "level.h"
 
 GameWorld::GameWorld() :
@@ -36,6 +37,7 @@ GameWorld::GameWorld() :
   setSegmentTree(segmentTree);
   //new VectorTerrain(this, segments, 0, 0);
   new LevelTerrain(this, level, -1, 0);
+  new ParallaxBackground(this, camera, "img/test_background.png", 0, -1);
 }
 
 glhckCamera* GameWorld::getCamera()
