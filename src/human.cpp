@@ -9,7 +9,7 @@
 
 namespace
 {
-  float const EPSILON = 0.0001;
+  float const EPSILON = 0.001;
   float const ONE_MINUS_EPSILON = 1.0 - EPSILON;
   float const ONE_PLUS_EPSILON = 1.0 + EPSILON;
 }
@@ -129,9 +129,15 @@ void Human::update(const float delta)
   setPosition(getPosition() + frameVelocity);
   PuppetEntity::update(delta);
 
+  float const r = 10;
   glhckObject* camera = glhckCameraGetObject(world->getCamera());
-  glhckObjectPositionf(camera, getPosition().x, getPosition().y, 150);
-  glhckObjectTargetf(camera, getPosition().x, getPosition().y, 0);
+  Vec2D cameraPosition(glhckObjectGetPosition(camera)->x, glhckObjectGetPosition(camera)->y);
+  cameraPosition.x = cameraPosition.x - getPosition().x < -r ? getPosition().x - r : cameraPosition.x;
+  cameraPosition.y = cameraPosition.y - getPosition().y < -r ? getPosition().y - r : cameraPosition.y;
+  cameraPosition.x = cameraPosition.x - getPosition().x > r ? getPosition().x + r : cameraPosition.x;
+  cameraPosition.y = cameraPosition.y - getPosition().y > r ? getPosition().y + r : cameraPosition.y;
+  glhckObjectPositionf(camera, cameraPosition.x, cameraPosition.y, 150);
+  glhckObjectTargetf(camera, cameraPosition.x, cameraPosition.y, 0);
   glhckCameraUpdate(world->getCamera());
 }
 
