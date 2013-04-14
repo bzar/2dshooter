@@ -6,7 +6,7 @@
 #include "level.h"
 #include "terrain.h"
 
-#include <vector>
+#include <deque>
 #include "glhck/glhck.h"
 
 class LevelTerrain : public ew::Renderable
@@ -23,11 +23,11 @@ public:
 private:
   static glhckTextureParameters const TEXTURE_PARAMETERS;
 
-  void addFilledPolygon(std::vector<Vec2D> const& vertices, std::string const& image, float const scale);
-  void addEdgePolygons(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge);
-  void addEdgePolygon(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge);
+  void addFilledPolygon(std::vector<Vec2D> const& vertices, std::string const& image, float const scale, bool const background);
+  void addEdgePolygons(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge, bool const background);
+  void addEdgePolygon(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge, bool const background);
 
-  std::vector<glhckObject*> objects;
+  std::deque<glhckObject*> objects;
 };
 
 

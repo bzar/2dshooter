@@ -29,8 +29,14 @@ Level::Level(const std::string& filename) :
   }, {
     {"Line", [&](Level& level, qmlon::Object& o) {
       Line line = qmlon::create(o, lii);
+      line.solid = true;
       level.lines.push_back(line);
-    }}
+    }},
+    {"Background", [&](Level& level, qmlon::Object& o) {
+      Line line = qmlon::create(o, lii);
+      line.solid = false;
+      level.lines.push_back(line);
+    }},
   });
   
   qmlon::Value::Reference value = qmlon::readFile(filename);

@@ -13,6 +13,7 @@ public:
   struct Line {
     std::vector<Vec2D> vertices;
     std::string terrain;
+    bool solid;
   };
 
   Level(std::string const& filename);

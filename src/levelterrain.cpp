@@ -26,14 +26,19 @@ LevelTerrain::LevelTerrain(GameWorld* world, Level const& level, const int zInde
   for(Level::Line const& line : level.getLines())
   {
     Terrain terrain = Terrain::load(line.terrain);
-    if(!terrain.getFill().empty())
+    if(!terrain.getFill().empty() && line.solid)
     {
-      addFilledPolygon(line.vertices, terrain.getFill(), terrain.getFillScale());
+      addFilledPolygon(line.vertices, terrain.getFill(), terrain.getFillScale(), false);
     }
 
     for(Terrain::Edge const& edge : terrain.getEdges())
     {
-      addEdgePolygons(line.vertices, edge);
+      addEdgePolygons(line.vertices, edge, !line.solid);
+    }
+
+    if(!terrain.getFill().empty() && !line.solid)
+    {
+      addFilledPolygon(line.vertices, terrain.getFill(), terrain.getFillScale(), true);
     }
   }
 }
@@ -51,7 +56,7 @@ void LevelTerrain::render(ew::RenderContext* context)
   }
 }
 
-void LevelTerrain::addFilledPolygon(const std::vector<Vec2D> &vertices, std::string const& image, float const scale)
+void LevelTerrain::addFilledPolygon(const std::vector<Vec2D> &vertices, std::string const& image, float const scale, bool const background)
 {
   Polygon polygon(vertices);
   std::vector<Triangle> triangles = polygon.triangulate();
@@ -80,10 +85,17 @@ void LevelTerrain::addFilledPolygon(const std::vector<Vec2D> &vertices, std::str
   glhckGeometrySetVertices(g, GLHCK_VERTEX_V2F, vertexData.data(), vertexData.size());
   glhckObjectUpdate(o);
 
-  objects.push_back(o);
+  if(background)
+  {
+    objects.push_front(o);
+  }
+  else
+  {
+    objects.push_back(o);
+  }
 }
 
-void LevelTerrain::addEdgePolygons(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge)
+void LevelTerrain::addEdgePolygons(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge, bool const background)
 {
   std::vector<Vec2D> edgeVertices;
 
@@ -109,18 +121,18 @@ void LevelTerrain::addEdgePolygons(const std::vector<Vec2D> &vertices, const Ter
     }
     else if(!edgeVertices.empty())
     {
-      addEdgePolygon(edgeVertices, edge);
+      addEdgePolygon(edgeVertices, edge, background);
       edgeVertices.clear();
     }
   }
 
   if(!edgeVertices.empty())
   {
-    addEdgePolygon(edgeVertices, edge);
+    addEdgePolygon(edgeVertices, edge, background);
   }
 }
 
-void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge)
+void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terrain::Edge &edge, bool const background)
 {
   std::vector<glhckVertexData2f> vertexData;
 
@@ -213,5 +225,12 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
   glhckGeometrySetVertices(g, GLHCK_VERTEX_V2F, vertexData.data(), vertexData.size());
   glhckObjectUpdate(o);
 
-  objects.push_back(o);
+  if(background)
+  {
+    objects.push_front(o);
+  }
+  else
+  {
+    objects.push_back(o);
+  }
 }

@@ -1,0 +1,7 @@
+Terrain {
+  
+  Edge {
+    image: "img/grass.png"
+    width: 4
+  }
+}

@@ -1,0 +1,4 @@
+Terrain {
+  fill: "img/background-dirt.png"
+  fillScale: 16
+}

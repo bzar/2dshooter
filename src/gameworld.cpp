@@ -21,6 +21,11 @@ GameWorld::GameWorld() :
   std::list<Segment> segments;
   for(Level::Line const& line : level.getLines())
   {
+    if(!line.solid)
+    {
+      continue;
+    }
+
     auto a = line.vertices.begin();
     auto b = line.vertices.begin();
     ++b;
