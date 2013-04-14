@@ -53,6 +53,8 @@ PuppetEntity::~PuppetEntity()
 
 void PuppetEntity::render(ew::RenderContext* context)
 {
+  glhckObjectPositionf(parts, position.x, position.y, 0);
+
   if(showParts)
     glhckObjectRender(parts);
   
@@ -66,8 +68,6 @@ void PuppetEntity::render(ew::RenderContext* context)
 void PuppetEntity::update(float const delta)
 {
   puppet.update(delta);
-
-  glhckObjectPositionf(parts, position.x, position.y, 0);
 
   if(dirtyVertices)
   {

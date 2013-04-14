@@ -10,6 +10,7 @@ Bullet::Bullet(GameWorld* world) : ew::Entity(world), ew::Renderable(world), ew:
 
 void Bullet::render(ew::RenderContext *context)
 {
+  glhckObjectPositionf(o, position.x, position.y, 0);
   glhckObjectColorb(o, isRicochet ? 128 : 255, isRicochet ? 128 : 255, isRicochet ? 128 : 255, 255);
   glhckObjectRender(o);
 }
@@ -21,7 +22,6 @@ void Bullet::update(const float delta)
     velocity += world->getGravity() * delta;
   }
   position += velocity * delta;
-  glhckObjectPositionf(o, position.x, position.y, 0);
 
   life -= delta;
   if(life <= 0)
