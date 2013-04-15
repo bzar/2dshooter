@@ -1,0 +1,110 @@
+Level {
+  name: "Commando1"
+  start: {x:40, y:140}
+
+  Parallax {
+    image: "img/test_background.png"
+    width: 300
+    height: 200
+    left: 0
+    right: 2960
+    bottom: 0
+    top: 400
+  }
+  
+  Line {
+    vertices: [{x:0, y:0}, {x:0, y:160}, {x:20, y:160}, {x:20, y:100}, {x:40, y:100}, {x:40, y:0}]
+    terrain: "terrains/grass.qmlon"
+  }
+
+  Line {
+    vertices: [{x:40, y:0}, {x:40, y:20}, {x:2960, y:20}, {x:2960, y:0}]
+    terrain: "terrains/underground.qmlon"
+  }
+  
+  Background {
+    vertices: [{x:40, y:100}, {x:140, y:100}, {x:140, y:120}, {x:220, y:120}, {x:220, y:100}, {x:940, y:100}, {x:940, y:100}, {x:940, y:20}, {x:40, y:20}]
+    terrain: "terrains/background-dirt.qmlon"
+  }
+
+  Line {
+    vertices: [{x:40, y:100}, {x:60, y:100}]
+    terrain: "terrains/grassplatform.qmlon"
+  }
+  
+  Line {
+    vertices: [{x:40, y:60}, {x:60, y:60}]
+    terrain: "terrains/grassplatform.qmlon"
+  }
+  
+  Line {
+    vertices: [{x:60, y:100}, {x:140, y:100}, {x:140, y:80}, {x:80, y:80}, {x:80, y:40}, {x:60, y:40}, {x:60, y:100}]
+    terrain: "terrains/grass.qmlon"
+  }
+  
+  Line {
+    vertices: [{x:140, y:120}, {x:140, y:140}, {x:220, y:140}, {x:220, y:120}, {x:140, y:120}]
+    terrain: "terrains/grass.qmlon"
+  }
+
+  Line {
+    vertices: [{x:160, y:160}, {x:200, y:160}]
+    terrain: "terrains/grassplatform.qmlon"
+  }
+
+  Line {
+    vertices: [{x:220, y:100}, {x:360, y:100}, {x:380, y:120}, {x:400, y:120}, {x:400, y:100}, {x:500, y:100}, {x:500, y:120}, {x:520, y:120}, {x:540, y:100}, {x:600, y:100}, {x:600, y:80}, {x:220, y:80}, {x:220, y:100}]
+    terrain: "terrains/grass.qmlon"
+  }
+
+  Line {
+    vertices: [{x:640, y:80}, {x:640, y:100}, {x:940, y:100}, {x:940, y:80}, {x:640, y:80}]
+    terrain: "terrains/grass.qmlon"
+  }
+
+  Line {
+    vertices: [{x:940, y:100}, {x:960, y:100}]
+    terrain: "terrains/grassplatform.qmlon"
+  }
+  
+  Line {
+    vertices: [{x:940, y:80}, {x:940, y:60}, {x:1040, y:60}, {x:1040, y:40}, {x:1540, y:40}, {x:1540, y:20}, {x:920, y:20}, {x:920, y:80}]
+    terrain: "terrains/underground.qmlon"
+  }
+
+  Line {
+    vertices: [{x:960, y:80}, {x:960, y:180}, {x:980, y:180}, {x:980, y:80}, {x:960, y:80}]
+    terrain: "terrains/grass.qmlon"
+  }
+  
+  Line {
+    vertices: [{x:860, y:140}, {x:960, y:140}]
+    terrain: "terrains/grassplatform.qmlon"
+  }
+
+  Line {
+    vertices: [{x:920, y:180}, {x:960, y:180}]
+    terrain: "terrains/grassplatform.qmlon"
+  }
+
+/*  Line {
+    vertices: [{x:50, y:0}, {x:175, y:50}, {x:200, y:50}, {x:200, y:40}, {x:220, y:40}, {x:220, y:30}, {x:230, y:30}, {x:230, y:20}, {x:240, y:20}, {x:240, y:10}, {x:250, y:10}, {x:250, y:0}]
+    terrain: "terrains/grass.qmlon"
+  }
+  
+  Line {
+    vertices: [{x:300, y:30}, {x:400, y:30}, {x:400, y:25}, {x:380, y:20}, {x:340, y:25}, {x:320, y:20}, {x:300, y:25}, {x:300, y:30}]
+    terrain: "terrains/grass.qmlon"
+  }
+  
+  Line {
+    vertices: [{x:450, y:0}, {x:500, y:50}, {x:510, y:50}, {x:530, y:0}, {x:550, y:50}, {x:560, y:50}, {x:610, y:0}]
+    terrain: "terrains/grass.qmlon"
+  }
+
+  Line {
+    vertices: [{x:3000, y:0}, {x:3100, y:50}, {x:3010, y:0}]
+    terrain: "terrains/grass.qmlon"
+  }
+  */
+}

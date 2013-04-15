@@ -16,6 +16,17 @@ public:
     bool solid;
   };
 
+  struct Parallax {
+    std::string image;
+    int zIndex;
+    float width;
+    float height;
+    float left;
+    float right;
+    float top;
+    float bottom;
+  };
+
   Level(std::string const& filename);
 
   std::string const& getFilename() const;
@@ -23,12 +34,14 @@ public:
   Vec2D const& getStartPosition() const;
 
   std::vector<Line> const& getLines() const;
+  std::vector<Parallax> const& getParallaxes() const;
 
 private:
   std::string filename;
   std::string name;
   Vec2D startPosition;
   std::vector<Line> lines;
+  std::vector<Parallax> parallaxes;
 };
 
 #endif

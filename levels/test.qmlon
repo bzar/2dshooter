@@ -2,8 +2,18 @@ Level {
   name: "TestLevel"
   start: {x:425, y:0}
 
+  Parallax {
+    image: "img/test_background.png"
+    width: 300
+    height: 200
+    left: 0
+    right: 3700
+    bottom: 0
+    top: 480
+  }
+  
   Line {
-    vertices: [{x:0, y:480}, {x:0, y:0}, {x:8000, y:0}, {x:8000, y:480}, {x:8200, y:480}, {x:8200, y:-200}, {x:-200, y:-200}, {x:-200, y:480}, {x:0, y:480}]
+    vertices: [{x:0, y:480}, {x:0, y:0}, {x:3500, y:0}, {x:3500, y:480}, {x:3700, y:480}, {x:3700, y:-200}, {x:-200, y:-200}, {x:-200, y:480}, {x:0, y:480}]
     terrain: "terrains/grass.qmlon"
   }
 

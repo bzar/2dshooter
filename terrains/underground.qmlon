@@ -1,0 +1,19 @@
+Terrain {
+  fill: "img/dirt.png"
+  fillScale: 16
+  
+  Edge {
+    fromAngle: 0.001
+    toAngle: 0.499
+    image: "img/underground.png"
+    width: 4
+  }
+  
+  Edge {
+    fromAngle: 0.501
+    toAngle: 0.999
+    offset: -4
+    image: "img/dirt-bottom.png"
+    width: 4
+  }
+}

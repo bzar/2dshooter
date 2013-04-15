@@ -4,11 +4,22 @@
 #include "qmloninitializershelpers.h"
 
 Level::Level(const std::string& filename) :
-  filename(filename), name(), startPosition(), lines()
+  filename(filename), name(), startPosition(), lines(), parallaxes()
 {
   qmlon::Initializer<Vec2D> vi({
     {"x", qmlon::set(&Vec2D::x)},
     {"y", qmlon::set(&Vec2D::y)},
+  });
+
+  qmlon::Initializer<Parallax> pi({
+    {"image", qmlon::set(&Parallax::image)},
+    {"z", qmlon::set(&Parallax::zIndex)},
+    {"left", qmlon::set(&Parallax::left)},
+    {"right", qmlon::set(&Parallax::right)},
+    {"top", qmlon::set(&Parallax::top)},
+    {"bottom", qmlon::set(&Parallax::bottom)},
+    {"width", qmlon::set(&Parallax::width)},
+    {"height", qmlon::set(&Parallax::height)}
   });
 
   qmlon::Initializer<Line> lii({
@@ -27,6 +38,10 @@ Level::Level(const std::string& filename) :
     {"name", qmlon::set(&Level::name)},
     {"start", qmlon::createSet(vi, &Level::startPosition)}
   }, {
+    {"Parallax", [&](Level& level, qmlon::Object& o) {
+      Parallax parallax = qmlon::create(o, pi);
+      level.parallaxes.push_back(parallax);
+    }},
     {"Line", [&](Level& level, qmlon::Object& o) {
       Line line = qmlon::create(o, lii);
       line.solid = true;
@@ -56,6 +71,11 @@ std::string const& Level::getName() const
 const std::vector<Level::Line> &Level::getLines() const
 {
   return lines;
+}
+
+const std::vector<Level::Parallax> &Level::getParallaxes() const
+{
+  return parallaxes;
 }
 
 Vec2D const& Level::getStartPosition() const

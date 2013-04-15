@@ -42,7 +42,14 @@ GameWorld::GameWorld() :
   setSegmentTree(segmentTree);
   //new VectorTerrain(this, segments, 0, 0);
   new LevelTerrain(this, level, -1, 0);
-  new ParallaxBackground(this, camera, "img/test_background.png", 0, -1);
+
+  for(Level::Parallax parallax : level.getParallaxes())
+  {
+    new ParallaxBackground(this, camera, parallax.image, parallax.width, parallax.height,
+                           parallax.left, parallax.right, parallax.top, parallax.bottom,
+                           parallax.zIndex, -1);
+  }
+
 }
 
 glhckCamera* GameWorld::getCamera()

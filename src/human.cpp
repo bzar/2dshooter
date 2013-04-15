@@ -43,7 +43,7 @@ void Human::update(const float delta)
     setPose("walk-hands", true);
     setPose("crouch", false);
     setFlipX(true);
-    velocity.x = -40;
+    velocity.x = -60;
   }
   else if(movingRight && !crouching)
   {
@@ -53,7 +53,7 @@ void Human::update(const float delta)
     setPose("walk-hands", true);
     setPose("crouch", false);
     setFlipX(false);
-    velocity.x = 40;
+    velocity.x = 60;
   }
   else
   {
@@ -68,7 +68,7 @@ void Human::update(const float delta)
 
   if(jumping && onGround)
   {
-    velocity.y = 200;
+    velocity.y = 250;
   }
 
   if(shootDelay > 0)
