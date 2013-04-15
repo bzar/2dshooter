@@ -3,7 +3,24 @@
 
 ew::UID const LevelTerrain::ID = ew::getUID();
 
-glhckTextureParameters const LevelTerrain::TEXTURE_PARAMETERS = {
+glhckTextureParameters const LevelTerrain::EDGE_TEXTURE_PARAMETERS = {
+  .minLod = -1000.0f,
+  .maxLod = 1000.0f,
+  .biasLod = 0.0f,
+  .baseLevel = 0,
+  .maxLevel = 1000,
+  .wrapS = GLHCK_WRAP_REPEAT,
+  .wrapT = GLHCK_WRAP_CLAMP_TO_BORDER,
+  .wrapR = GLHCK_WRAP_REPEAT,
+  .minFilter = GLHCK_FILTER_NEAREST,
+  .magFilter = GLHCK_FILTER_NEAREST,
+  .compareMode = GLHCK_COMPARE_NONE,
+  .compareFunc = GLHCK_COMPARE_LEQUAL,
+  .compression = GLHCK_COMPRESSION_NONE,
+  .mipmap = 0,
+};
+
+glhckTextureParameters const LevelTerrain::FILL_TEXTURE_PARAMETERS = {
   .minLod = -1000.0f,
   .maxLod = 1000.0f,
   .biasLod = 0.0f,
@@ -77,7 +94,7 @@ void LevelTerrain::addFilledPolygon(const std::vector<Vec2D> &vertices, std::str
 
   glhckObject* o = glhckObjectNew();
   glhckGeometry* g = glhckObjectNewGeometry(o);
-  glhckTexture* tex = glhckTextureNew(image.data(), 0, &TEXTURE_PARAMETERS);
+  glhckTexture* tex = glhckTextureNew(image.data(), 0, &FILL_TEXTURE_PARAMETERS);
   glhckObjectTexture(o, tex);
   glhckTextureFree(tex);
   //glhckObjectMaterialFlags(o, GLHCK_MATERIAL_COLOR);
@@ -141,7 +158,7 @@ void LevelTerrain::addEdgePolygon(const std::vector<Vec2D> &vertices, const Terr
   Vec2D prev1;
   Vec2D prev2;
 
-  glhckTexture* tex = glhckTextureNew(edge.image.data(), 0, &TEXTURE_PARAMETERS);
+  glhckTexture* tex = glhckTextureNew(edge.image.data(), 0, &EDGE_TEXTURE_PARAMETERS);
   int imageWidth = 0;
   int imageHeight = 0;
   glhckTextureGetInformation(tex, nullptr, &imageWidth, &imageHeight, nullptr, nullptr, nullptr, nullptr);

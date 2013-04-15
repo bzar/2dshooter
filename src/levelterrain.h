@@ -21,7 +21,8 @@ public:
   void render(ew::RenderContext* context);
 
 private:
-  static glhckTextureParameters const TEXTURE_PARAMETERS;
+  static glhckTextureParameters const EDGE_TEXTURE_PARAMETERS;
+  static glhckTextureParameters const FILL_TEXTURE_PARAMETERS;
 
   void addFilledPolygon(std::vector<Vec2D> const& vertices, std::string const& image, float const scale, bool const background);
   void addEdgePolygons(std::vector<Vec2D> const& vertices, Terrain::Edge const& edge, bool const background);
