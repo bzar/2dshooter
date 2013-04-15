@@ -12,41 +12,41 @@ Skeleton {
 
     Bone {
       name: "arms-aim"
-      base: {y: 14}
-      tip: {x: 1, y: 14}
+      base: {y: 13.5}
+      tip: {x: 1, y: 13.5}
       
       Bone {
         name: "arm-left"
-        base: {y: 14}
-        tip: {y: 10}
+        base: {y: 13.5}
+        tip: {y: 9.5}
 
         Bone {
           name: "forearm-left"
-          base: {y: 10}
-          tip: {y: 6}
+          base: {y: 9.5}
+          tip: {y: 5.5}
 
           Bone {
             name: "item-left"
-            base: {y: 6}
-            tip: {y: 5}
+            base: {y: 5.5}
+            tip: {y: 4.5}
           }
         }
       }
 
       Bone {
         name: "arm-right"
-        base: {y: 14}
-        tip: {y: 10}
+        base: {y: 13.5}
+        tip: {y: 9.5}
 
         Bone {
           name: "forearm-right"
-          base: {y: 10}
-          tip: {y: 6}
+          base: {y: 9.5}
+          tip: {y: 5.5}
           
           Bone {
             name: "item-right"
-            base: {y: 6}
-            tip: {y: 5}
+            base: {y: 5.5}
+            tip: {y: 4.5}
           }
         }
       }

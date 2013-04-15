@@ -15,7 +15,7 @@ namespace
 }
 
 ew::UID const Human::ID = ew::getUID();
-std::string const Human::PUPPET_FILE = "puppets/stickman.qmlon";
+std::string const Human::PUPPET_FILE = "puppets/commando.qmlon";
 
 Human::Human(GameWorld* world) :
   ew::Entity(world), PuppetEntity(createPuppet(), world), ew::Controllable(world), ew::VectorTerrainCollidable(world), 

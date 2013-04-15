@@ -1,0 +1,146 @@
+Sheet {
+  image: "img/commando.png"
+  Sprite {
+    id: "head"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 12, y: 4}
+        size: Size {width: 28, height: 28}
+        hotspot: Vec2D {x: 14, y: 28}
+      }
+    }
+  }
+  Sprite {
+    id: "torso"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 8, y: 36}
+        size: Size {width: 36, height: 80}
+        hotspot: Vec2D {x: 18, y: 0}
+      }
+    }
+  }
+  Sprite {
+    id: "arm-front"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 52, y: 36}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "forearm-front"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 80, y: 36}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "arm-back"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 108, y: 36}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "forearm-back"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 136, y: 36}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "thigh-front"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 52, y: 104}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "leg-front"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 80, y: 104}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "thigh-back"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 108, y: 104}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "leg-back"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 136, y: 104}
+        size: Size {width: 20, height: 64}
+        hotspot: Vec2D {x: 10, y: 10}
+      }
+    }
+  }
+  Sprite {
+    id: "rifle"
+
+    Animation {
+      id: "default"
+
+      Frame {
+        position: Vec2D {x: 3, y: 171}
+        size: Size {width: 150, height: 44}
+        hotspot: Vec2D {x: 35, y: 17}
+      }
+    }
+  }
+}

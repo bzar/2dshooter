@@ -153,7 +153,7 @@ Puppet::PartRefs Puppet::getPartsZOrdered() const
   
   bool const flipped = skeleton.getFlipX() != skeleton.getFlipY();
   std::stable_sort(ordered.begin(), ordered.end(), [flipped](Part const* a, Part const* b) { 
-    return a->z < b->z != flipped;
+    return a->z < b->z != flipped && a->z != b->z;
   });
   
   return ordered;
